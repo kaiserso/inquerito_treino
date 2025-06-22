@@ -99,9 +99,9 @@ nhanes$hh_inc_num <- as.numeric(as.character(nhanes$hh_inc_num))
 # criar um boxplot estratificado (basico)
 with(nhanes,
      boxplot(hh_inc_num ~ hhref_edu, 
-        xlab = "Educa??o",     # se aparecer como 'Educa??o', tem de reabrir com codificacao LATIN1
+        xlab = "Educação",     # se aparecer como 'Educa??o', tem de reabrir com codificacao LATIN1
         ylab = 'Renda',
-        main = "Educa??o versus renda no agregado familiar (NHANES, 2015-16)",
+        main = "Educação versus renda no agregado familiar (NHANES, 2015-16)",
         col = "bisque"))
 
 # tabela simples
