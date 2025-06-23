@@ -105,7 +105,7 @@ with(nhanes,
         col = "bisque"))
 
 # tabela simples
-with(nhanes,
+with(nhanes,f
      addmargins(table(hh_inc, hhref_edu)))
 
 # a evidencias de uma diferenca em renda por nivel de educacao?
@@ -251,7 +251,7 @@ str(nhanes_raw)                         # descrever o conteudo
 ## Usando factores ----------------------------------------------------------
 
 # criar um factor
-nhanes_raw$sex <- factor(nhanes$RIAGENDR, 
+nhanes_raw$sex <- factor(nhanes_raw$RIAGENDR, 
                          levels = c(1,2), 
                          labels = c("Masculino", "Feminino"))
 
