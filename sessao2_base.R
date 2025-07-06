@@ -53,7 +53,7 @@ help("<-")              # para simbolos, melhor ""
 
 # Bibliotecas --------------------------------------------------------------
 
-# install.packages("haven", "epitools", "gmodels") # somente a primeira vez
+# install.packages(c("haven", "epitools", "gmodels")) # somente a primeira vez
 
 library(haven)
 library(epitools)
@@ -105,7 +105,7 @@ with(nhanes,
         col = "bisque"))
 
 # tabela simples
-with(nhanes,f
+with(nhanes,
      addmargins(table(hh_inc, hhref_edu)))
 
 # a evidencias de uma diferenca em renda por nivel de educacao?
