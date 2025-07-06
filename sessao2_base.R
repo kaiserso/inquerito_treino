@@ -53,7 +53,8 @@ help("<-")              # para simbolos, melhor ""
 
 # Bibliotecas --------------------------------------------------------------
 
-# install.packages(c("haven", "epitools", "gmodels")) # somente a primeira vez
+#install.packages("haven", "epitools", "gmodels") # somente a primeira vez
+#install.packages(c("haven", "epitools", "gmodels")) # somente a primeira vez
 
 library(haven)
 library(epitools)
@@ -127,9 +128,11 @@ y*100                     # expressao aritmetica
 y > 20                    # expressao logica
 y > Inf                   # Nada e > Infinito
 y^2                       # y quadrado
+y <- y*2                  # podemos incluir variaveis do outro lado do <-
 
 # Exercicio: criar um variavel numerico com valor de -100 e dividir por 10
 # Obs: so devem comecar o nome dos variaveis com letra, nao com numero ou simbolo
+
 ## Vectores -----------------------------------------------------------------
 
 z <- c(1, 10)             # vector de numeros
@@ -145,6 +148,8 @@ z[1]                      # inspeccao de elementos de um vector
 a[2]                  
 
 d <- c(z[1], a[2])        # criacao de um novo vector com elementos de outros
+
+# Exercicio: criar um vector com tres elementos, os primeiros 3 numeros pares
 
 # Chamar funcoes ---------------------------------------------------------------
 
@@ -191,6 +196,8 @@ length(f)             # tambem com data frames
 
 ## Indexing ----------------------------------------------------------------
 
+# SWITCH TO DIAGRAM
+
 f[1,2]                # indexing - o item na primeira linha, segunda coluna
 f[,1]                 # a 1a coluna
 f[1,]                 # a 1a fila
@@ -206,6 +213,8 @@ f$pop[2]              # o segundo elemento do vector resultando de seleccionar a
 
 ## Operacoes vectorizadas -------------------------------------------------------
 
+# SWITCH TO DIAGRAM
+
 names(f) <- c("a", "b")   # podemos renomear as variaveis
 f
 names(f) <- c("provincia", "pop") # mas nao queremos!
@@ -214,14 +223,19 @@ f$pop_m <- f$pop / 100000   # podemos actualizar os valores
 f
 
 # Exercicio: criar uma nova variavel no f com nome "pop2" que e pop / 1000
+f$pop2 <- f$pop / 100
 
 ## expressoes logicas -----------------------------------------------------
 
 f$pop_m>15
 f$provincia[c(FALSE, TRUE, FALSE, TRUE)]
 f[f$pop_m>15,]
-subset(f, pop_m>15)
+f2 <- subset(f, pop_m>15)
+
+f2$provincia
+
 subset(f, pop_m>15, provincia)
+subset(f, , c("pop", "pop_m"))
 
 ## Recodificacao ----------------------------------------------------------------
 
@@ -231,6 +245,7 @@ f$pop_cat <- cut(f$pop, breaks = c(-1, 1499999, 9999999),
                  labels = c("<1,5m", ">=1,5m")) # intervals fechado do direito por omissao
 f
 table(f$pop_cat)
+table()
 
 f$provincia <- toupper(f$provincia)    # converter minuscula em maiuscula
 f["provincia"]
@@ -248,6 +263,8 @@ str(nhanes_raw)                         # descrever o conteudo
 
 # Obs: 'str' e igual ao que aparece no painel de 'Environment'
 
+View(nhanes_raw)
+
 ## Usando factores ----------------------------------------------------------
 
 # criar um factor
@@ -256,7 +273,8 @@ nhanes_raw$sex <- factor(nhanes_raw$RIAGENDR,
                          labels = c("Masculino", "Feminino"))
 
 # o que e um factor a final?
-table(nhanes_raw$sex)
+#table(nhanes_raw$sex)
+table(nhanes_raw$RIAGENDR, nhanes_raw$sex)
 table(as.numeric(nhanes_raw$sex))
 typeof(nhanes_raw$sex)                   # afinal, e um numero integral?
 class(nhanes_raw$sex)                    # a classe e factor
@@ -268,7 +286,7 @@ nhanes_raw$agecat1 <- cut(nhanes_raw$ageyrs,
                           breaks = c(-1, 14, 24, 44, 64, 80))
 
 with(nhanes_raw,
-    table(ageyrs, agecat1))              # verificar a categorizacao esta certa
+    addmargins(table(ageyrs, agecat1)))              # verificar a categorizacao esta certa
 
 # Exercicio: como fazer a tabela sem usar 'with'?
 
@@ -313,30 +331,32 @@ addmargins(table(nhanes$marital))   # mas 5719 < 9971! verificar o codebook.
 
 summary(subset(nhanes, RIDAGEYR < 20, marital))           
 
-# Acrescentando um nivel de factor ----------------------------------------------
-
-nhanes$marital2 <- nhanes$marital
-nhanes$marital2[nhanes$RIDAGEYR < 20] <- "N/A (<20 yrs)"  # nao funciona
-
-# converter em string primeiro
-nhanes$marital2 <- as.character(nhanes$marital)
-nhanes$marital2[nhanes$RIDAGEYR < 20] <- "N/A (<20 yrs)"  # agora sim
-
-table(nhanes$marital2)
-nhanes$marital2 <- as.factor(nhanes$marital2)             # reconverter em factor
-table(nhanes$marital2)
-class(nhanes$marital2)
+# # Acrescentando um nivel de factor ----------------------------------------------
+# 
+# nhanes$marital2 <- nhanes$marital
+# nhanes$marital2[nhanes$RIDAGEYR < 20] <- "N/A (<20 yrs)"  # nao funciona
+# 
+# # converter em string primeiro
+# nhanes$marital2 <- as.character(nhanes$marital)
+# nhanes$marital2[nhanes$RIDAGEYR < 20] <- "N/A (<20 yrs)"  # agora sim
+# 
+# table(nhanes$marital2)
+# nhanes$marital2 <- as.factor(nhanes$marital2)             # reconverter em factor
+# table(nhanes$marital2)
+# class(nhanes$marital2)
 
 # Converter a missing ---------------------------------------------------
 
-sum(nhanes$marital2 == "Don't Know")
-sum(nhanes$marital2 %in% c("Don't Know", "Refused"))
-
-nhanes$marital2[nhanes$marital2 %in% c("Don't Know", "Refused")] <- NA
-sum(nhanes$marital2 %in% c("Don't Know", "Refused"))
-
-addmargins(table(nhanes$marital2))   # 9968 + 3 = 9971 onde que foram os msisings?
-addmargins(table(nhanes$marital2, useNA="ifany"))         # sempre bom confirmar
+# SWITCH TO SLIDE on MISSING
+# 
+# sum(nhanes$marital2 == "Don't Know")
+# sum(nhanes$marital2 %in% c("Don't Know", "Refused"))
+# 
+# nhanes$marital2[nhanes$marital2 %in% c("Don't Know", "Refused")] <- NA
+# sum(nhanes$marital2 %in% c("Don't Know", "Refused"))
+# 
+# addmargins(table(nhanes$marital2))   # 9968 + 3 = 9971 onde que foram os msisings?
+# addmargins(table(nhanes$marital2, useNA="ifany"))         # sempre bom confirmar
 
 # Graficos em R Base ---------------------------------------------------------
 
@@ -424,6 +444,10 @@ with(nhanes,
 with(nhanes,
      table(hh_inc_high, race_white, hhref_edu3))
 
+# NOT IN THEIR FILE
+with(nhanes,
+     ftable(table(hh_inc_high, race_white, hhref_edu3)))
+
 # facilitar tabulacao similar a SPSS
 library(gmodels)
 with(nhanes,
@@ -490,7 +514,12 @@ gmod2 <- glm(hh_inc_high ~ race_white * sex + hhref_edu3, data = nhanes,
 summary(gmod2)
 exp(coefficients(gmod2))      # lembrar, coeficientes estao na escala logaritmico
 
+# exercise: look at household income (high/low) by marital status. Which is the reference
+# group? which group appears to have the best income? For this analysis, would it make sense
+# to include children (married2) or exclude them (married)?
+
 write_dta(nhanes, path = "data/nhanes_recode.dta")
 rm(nhanes)
+rm(nhanes_raw)
 
 # Fim!

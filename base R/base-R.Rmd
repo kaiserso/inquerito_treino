@@ -1,0 +1,557 @@
+---
+title: "Tutorial: base R"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    language: pt
+runtime: shiny_prerendered
+description: >
+  Aprender algumas noções básicas do base R. Estes exercícios acompanham um curso sobre R feito no Instituto Nacional de Saúde, Marracuene, Moçambique em 2025.
+---
+
+```{js logo-js, echo=FALSE}
+$(document).ready(function() {
+  $('#header').parent().prepend('<div id=\"logo\"><img src=\"www/xxxxx.png\" style=\"position:absolute; top:0; right:0; padding:20px; height:120px\"></div>');
+  $('#header').css('margin-right', '120px')
+});
+```
+
+
+
+```{r setup, include=FALSE}
+library(learnr)
+#library(gradethis)
+
+knitr::opts_chunk$set(echo = FALSE)
+gradethis::gradethis_setup()
+
+randompraise <- function() {
+  praise <- c("Uau!", "Parabéns, você acertou!", "Agora sim!", "Está certo.", "Claro que sim!", "Eu sabia que ia conseguir!", "Impressionante!", "Fantástico")
+  praise[runif(1, 1, length(praise))]
+}
+
+randomencouragement <- function() {
+  encouragement <- c("Tente mais uma vez", "Tente de novo, consegues!", "Não desiste, tenta outra vez!", "Ainda não", "Reveja a resposta e tenta outra vez!", "Volte a tentar!", "Quase, tente outra vez", "Pense um pouco e tenta de novo")
+  encouragement[runif(1, 1, length(encouragement))]
+}
+
+```
+
+## Seja bem-vindo!
+
+Este tutorial foi feito para acompanhar o curso sobre uso de R para analisar dados de inquéritos populacionais, a ser apresentado no Instituto Nacional de Saúde de Moçambique. 
+
+### 
+
+Neste tutorial, vai fazer exercícios para reforçar conceitos como:
+
+* variáveis
+* escalares
+* vectores
+* listas
+* funções
+* conjuntos de dados
+
+## Ajuda no R
+
+Tem várias maneiras de obter ajuda no R/Rstudio:
+
+```{r help, echo=TRUE}
+# ?ls
+# help("ls")
+# help("<-")
+```
+
+**Peça ajuda para a função sqrt (raiz-quadrado)**
+
+```{r help2, exercise=TRUE}
+
+```
+
+## Variáveis 
+
+### Valores escalares (scalars) 
+
+Os 'valores escalares' são variáveis que so podem conter um único valor (um número, uma frase, etc). Alguns exemplos...
+
+```{r criar-var, echo=TRUE}
+x <- "hello world"        # um scalar de cadeia de letras (string)
+x
+y <- 30                   # um scalar de numero (integral)
+y*100                     # expressão aritmética
+y > 20                    # expressão lógica
+y > Inf                   # Nada e > Infinito
+y^2                       # y quadrado
+
+```
+
+Agora a sua vez.
+
+*Exercício: criar uma variável z com valor de 40 / 4.*
+*Obs: so devem comecar o nome das variáveis com letra, não com número ou símbolo*
+
+```{r criar-variavel1, exercise=TRUE}
+z <- 
+z
+```
+
+```{r criar-variavel1-hint}
+# podemos incluir operações como divisão quando criamos a variável
+z <- 40 / 4
+z
+```
+
+*Obs: se não ver o resultado da sua ação, deve incluir a variável sozinho numa linha para pedir o R mostrar o seu valor.*
+
+*Exercício: criar uma variável numérica com valor de -100 e dividir por 10*
+
+
+```{r criar-variavel2, exercise=TRUE, exercise.lines = 5}
+z2 <- 
+
+```
+
+<div id="criar-variavel2-hint">
+**Hint:** Tem cuidado de não esquecer o traço no "<-".
+</div>
+
+*Obs: so devem começar os nomes das variáveis com letra, não com número ou símbolo*
+
+*Exercício: alterar a linha abaixo para confirmar se o valor da nova variável seja mais do que zero*
+
+```{r criar-variavel3, exercise=TRUE, exercise.lines = 5}
+z2 < 100
+
+```
+
+```{r criar-variavel3-hint}
+# o número negativo se escreve com '-' antes do número, tem cuidado de incluir o "<-":
+z2 > 0 
+
+```
+
+*Exercício: alterar a nova variável para que tenha o dobro do valor actual*
+
+```{r criar-variavel4, exercise=TRUE, exercise.lines = 5}
+z2 <- 
+
+```
+
+```{r criar-variavel4-hint}
+# a variavel pode ser referido na expressão ao direito da seta
+z2 <- z2 * 2 
+
+```
+
+## Vectores
+
+Um vector é uma lista de elementos, todos com o mesmo tipo (número, cadeia de letras, etc). Podemos
+criar vectores com a função c (c = combinar).
+
+```{r vectors, echo=TRUE, include=TRUE}
+
+z <- c(1, 10)             # vector de numeros
+z
+
+a <- c("hello", "world")  # vector de strings
+a
+
+b <- c(1, "world")        # se tentamos misturar...
+b
+```
+
+No exemplo anterior, misturamos os tipos (número e string) o que resultou na conversão do número
+em string.
+
+*Exercício: criar um vector `vec` com os três primeiros números impares*
+
+```{r vectors2, exercise=TRUE, exercise.eval=FALSE}
+vec <- 
+
+```
+
+```{r vectors2-check}
+grade_this({
+  if(identical(.result, c(1,3,5))) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+Podemos inspeccionar elementos com o operador de indexação `[`, seguido pela posição de interesse.
+
+```{r vectors-indexing}
+
+z[1]                      # inspeccao de elementos de um vector
+a[2]                  
+
+d <- c(z[1], a[2])        # criacao de um novo vector com elementos de outros
+
+# Exercicio: criar um vector com tres elementos, os primeiros 3 numeros pares
+
+```
+
+*Exercício: inspecionar o segundo elemento do vector vec que criou no exercício anterior*
+
+```{r prepare-vectors3}
+vec <- c(1,3,5)
+```
+
+```{r vectors3, exercise=TRUE, exercise.setup = "prepare-vectors3"}
+vec <- 
+
+```
+
+```{r vectors3-check}
+grade_this({
+  if(identical(.result, c(3))) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+
+```
+
+*Exercício: veja o que aconteça caso tentar escolher um elemento inexistente (por exemplo, o elemento zero, ou quarto elemento de um vector com três elementos)*
+```{r vectors4, exercise=TRUE, exercise.setup = "prepare-vectors3", exercise.blanks = TRUE}
+vec[___]
+
+```
+
+No exemplo anterior, notou que a resposta foi diferente para iten zero e iten >3? Verifique o tamanho do resultado com `length(vec[0])` ou `length(vec[9])`. São iguais?
+
+```{r vector-quiz}
+quiz(
+  question("Qual e o cumprimento de vec[0]?",
+    answer("0", correct = TRUE),
+    answer("1"),
+    answer("NA")
+  ),
+  question("Qual e o cumprimento de vec[9]?",
+    answer("0"),
+    answer("1", correct = TRUE),
+    answer("NA")
+  )
+)
+```
+
+O vector com cumprimento = 0 se chama o vector nulo (ou vazio). 
+
+*Exercício: podemos incluir os elementos de vectores em operações mais complexas. Multiplique o segundo elemento de `vec` por 10. *
+```{r vectors5, exercise=TRUE, exercise.setup = "prepare-vectors3", exercise.blanks = TRUE}
+vec
+
+```
+
+```{r vectors5-check}
+grade_this({
+  if(identical(.result, 30)) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+
+```
+
+## Funções
+
+Existem muitas funções no R que podem ser predefinidas ou contribuidas através de pacotes criados pelos usuários.  A definição básica de uma função é que transforma algum *input* em *output*.
+
+```{r funcoes1, echo=TRUE, include=TRUE, error=TRUE}
+
+ls()                        # uso de funcoes predeterminadas
+sqrt(4)                     # uma função pode ter argumentos, e pode produzir resultados
+sqrt(4, 9)                  # algumas funcoes so aceitam um numero fixo de argumentos (um, no caso de sqrt)
+is.na(100)                  # nao esta em falta
+is.na(NA)                   # esta sim em falta
+```
+
+*Exercício: use a função sqrt para obter a raiz quadrada de 9*
+
+```{r funcoes2, exercise=TRUE}
+sqrt()
+```
+
+```{r funcoes2-check}
+grade_this({
+  if(identical(.result, 3)) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+*Exercício: veja o que aconteça se chamar uma função sem argumentos nem parênteses*
+```{r funcoes3, exercise=TRUE}
+ls
+```
+
+Se chamar uma função sem parênteses (e sem argumentos), o R devolve o programa que implementa
+a função (o código). Pode não precisar disto no entanto, e bom sabé-lo. se tentar correr uma função e
+obter um monte de código em vez do resultado esperado, talvez esqueceu de incluir os parênteses.
+
+Os elementos que passamos nos parenteses se chamam argumentos à função. Algumas funcoes aceitam vectores como argumentos:
+
+```{r funcoes4, echo=TRUE, include=TRUE}
+vec2 <- c(3, 4)
+sum(vec2)                   # somar o conteudo do vector vec2
+```
+
+E outros aceitam mais do que um argumento, por exemplo `all.equal()` que compara os seus argumentos
+e cofirma se são considerados iguais:
+
+```{r funcoes5, echo=TRUE, include=TRUE}
+b <- c(1, 5, 3)
+d <- c(1, 5, 3)
+all.equal(b, d)             # uso de funcoes com >1 argumentos
+```
+
+Podemos dispensar com a criação dos argumentos, e passar expressões directamente como os argumentos da função:
+
+```{r funcoes6, echo=TRUE, include=TRUE}
+all.equal(c(1, 5, 3), c(1, 5, 3))             
+
+```
+
+*Exercício: confirmar que dois quadrado e igual a menos dois quadrado com `all.equal()`*
+
+```{r funcoes7, exercise=TRUE}
+all.equal()
+```
+
+```{r funcoes7-solution}
+all.equal(2*2, (-2)*(-2))
+```
+
+<div id="funcoes7-hint">
+**Dica:** a ordem de operações privilegia a multiplicação sobre a adição ou subtração, portanto deve proteger o seu -2 com parenteses assim: (-2)
+</div>
+
+```{r funcoes7-check}
+grade_this_code()
+```
+
+## Listas (e etiquetas)
+
+Além dos vectores, nos quais todos os elementos têm o mesmo tipo, R tem 'listas' em que os elementos podem ter vários tipos. Não vamos usar listas com muita frequência, mas elas são convenientes para passar
+opções complexas a funções, por exemplo, no tidyverse, então é importante saber o que são, e como criá-las.
+
+```{r listas1, echo=TRUE, include=TRUE}
+
+e <- list(1, "world")                       # uma lista com dois elementos, cada com o seu tipo
+e
+e[1]
+e[2]
+```
+
+Anotamos que os resultados parecem um pouco extranhos, com `[[1]]` em vez de `[1]` para indicar a primeira posição. Mesmo
+quando pedimos um elemento da lista com `[1]`, o resultado é uma nova lista com um elemento, por isso, continua a aparecer
+`[[1]]` no resultado.
+
+*Exercício: cria uma lista com 3 elementos de pelo menos 2 tipos diferentes. Inspeciona o segundo elemento.*
+
+```{r listas2, exercise=TRUE}
+```
+
+As listas também aceitam ter nomes para os elementos. 
+
+Pode ver que os `[[1]]` e `[[2]]` foram substituidos pelos nomes dados.
+
+```{r listas3, echo=TRUE, include=TRUE}
+e <- list(primeiro = 1, segundo = "world")  # uma lista com etiquetas (nomes)
+e
+names(e)                                    # ver os nomes (somente)
+e["primeiro"]                               # podemos usar os nomes em vez das posicoes
+```
+
+*Exercício: criar uma lista com nomes. Cria uma lista com pelo menos 2 elementos, e atribua nomes aos elementos.*
+```{r listas4, exercise=TRUE}
+```
+
+```{r listas4-check}
+grade_this({
+  if(is.list(.result)) {
+    if(!is.null(names(.result))) {
+      pass(randompraise())
+    } else {
+      fail("Está quase mas será que lembrou de por os nomes?")
+    }
+  } else {
+    fail("Parece que esqueceu de criar uma lista? Tenta de novo")
+  }
+})
+```
+
+Quando temos uma lista já existente, podemos alterar os nomes, colocando `nomes()` no lado izquerdo da fórmula com `<-`.
+
+```{r listas5, echo=TRUE, include=TRUE}
+names(e) <- c("Pri", "Seg")                 # renomear os elementos
+e
+e[1]                  # o '[' e para indexar listas e vectores.
+e["Seg"]              # outra alternativa quando tem etiqueta (nome)
+```
+
+Existe uma forma alternativa de aceder aos elementos por nome, com [$](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/Extract). Neste caso, o resultado e um elemento e não uma lista.
+
+```{r listas6, echo=TRUE, include=TRUE}
+e$Seg                 # uma alternativa quando o elemento tem etiqueta e usar '$'
+```
+
+```{r listas7-setup}
+e <- list(primeiro = 1, segundo = "world")
+```
+
+*Exercício: alterar os nomes da lista `e`, e usar o primeiro nome para obter o valor do primeiro elemento.*
+
+```{r listas7, exercise=TRUE, exercise.setup = "listas7-setup"}
+
+```
+
+```{r listas7-check}
+grade_this({
+  if(identical(.result, 1)) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+Finalmente, se queremos obter um único elemento da lista e *nao* queremos que o resultado seja uma lista, similar ao que 
+aconteça com `$`, podemos usar `[[]]`:
+
+```{r lista8, echo=TRUE, include=TRUE}
+e <- list(primeiro = 1, segundo = "world")
+e
+e[["primeiro"]]
+```
+
+## Conjuntos de dados
+
+Agora vamos ver como criar e manipular 'data frames', que são tabelas de dados, similar a uma folha de cálculo mas com algumas diferenças importantes.  Também vamos aprender alguns métodos para ler um ficheiro com dados e guardar na memoria em forma de um data frame, para poder usar no R.
+
+### Data frames 
+
+Tem um diagrama aqui para ilustrar a estrutura de um data frame em termos de colunas (variáveis) e linhas (observações):
+
+```{r data3a, echo=FALSE}
+shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/07/dataframes.png", alt = "A diagram illustrating how indexing a row and column of a data frame works", 
+height = "300px")
+```
+
+Podemos usar [data.frame()](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/data.frame) para criar um novo data frame. Esta forma e conveniente para pequenos exemplos, mas não para dados mais complexos ou extensos.
+
+```{r data1, echo=TRUE, include=TRUE}
+
+provs <- c("Maputo Cidade", "Maputo Provincia", "Gaza", "Inhambane")
+pops <- c(1130319, 2390673, 1465802, 1564289)
+f <- data.frame(provincia = provs, pop = pops)
+f
+```
+
+Temos algumas funções chaves para inspeccionar os data frames:
+
+```{r data2, echo=TRUE}
+str(f)                # descrever o objecto (same as Environment)
+summary(f)            # resumir as variaveis
+dim(f)                # dimensoes do objecto
+```
+
+A funçaõ [str()](https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/str) (estrutura) da um resumo abreviado da estrutura do data frame, como se fosse um dicionário de dados simples.  
+
+[summary()](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary) faz uma analise rápida das variáveis numéricas.   
+
+[dim()](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/dim) reporta as dimensões. Os data frames sempre tem dois dimensoes (linhas e colunas).
+
+```{r data3, echo=TRUE, include=TRUE}
+e <- c(1, 2, 3)
+str(e)                # str também funciona com outros objectos
+dim(e)                # mas dim somente funciona com arrays, matrices, data frames...
+length(e)             # length sim funciona
+length(f)             # também com data frames
+```
+
+### Indexing
+
+"Indexing" refere ao metodo de ter aceso a um elemento segundo a sua posição no data frame.   
+Np diagrama acima, pode ver a tercera coluna em azul e a segunda linha em vermelho. A posição `[2,3]` representa a interseção destes dois vertentes.
+
+```{r data4, echo=TRUE, include=TRUE}
+f[1,2]                # indexing - o item na primeira linha, segunda coluna
+f[,1]                 # a 1a coluna
+f[1,]                 # a 1a fila
+```
+
+```{r data5-setup, echo=TRUE, include=TRUE}
+
+provs <- c("Maputo Cidade", "Maputo Provincia", "Gaza", "Inhambane")
+pops <- c(1130319, 2390673, 1465802, 1564289)
+f <- data.frame(provincia = provs, pop = pops)
+f
+
+```
+
+*Exercício: utilize a indexação para somar a população de Inhambane e Maputo Província do data frame `f`.*
+```{r data5, exercise=TRUE, exercise.setup = "data5-setup"}
+
+```
+
+```{r data5-check}
+grade_this({
+  if(identical(.result, 3954962)) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+<div id="data5-hint">
+**Dica:** Lembre que para aceder a linha X e coluna Y do data frame Z, pode usar Z[X,Y].
+</div>
+
+Tem muitas variações na especificação dos indices. 
+
+Por exemplo, se queremos somente especificar a coluna e não a linha (porque queremos todas as linhas), podemos deixar o número de linha em branco.
+
+```{r data7, echo=TRUE}
+f[,1]
+```
+
+se somente colocamos um número, vai ser interpretado como o último indice, ou seja, a coluna.  Se deixamos em branco o primeiro número.
+
+```{r data8, echo=TRUE}
+f[1]                  # a 1a coluna (igual a f[,1])
+```
+
+Podemos incluir um vector em vez de um número para indicar múltiplo linhas ou colunas
+
+```{r data9, echo=TRUE}
+f[c(1,2),]            # as 1as duas filas
+f[,c(1,2)]            # as 1as duas colunas (somente tem 2)
+f[c(3,4),2]           # a 3a e 4a iten na segunda coluna
+```
+
+Podemos usar o operador `$` que vemos antes para aceder a uma variável por nome em lugar
+da posição dela. E podemos combinar isto com `[]` para aceder a um elemento dentro da variável
+
+```{r data10, echo=TRUE}
+f$provincia           # aceder com nome
+f$pop                  
+f$pop[2]              # o segundo elemento do vector resultando de seleccionar a 
+                      # variavel 'pop'
+```
+
+Agora a sua vez.
+*Exercício: usar a indexeção numérica e por nome para obter o nome da tercera província no data frame f*
+```{r data11, exercise=TRUE, exercise.setup = "data5-setup"}
+
+```
+
+## Recursos adicionais
+
+[R para usuários de Excel (En)](https://rstudio-conf-2020.github.io/r-for-excel/)  
+[Livro introdutório sobre R (En, Pt)](https://pedropark99.github.io/Introducao_R/)  
+[Livro sobre R para epidemiologia (En, Pt)](https://www.epirhandbook.com/pt/index.pt.html)  
+[Tutoriais sobre R para epidemiologia (En, Fr, Es, Pt)](https://www.appliedepi.org/)  
+[R Crash Course (En)](https://r-crash-course.github.io/01-rstudio-intro/)  
+[Posit Cloud (En)](https://posit.cloud)  
