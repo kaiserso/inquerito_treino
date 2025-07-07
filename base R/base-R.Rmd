@@ -10,18 +10,9 @@ description: >
   Aprender algumas noções básicas do base R. Estes exercícios acompanham um curso sobre R feito no Instituto Nacional de Saúde, Marracuene, Moçambique em 2025.
 ---
 
-```{js logo-js, echo=FALSE}
-$(document).ready(function() {
-  $('#header').parent().prepend('<div id=\"logo\"><img src=\"www/xxxxx.png\" style=\"position:absolute; top:0; right:0; padding:20px; height:120px\"></div>');
-  $('#header').css('margin-right', '120px')
-});
-```
-
-
-
 ```{r setup, include=FALSE}
 library(learnr)
-#library(gradethis)
+library(gradethis)
 
 knitr::opts_chunk$set(echo = FALSE)
 gradethis::gradethis_setup()
@@ -37,6 +28,47 @@ randomencouragement <- function() {
 }
 
 ```
+
+```{r logo, echo=FALSE, results='asis'}
+
+htmltools::tags$style(HTML("
+  h1 {
+    color: navy;
+  }
+  h2 {
+    color: navy;
+  }
+  .logo-top-right {
+    float: right;
+    top: 10px;
+    right: 10px;
+    width: 100px;
+    max-width: 25vw;
+  }
+  .exercise-box {
+    background-color: #f1f8ff;
+    border-left: 4px solid #2196F3;
+    padding: 10px;
+    margin: 15px 0;
+    font-style: italic;
+    border-radius: 4px;
+  }
+  .observation-box {
+    background-color: #fff8e1;
+    border-left: 4px solid #f9a825;
+    padding: 10px;
+    margin: 15px 0;
+    font-style: italic;
+    border-radius: 4px;
+  }
+"))
+
+htmltools::tags$img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/07/logo-small.png", class = "logo-top-right")
+
+```
+
+<!-- ![Logo](https://peter.mayfirst.org/wp-content/uploads/2025/07/logo-small.png) -->
+
 
 ## Seja bem-vindo!
 
@@ -88,42 +120,53 @@ y^2                       # y quadrado
 
 Agora a sua vez.
 
-*Exercício: criar uma variável z com valor de 40 / 4.*
-*Obs: so devem comecar o nome das variáveis com letra, não com número ou símbolo*
+<div class="exercise-box">
+Exercício: Criar uma variável z com valor de 40 / 4.
+
+<div class="observation-box">
+Obs: somente deve comecar o nome das variáveis com letra, e não com número ou símbolo
+</div>
 
 ```{r criar-variavel1, exercise=TRUE}
 z <- 
 z
 ```
+</div>
 
 ```{r criar-variavel1-hint}
 # podemos incluir operações como divisão quando criamos a variável
 z <- 40 / 4
 z
 ```
-
-*Obs: se não ver o resultado da sua ação, deve incluir a variável sozinho numa linha para pedir o R mostrar o seu valor.*
-
-*Exercício: criar uma variável numérica com valor de -100 e dividir por 10*
-
+<div class="observation-box">
+Obs: se não ver o resultado da sua ação, deve incluir a variável sozinho numa linha para pedir o R mostrar o seu valor.
+</div>
+<div class="exercise-box">
+Exercício: criar uma variável numérica com valor de -100 e dividir por 10
 
 ```{r criar-variavel2, exercise=TRUE, exercise.lines = 5}
 z2 <- 
 
 ```
+</div>
 
 <div id="criar-variavel2-hint">
 **Hint:** Tem cuidado de não esquecer o traço no "<-".
 </div>
 
-*Obs: so devem começar os nomes das variáveis com letra, não com número ou símbolo*
+<div class="observation-box">
+Obs: so devem começar os nomes das variáveis com letra, não com número ou símbolo
+</div>
 
-*Exercício: alterar a linha abaixo para confirmar se o valor da nova variável seja mais do que zero*
+<div class="exercise-box">
+Exercício: alterar a linha abaixo para confirmar se o valor da nova variável seja mais do que zero
 
 ```{r criar-variavel3, exercise=TRUE, exercise.lines = 5}
 z2 < 100
 
 ```
+
+</div>
 
 ```{r criar-variavel3-hint}
 # o número negativo se escreve com '-' antes do número, tem cuidado de incluir o "<-":
@@ -131,12 +174,15 @@ z2 > 0
 
 ```
 
-*Exercício: alterar a nova variável para que tenha o dobro do valor actual*
+<div class="exercise-box">
+Exercício: alterar a nova variável para que tenha o dobro do valor actual
 
 ```{r criar-variavel4, exercise=TRUE, exercise.lines = 5}
 z2 <- 
 
 ```
+
+</div>
 
 ```{r criar-variavel4-hint}
 # a variavel pode ser referido na expressão ao direito da seta
@@ -164,12 +210,15 @@ b
 No exemplo anterior, misturamos os tipos (número e string) o que resultou na conversão do número
 em string.
 
-*Exercício: criar um vector `vec` com os três primeiros números impares*
+<div class="exercise-box">
+Exercício: criar um vector `vec` com os três primeiros números impares
 
 ```{r vectors2, exercise=TRUE, exercise.eval=FALSE}
 vec <- 
 
 ```
+
+</div>
 
 ```{r vectors2-check}
 grade_this({
@@ -193,16 +242,18 @@ d <- c(z[1], a[2])        # criacao de um novo vector com elementos de outros
 
 ```
 
-*Exercício: inspecionar o segundo elemento do vector vec que criou no exercício anterior*
-
 ```{r prepare-vectors3}
 vec <- c(1,3,5)
 ```
 
+<div class="exercise-box">
+Exercício: inspecionar o segundo elemento do vector vec que criou no exercício anterior
+
 ```{r vectors3, exercise=TRUE, exercise.setup = "prepare-vectors3"}
 vec <- 
-
 ```
+
+</div>
 
 ```{r vectors3-check}
 grade_this({
@@ -214,16 +265,20 @@ grade_this({
 
 ```
 
-*Exercício: veja o que aconteça caso tentar escolher um elemento inexistente (por exemplo, o elemento zero, ou quarto elemento de um vector com três elementos)*
+<div class="exercise-box">
+Exercício: veja o que aconteça caso tentar escolher um elemento inexistente (por exemplo, o elemento zero, ou quarto elemento de um vector com três elementos)
+
 ```{r vectors4, exercise=TRUE, exercise.setup = "prepare-vectors3", exercise.blanks = TRUE}
 vec[___]
 
 ```
+</div>
 
 No exemplo anterior, notou que a resposta foi diferente para iten zero e iten >3? Verifique o tamanho do resultado com `length(vec[0])` ou `length(vec[9])`. São iguais?
 
 ```{r vector-quiz}
 quiz(
+  caption = "",
   question("Qual e o cumprimento de vec[0]?",
     answer("0", correct = TRUE),
     answer("1"),
@@ -239,11 +294,14 @@ quiz(
 
 O vector com cumprimento = 0 se chama o vector nulo (ou vazio). 
 
-*Exercício: podemos incluir os elementos de vectores em operações mais complexas. Multiplique o segundo elemento de `vec` por 10. *
+<div class="exercise-box">
+Exercício: podemos incluir os elementos de vectores em operações mais complexas. Multiplique o segundo elemento de `vec` por 10. 
+
 ```{r vectors5, exercise=TRUE, exercise.setup = "prepare-vectors3", exercise.blanks = TRUE}
 vec
 
 ```
+</div>
 
 ```{r vectors5-check}
 grade_this({
@@ -268,11 +326,13 @@ is.na(100)                  # nao esta em falta
 is.na(NA)                   # esta sim em falta
 ```
 
-*Exercício: use a função sqrt para obter a raiz quadrada de 9*
+<div class="exercise-box">
+Exercício: use a função sqrt para obter a raiz quadrada de 9
 
 ```{r funcoes2, exercise=TRUE}
 sqrt()
 ```
+</div>
 
 ```{r funcoes2-check}
 grade_this({
@@ -283,10 +343,13 @@ grade_this({
 })
 ```
 
-*Exercício: veja o que aconteça se chamar uma função sem argumentos nem parênteses*
+<div class="exercise-box">
+Exercício: veja o que aconteça se chamar uma função sem argumentos nem parênteses
+
 ```{r funcoes3, exercise=TRUE}
 ls
 ```
+</div>
 
 Se chamar uma função sem parênteses (e sem argumentos), o R devolve o programa que implementa
 a função (o código). Pode não precisar disto no entanto, e bom sabé-lo. se tentar correr uma função e
@@ -315,11 +378,13 @@ all.equal(c(1, 5, 3), c(1, 5, 3))
 
 ```
 
-*Exercício: confirmar que dois quadrado e igual a menos dois quadrado com `all.equal()`*
+<div class="exercise-box">
+Exercício: confirmar que dois quadrado e igual a menos dois quadrado com `all.equal()`
 
 ```{r funcoes7, exercise=TRUE}
 all.equal()
 ```
+</div>
 
 ```{r funcoes7-solution}
 all.equal(2*2, (-2)*(-2))
@@ -350,10 +415,12 @@ Anotamos que os resultados parecem um pouco extranhos, com `[[1]]` em vez de `[1
 quando pedimos um elemento da lista com `[1]`, o resultado é uma nova lista com um elemento, por isso, continua a aparecer
 `[[1]]` no resultado.
 
-*Exercício: cria uma lista com 3 elementos de pelo menos 2 tipos diferentes. Inspeciona o segundo elemento.*
+<div class="exercise-box">
+Exercício: cria uma lista com 3 elementos de pelo menos 2 tipos diferentes. Inspeciona o segundo elemento.
 
 ```{r listas2, exercise=TRUE}
 ```
+</div>
 
 As listas também aceitam ter nomes para os elementos. 
 
@@ -366,9 +433,12 @@ names(e)                                    # ver os nomes (somente)
 e["primeiro"]                               # podemos usar os nomes em vez das posicoes
 ```
 
-*Exercício: criar uma lista com nomes. Cria uma lista com pelo menos 2 elementos, e atribua nomes aos elementos.*
+<div class="exercise-box">
+Exercício: criar uma lista com nomes. Cria uma lista com pelo menos 2 elementos, e atribua nomes aos elementos.
+
 ```{r listas4, exercise=TRUE}
 ```
+</div>
 
 ```{r listas4-check}
 grade_this({
@@ -403,11 +473,12 @@ e$Seg                 # uma alternativa quando o elemento tem etiqueta e usar '$
 e <- list(primeiro = 1, segundo = "world")
 ```
 
-*Exercício: alterar os nomes da lista `e`, e usar o primeiro nome para obter o valor do primeiro elemento.*
+<div class="exercise-box">
+Exercício: alterar os nomes da lista `e`, e usar o primeiro nome para obter o valor do primeiro elemento.
 
 ```{r listas7, exercise=TRUE, exercise.setup = "listas7-setup"}
-
 ```
+</div>
 
 ```{r listas7-check}
 grade_this({
@@ -492,10 +563,12 @@ f
 
 ```
 
-*Exercício: utilize a indexação para somar a população de Inhambane e Maputo Província do data frame `f`.*
-```{r data5, exercise=TRUE, exercise.setup = "data5-setup"}
+<div class="exercise-box">
+Exercício: utilize a indexação para somar a população de Inhambane e Maputo Província do data frame `f`.
 
+```{r data5, exercise=TRUE, exercise.setup = "data5-setup"}
 ```
+</div>
 
 ```{r data5-check}
 grade_this({
@@ -542,10 +615,13 @@ f$pop[2]              # o segundo elemento do vector resultando de seleccionar a
 ```
 
 Agora a sua vez.
-*Exercício: usar a indexeção numérica e por nome para obter o nome da tercera província no data frame f*
-```{r data11, exercise=TRUE, exercise.setup = "data5-setup"}
 
+<div class="exercise-box">
+Exercício: usar a indexeção numérica e por nome para obter o nome da tercera província no data frame f
+
+```{r data11, exercise=TRUE, exercise.setup = "data5-setup"}
 ```
+</div>
 
 ## Recursos adicionais
 
