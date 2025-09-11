@@ -1,0 +1,412 @@
+---
+title: "Tutorial: mais base R"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    language: pt
+runtime: shiny_prerendered
+description: >
+  Aprender algumas noções básicas do base R. Estes exercícios acompanham um curso sobre R feito no Instituto Nacional de Saúde, Marracuene, Moçambique em 2025.
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+
+knitr::opts_chunk$set(echo = FALSE)
+gradethis::gradethis_setup()
+
+randompraise <- function() {
+  praise <- c("Uau!", "Parabéns, você acertou!", "Agora sim!", "Está certo.", "Claro que sim!", "Eu sabia que ia conseguir!", "Impressionante!", "Fantástico")
+  praise[runif(1, 1, length(praise))]
+}
+
+randomencouragement <- function() {
+  encouragement <- c("Tente mais uma vez", "Tente de novo, consegues!", "Não desiste, tenta outra vez!", "Ainda não", "Reveja a resposta e tenta outra vez!", "Volte a tentar!", "Quase, tente outra vez", "Pense um pouco e tenta de novo")
+  encouragement[runif(1, 1, length(encouragement))]
+}
+
+provs <- c("Maputo Cidade", "Maputo Provincia", "Gaza", "Inhambane")
+pops <- c(1130319, 2390673, 1465802, 1564289)
+f <- data.frame(provincia = provs, pop = pops)
+
+```
+
+```{r logo, echo=FALSE, results='asis'}
+
+htmltools::tags$style(HTML("
+  h1 {
+    color: navy;
+  }
+  h2 {
+    color: navy;
+  }
+  .logo-top-right {
+    float: right;
+    top: 10px;
+    right: 10px;
+    width: 150px;
+    max-width: 25vw;
+  }
+  .exercise-box {
+    background-color: #f1f8ff;
+    border-left: 4px solid #2196F3;
+    padding: 10px;
+    margin: 15px 0;
+    font-style: italic;
+    border-radius: 4px;
+  }
+  .observation-box {
+    background-color: #fff8e1;
+    border-left: 4px solid #f9a825;
+    padding: 10px;
+    margin: 15px 0;
+    font-style: italic;
+    border-radius: 4px;
+  }
+"))
+
+htmltools::tags$img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/07/logo-small.png", class = "logo-top-right")
+
+```
+
+## Seja bem-vindo!
+
+Este tutorial foi desenvolvido para dar seguimento ao curso sobre uso de R para analisar dados de inquéritos populacionais, a ser apresentado no Instituto Nacional de Saúde de Moçambique. 
+
+### 
+
+Neste tutorial, poderá completar alguns exercícios para reforçar conceitos tais como:
+
+* Operações lógicas
+* Bases de dados
+
+## Operações lógicas
+
+Os operadores lógicas no R são: `&, |, !, ==, !=, <, >, <=, >=`. Estes operadores são usados para comparar valores lógicos e retornar um valor lógico (TRUE - verdadeiro, ou FALSE - falso). O significado de cada um:
+
+* `&` e
+* `|` ou
+* `!` negação
+
+Por exemplo, a expressão `A & B` é TRUE se A e B ambos são TRUE, caso contrário é FALSE.  `A | B` é TRUE se ou A ou B é TRUE, caso contrário e FALSE, etc. O `!` nega ou inverte o valor de qualquer expressão lógica, por exemplo `!TRUE` é FALSE é `!FALSE` é TRUE.
+
+No caso de comparação que envolve um vector, o resultado seria um vector de valores lógicos.
+
+Alguns exemplos de expressões lógicas:
+
+```{r, echo=TRUE}
+A <- TRUE
+B <- FALSE
+A & B
+A | B
+!A
+```
+
+Agora com vectores:
+
+```{r, echo=TRUE}
+A <- c(T, F) # podem ser abreviados TRUE (T) ou FALSE (F), embora corre risco de confudir com variáveis com mesmo nome
+B <- c(T, T)
+A & B
+A | B
+!A
+```
+
+<div class="exercise-box">
+Exercício: A expressão abaixo produz TRUE se ou A ou B ou ambos sejam TRUE. Altere para dar TRUE somente se ambos sejam TRUE. 
+
+```{r logic1, exercise=TRUE, exercise.preload=TRUE}
+A <- TRUE
+B <- FALSE
+C <- A | B
+C
+```
+</div>
+```{r logic1-check}
+grade_this({
+  if(identical(.result, FALSE)) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+<div class="exercise-box">
+Exercício: A expressão abaixo produz TRUE se ou A é B sejam ambos TRUE. Altere para dar TRUE mesmo se somente um deles seja TRUE. 
+
+```{r logic2, exercise=TRUE, exercise.preload=TRUE}
+A <- c(TRUE, TRUE)
+B <- c(TRUE, FALSE)
+C <- A & B
+C
+```
+</div>
+```{r logic2-check}
+grade_this({
+  if(identical(.result, c(TRUE, TRUE))) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+## Operadores de comparação
+
+Os operadores de comparação são `==, !=, <, >, <=, >=`. Estes operadores são usados para comparar valores e retornar um (ou mais) valor(es) lógico(s) (TRUE - verdadeiro, ou FALSE - falso). O significado de cada um:
+
+* `==` igualdade
+* `!=` não igualdade
+* `<, >, <=, >=` menor, maior, menor ou igual, maior ou igual que
+
+Os operadores de comparação `==, !=, <, >, <=, >=` podem ser usados para fazer comparações de números (ou vectores de números)
+
+```{r, echo=TRUE}
+X <- 100
+Y <- 200
+X > Y
+X == Y
+X != Y
+X >= X
+Y <= Y
+```
+
+<div class="exercise-box">
+Exercício: Alterar o código abaixo para guardar o resultado de avaliar se X *não* é maior que Y.
+```{r logic3, exercise=TRUE}
+X <- 1000
+Y <- 100
+C <- X > Y
+C
+```
+</div>
+```{r logic3-check}
+grade_this({
+  if(identical(.result, FALSE)) {
+    pass("Exactamente! Notou que há duas maneiras de testar? Pode fazer `C <- !(X>Y)` ou `C <- (X<=Y)`.")
+  }
+  fail(randomencouragement())
+})
+```
+
+Os operadores também podem ser usado para comparar vectores:
+
+```{r, echo=TRUE}
+X <- c(100, 1000)
+Y <- c(500, 500)
+X > Y
+X == Y
+X != Y
+X >= X
+Y <= Y
+```
+
+<div class="exercise-box">
+Exercício: Completar o código abaixo (preenchendo os ___) para guardar o resultado de calcular quántos dos elementos de Y são iguais aos do X.
+```{r logic4, exercise=TRUE}
+X <- c(1, 1, 0)
+Y <- c(0, 1, 0)
+C <- X ___ Y
+___(C)
+```
+</div>
+
+```{r logic4-hint-1}
+# **Dica:** no tutorial anterior (base R) veemos que podemos somar o 
+# conteudo de um vector com sum():
+S <- sum(C)
+```
+
+```{r logic4-hint-2}
+# **Dica:** neste caso, sum() vai considerar TRUE como 1 e FALSE 
+# como 0, assim, o somatório do vector vai dar o número de elementos 
+# que são iguais:
+sum(TRUE, FALSE) == 1
+```
+
+```{r logic4-check}
+grade_this({
+  if(identical(.result, 2)) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+Os operadores de comparação podem também ser usados com valores lógicos:
+
+```{r, echo=TRUE}
+A <- TRUE
+B <- FALSE
+A == B
+A != B
+A > B   # TRUE > FALSE
+```
+
+Similar aos operadores lógicos, produzem vectores quando apresentados com um ou mais vectores.
+
+```{r, echo=TRUE}
+A <- c(T, F) # podem ser abreviados TRUE (T) ou FALSE (F), embora corre risco de confudir com variáveis com mesmo nome
+B <- c(T, T)
+A == B
+A != B
+```
+
+Portanto é ariscado usar assim num contexto que precisa de um só valor de resultado. Neste caso, tem funções especiais para garantir um resultado único:
+
+```{r, echo=TRUE}
+A <- c(TRUE, TRUE)
+B <- c(TRUE, FALSE)
+A == B               # resultado é um vector
+
+identical(A, B)      # resultado é um único valor (senpre)
+```
+
+No futuro, vamos ver situações onde esta diferença seja importante tomar em conta.
+
+No tutorial anterior (base R), vimos um data frame com dados de inquérito populacional:
+```{r, echo=TRUE}
+str(f)
+```
+
+Podemos usar os operadores de comparação para filtrar os dados. Por exemplo, para encontrar todos as províncias que tem população maior que 2 milhões no data frame df:
+
+```{r, echo=TRUE}
+i <- f$pop > 2000000
+i
+```
+
+A operação foi vectorizada, e portanto o resultado e um vector, indicando para cada elemento (ou seja, cada população provincial), qual é o resultado da comparação com o valor de 2 milhões.
+
+Podemos usar este restultado para obter os nomes das províncias que tem população maior que 2 milhões:
+```{r, echo=TRUE}
+i <- f$pop > 2000000
+f$provincia[i]
+
+# na verdade nem precisamos de criar a variável i, podemos fazer a operação diretamente:
+f$provincia[f$pop > 2000000]
+```
+
+<div class="exercise-box">Exercício: qual é o total populacional das províncias com população menor que 2 milhões?
+
+```{r logic5, exercise=TRUE, echo=TRUE}
+```
+
+```{r logic5-hint-1}
+i <- f$pop < 2000000 # cria um vector lógico
+```
+```{r logic5-hint-2}
+i <- f$pop < 2000000 # cria um vector lógico
+f$pop[i]
+```
+
+```{r logic5-solution, exercise.reveal_solution = TRUE}
+i <- f$pop < 2000000 # cria um vector lógico
+f$pop[i]
+sum(f$pop[i])
+sum(f$pop[f$pop < 2000000]) # alternativa abreviada
+```
+
+```{r logic5-check}
+grade_this({
+  if(identical(.result, 4160410)) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+</div>
+
+Podemos também fazer expressões lógicas com números, más, as vezes é difícil prever o comportamento. 
+
+```{r, echo=TRUE}
+1 == TRUE
+identical(1, TRUE)    
+```
+FALSE! Embora '==' compara o valor de dois objectos, `identical()` compara o valor e o tipo (classe) dos objectos.
+
+```{r, echo=TRUE}         
+identical(as.logical(1), TRUE) # TRUE
+0 == FALSE
+-2 == TRUE
+as.logical(-2) == TRUE         # TRUE! 
+```
+
+Neste último caso, as.logical(-2) converteu -2 em TRUE, porque qualquer número diferente de zero é considerado TRUE.
+
+Por isso, devemos ter cuidado quando tratar números como se fossem valores lógicos.
+
+### Ordem de operações
+
+Os operadores são avaliadas em ordem de prioridade, assim:
+
+* `^`                       # primeiro os aritméticos
+* `*, /`
+* `+, -`
+* `>, <, ==, >=, <=, !=`    # depois, os de comparação
+* `!`                       # finalmente, os lógicos
+* `&`
+* `|`
+
+Portanto, a expressão `FALSE & FALSE | TRUE` e avaliado como `(FALSE & FALSE) | TRUE` (verdadeiro):
+
+```{r, echo=TRUE}
+FALSE & FALSE | TRUE
+(FALSE & FALSE) | TRUE
+FALSE & (FALSE | TRUE) # podemos alterar a ordem de avaliação com parens
+```
+
+<div class="exercise-box">
+Altere a expressão abaixo apra garantir que a primeira parte (adição) seja avaliada antes da segunda (multiplicação).
+```{r logic7, exercise=TRUE}
+X <- 100
+Y <- 2
+Z <- 3
+X + Y * Z
+```
+</div>
+
+```{r logic7-check}
+grade_this({
+  if(identical(.result, 306)) {
+    pass(randompraise())
+  }
+  fail("Tente de novo. Usou os () para agrupar os resultados?")
+})
+```
+
+### Promoção
+
+Quando usar uma expressão lógica num contexto que espera um número, é convertido automaticamente em valor numérico. TRUE é convertido em 1, e FALSE em 0. Isto chamamos 'promoção'. 
+
+```{r, echo=TRUE}
+X <- TRUE
+typeof(X)
+Y <- X*3
+typeof(Y)
+Y > 3
+typeof(Y > 3)
+Y>3*4
+```
+
+<div class="observation-box">
+Obs: Este tipo de conversão também acontece quando incluir valores com tipos diferentes num vector.
+</div>
+
+## Recursos adicionais
+
+[Tutorial base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)
+[Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/more-tutorial-base-R)
+[Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R)
+
+Aqui estão alguns recursos adicionais para aprender mais sobre R:  
+
+[Receitas de R (En)](https://posit.cloud/learn/recipes)
+[R para usuários de Excel (En)](https://rstudio-conf-2020.github.io/r-for-excel/)  
+[Livro introdutório sobre R (En, Pt)](https://pedropark99.github.io/Introducao_R/)  
+[Livro sobre R para epidemiologia (En, Pt)](https://www.epirhandbook.com/pt/index.pt.html)  
+[Tutoriais sobre R para epidemiologia (En, Fr, Es, Pt)](https://www.appliedepi.org/)  
+[R Crash Course (En)](https://r-crash-course.github.io/01-rstudio-intro/)  
+[Posit Cloud (En)](https://posit.cloud)  

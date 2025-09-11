@@ -1,0 +1,208 @@
+---
+title: "Tutorial: tidy R"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    language: pt
+runtime: shiny_prerendered
+description: >
+  Aprender algumas noções básicas do tidy R. Estes exercícios acompanham um curso sobre R feito no Instituto Nacional de Saúde, Marracuene, Moçambique em 2025.
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(dplyr)
+
+knitr::opts_chunk$set(echo = FALSE)
+gradethis::gradethis_setup()
+
+randompraise <- function() {
+  praise <- c("Uau!", "Parabéns, você acertou!", "Agora sim!", "Está certo.", "Claro que sim!", "Eu sabia que ia conseguir!", "Impressionante!", "Fantástico")
+  praise[runif(1, 1, length(praise))]
+}
+
+randomencouragement <- function() {
+  encouragement <- c("Tente mais uma vez", "Tente de novo, consegues!", "Não desiste, tenta outra vez!", "Ainda não", "Reveja a resposta e tenta outra vez!", "Volte a tentar!", "Quase, tente outra vez", "Pense um pouco e tenta de novo")
+  encouragement[runif(1, 1, length(encouragement))]
+}
+
+```
+
+```{r logo, echo=FALSE, results='asis'}
+
+htmltools::tags$style(HTML("
+  h1 {
+    color: navy;
+  }
+  h2 {
+    color: navy;
+  }
+  .logo-top-right {
+    float: right;
+    top: 10px;
+    right: 10px;
+    width: 150px;
+    max-width: 25vw;
+  }
+  .exercise-box {
+    background-color: #f1f8ff;
+    border-left: 4px solid #2196F3;
+    padding: 10px;
+    margin: 15px 0;
+    font-style: italic;
+    border-radius: 4px;
+  }
+  .observation-box {
+    background-color: #fff8e1;
+    border-left: 4px solid #f9a825;
+    padding: 10px;
+    margin: 15px 0;
+    font-style: italic;
+    border-radius: 4px;
+  }
+"))
+
+htmltools::tags$img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/07/logo-small.png", class = "logo-top-right")
+
+```
+
+## Seja bem-vindo!
+
+Este tutorial foi desenvolvido para dar seguimento ao curso sobre uso de R para analisar dados de inquéritos populacionais, a ser apresentado no Instituto Nacional de Saúde de Moçambique. 
+
+### 
+
+Neste tutorial, poderá completar alguns exercícios para reforçar conceitos tais como:
+
+* Tibbles
+* Pipes (tubos)
+* mutate
+* filter e select
+* arrange
+* group_by e ummarise
+* ggplot
+* tbl_summary e tbl_regression
+
+### O que é o tidyverse?
+
+O **tidyverse** é um conjunto de pacotes do R que compartilham uma filosofia comum de desenho, gramática e dados. Ele é projetado para tornar a análise de dados mais intuitiva e eficiente. Os pacotes mais comuns incluem:
+
+* **dplyr**: Manipulação de dados (filtragem, ordenação, resumo, etc.)  
+* **ggplot2**: Visualização de dados
+* **tidyr**: Transformação de dados (por exemplo, de formato largo para longo)
+* **tibble**: Uma versão moderna de data frames
+* **haven**: Leitura e escrita de dados em formatos como SPSS, Stata, etc.
+
+entre outros.
+
+### O que é o tidy R?
+
+O **tidy R** é uma abordagem para trabalhar com dados no R que enfatiza a clareza e a simplicidade. Ele se baseia nos princípios do tidyverse, mas pode ser usado com qualquer pacote ou função do R. A ideia é que os dados sejam organizados de forma que cada variável seja uma coluna, cada observação seja uma linha e cada tipo de unidade de observação seja uma tabela.
+
+### O que é um tibble?
+
+Um **tibble** é uma versão moderna de um data frame no R. Ele é parte do tidyverse e oferece várias vantagens sobre os data frames tradicionais:
+* **Impressão mais limpa**: Tibbles exibem apenas as primeiras linhas e colunas, evitando a sobrecarga visual.
+* **Tipos de dados explícitos**: Tibbles mantêm os tipos de dados de forma mais explícita, o que ajuda a evitar erros.
+* **Subconjunto seguro**: Tibbles não permitem a subconfiguração de colunas que não existem, o que ajuda a evitar erros comuns.
+
+### O que é um pipe (tubo)?
+Um **pipe** (tubo) é um operador `|>` ou `%>%` que permite encadear várias operações de forma sequencial. Ele é usado para passar o resultado de uma operação como entrada para a próxima, tornando o código mais legível e intuitivo. Por exemplo:
+
+```{r, pipe, echo=TRUE}
+library(dplyr)
+mtcars |>
+  filter(mpg > 20) |>
+  select(mpg, cyl, hp) |>
+  arrange(desc(mpg))
+```
+
+O pipe define uma cadeia de operações sequenciais que é mais facilmente descrita em lingua natural, por exemplo, "pegue na tabela mtcars, filtar para somente incluir as linhas onde os mpg sejam acima de 20, selecciona as variáveis mpg, cyl e hp, e por em ordem decrescente segundo os mpg." Compare isto com a versão em base R do mesmo código:
+
+```{r, pipe2, echo=TRUE}
+(mtcars[mtcars$mpg > 20, c("mpg", "cyl", "hp")])[order(mtcars$mpg[mtcars$mpg > 20], decreasing = TRUE), ]
+```
+
+Pode ver que o código com pipes é mais linear, mais legível e fácil de seguir.
+
+<div class="exercise-box"> 
+Exercício 1: filtre a tabela mtcars para incluir somente carros com cylindros acima de 6, ordena por hp em ordem crescente, e seleccione as variaveis mpg e cyl. Use pipes para fazer isto.
+
+```{r, pipe3, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
+mtcars |> ___             # seu codigo aqui
+```
+
+<div class="observation-box">Obs: quando ver um traço longo `___` no código, isto indica que é um espaço reservado para você completar com o seu código. Você pode substituir `___` por qualquer função ou operação que desejar.</div>
+</div>
+
+```{r pipe3-check}
+grade_this({
+  if(identical(.result, mtcars %>% filter(cyl > 6) %>% arrange(hp) %>% select(mpg, cyl))) {
+    pass("Parabéns! Viu que foi necessário ordenar antes de seleccionar, para ter acesso à variável hp na ordenação.")
+  }
+  fail(randomencouragement())
+})
+```
+
+```{r pipe3-hint-1}
+# Sendo que queremos ordenar por hp, e importante ordenar antes de seleccionar, caso contrário, a variável hp não estará disponível para ordenar. 
+mtcars
+```
+
+```{r pipe3-hint-2}
+# Mais uma dica: você pode usar `filter` para filtrar os dados, `arrange` para ordenar e `select` para escolher as variáveis que deseja manter.
+mtcars |> filter(___) |> arrange(__) |> select(___)
+```
+
+Antes de continuar, vamos analizar alguns aspectos do exercício anterior. Primeiro, notou que nao precisavamos de por os nomes das variáveis em ""? Alem disso, quando listamos as variaveis mpg e cyl para o select, incluiu num vector c()? Com o tidyverse, não é necessário. `mtcars[, c("mpg", "cyl")]` virou `mtcars |> select(mpg, cyl)` no tidyverse. São alguns dos aspectos do tidyverse que facilitam a programção.
+
+### Agrupar
+
+Agora vamos aprender como calcular estatísticas sobre dados agrupados.  Podemos usar group_by para criar grupos nos dados:
+
+```{r, echo=TRUE}
+mtcars |> group_by(cyl)
+```
+
+Notou a linha `# Groups:   cyl [3]`? Isto indica que os dados agora são agrupados, embora o agrupamento somente tem valor prático quando usamos num comando subsequente:
+
+```{r, echo=TRUE}
+mtcars |> group_by(cyl) |> summarize(mpg_media = mean(mpg))
+```
+
+O resultado é um tibble com a media de mpg para cada grupo. Os resultados incluem as variáveis de agrupamento, junto com as novas variáveis criadas pelos comandos que aparecem no summarize.
+
+Podemos fazer mais de que um comando ao mesmo tempo, e podemos criar grupos sobre combinações de variáveis, por exemplo o mpg (kilometragem) media e o número de observações para cda combinação de gear e cyl:
+
+```{r, echo=TRUE}
+mtcars |> group_by(gear, cyl) |> summarize(mpg_media = mean(mpg), n = n())
+```
+
+Agora a sua vez! Agrupar os dados pelos am e carb, e calcular o max de disp para cada grupo.
+
+```{r tibble1, exercise=TRUE}
+
+```
+
+## 
+
+## Recursos adicionais
+
+Tutoriais adicionais neste série:
+
+[Tutorial base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)  
+[Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/more-tutorial-base-R)  
+[Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R)  
+
+Aqui estão alguns recursos adicionais para aprender mais sobre R:  
+
+[Receitas de R (En)](https://posit.cloud/learn/recipes)  
+[R para usuários de Excel (En)](https://rstudio-conf-2020.github.io/r-for-excel/)  
+[Livro introdutório sobre R (En, Pt)](https://pedropark99.github.io/Introducao_R/)  
+[Livro sobre R para epidemiologia (En, Pt)](https://www.epirhandbook.com/pt/index.pt.html)  
+[Tutoriais sobre R para epidemiologia (En, Fr, Es, Pt)](https://www.appliedepi.org/)  
+[R Crash Course (En)](https://r-crash-course.github.io/01-rstudio-intro/)  
+[Posit Cloud (En)](https://posit.cloud)  
+
