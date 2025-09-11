@@ -213,8 +213,8 @@ ___(C)
 </div>
 
 ```{r logic4-hint-1}
-# **Dica:** no tutorial anterior (base R) veemos que podemos somar o 
-# conteudo de um vector com sum():
+# **Dica:** no tutorial anterior ([base R (Pt)] (https://peteryoung.shinyapps.io/tutorial-base-R)) veemos que podemos 
+# somar o conteudo de um vector com sum():
 S <- sum(C)
 ```
 
@@ -265,7 +265,8 @@ identical(A, B)      # resultado é um único valor (senpre)
 
 No futuro, vamos ver situações onde esta diferença seja importante tomar em conta.
 
-No tutorial anterior (base R), vimos um data frame com dados de inquérito populacional:
+No tutorial anterior ([base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)
+), vimos um data frame com dados de inquérito populacional:
 ```{r, echo=TRUE}
 str(f)
 ```
@@ -350,7 +351,9 @@ Os operadores são avaliadas em ordem de prioridade, assim:
 * `&`
 * `|`
 
-Portanto, a expressão `FALSE & FALSE | TRUE` e avaliado como `(FALSE & FALSE) | TRUE` (verdadeiro):
+Operadores em linhas subsequentes são avaliados depois dos operadores que vem em linhas anteriores. Operadores na mesma linha, como `*` e `/`, são avaliados da esquerda para a direita.
+
+Portanto, a expressão `TRUE | FALSE & FALSE` e avaliado como `TRUE | (FALSE & FALSE)` (verdadeiro), e não como `(TRUE | FALSE) & FALSE` (falso).:
 
 ```{r, echo=TRUE}
 FALSE & FALSE | TRUE
@@ -395,15 +398,15 @@ Y>3*4
 Obs: Este tipo de conversão também acontece quando incluir valores com tipos diferentes num vector.
 </div>
 
-## Recursos adicionais
+## Tutoriais adicionais neste série:
 
-[Tutorial base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)
-[Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/more-tutorial-base-R)
-[Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R)
+[Tutorial base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)  
+[Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/more-tutorial-base-R)  
+<!-- [Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R) -->
 
 Aqui estão alguns recursos adicionais para aprender mais sobre R:  
 
-[Receitas de R (En)](https://posit.cloud/learn/recipes)
+[Receitas de R (En)](https://posit.cloud/learn/recipes)  
 [R para usuários de Excel (En)](https://rstudio-conf-2020.github.io/r-for-excel/)  
 [Livro introdutório sobre R (En, Pt)](https://pedropark99.github.io/Introducao_R/)  
 [Livro sobre R para epidemiologia (En, Pt)](https://www.epirhandbook.com/pt/index.pt.html)  

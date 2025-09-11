@@ -67,27 +67,24 @@ htmltools::tags$img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/07
 
 ```
 
-<!-- ![Logo](https://peter.mayfirst.org/wp-content/uploads/2025/07/logo-small.png) -->
-
-
 ## Seja bem-vindo!
 
-Este tutorial foi feito para acompanhar o curso sobre uso de R para analisar dados de inquéritos populacionais, a ser apresentado no Instituto Nacional de Saúde de Moçambique. 
+Este tutorial foi desenvolvido para dar seguimento ao curso sobre uso de R para analisar dados de inquéritos populacionais, a ser apresentado no Instituto Nacional de Saúde de Moçambique. 
 
 ### 
 
-Neste tutorial, vai fazer exercícios para reforçar conceitos como:
+Neste tutorial, poderá completar alguns exercícios para reforçar conceitos tais como:
 
-* variáveis
-* escalares
-* vectores
-* listas
-* funções
-* conjuntos de dados
+* Variáveis
+* Escalares
+* Vectores
+* Listas
+* Funções
+* Bases de dados
 
 ## Ajuda no R
 
-Tem várias maneiras de obter ajuda no R/Rstudio:
+Existem várias maneiras de obter ajuda no R/Rstudio:
 
 ```{r help, echo=TRUE}
 # ?ls
@@ -95,11 +92,13 @@ Tem várias maneiras de obter ajuda no R/Rstudio:
 # help("<-")
 ```
 
-**Peça ajuda para a função sqrt (raiz-quadrado)**
+<div class="exercise-box">Exercício: Peça ajuda para a função `sqrt` (raiz-quadrada)
 
 ```{r help2, exercise=TRUE}
 
 ```
+
+</div>
 
 ## Variáveis 
 
@@ -151,7 +150,7 @@ z2 <-
 </div>
 
 <div id="criar-variavel2-hint">
-**Hint:** Tem cuidado de não esquecer o traço no "<-".
+**Dica:** Tem cuidado de não esquecer o traço no "<-".
 </div>
 
 <div class="observation-box">
@@ -162,6 +161,7 @@ Obs: so devem começar os nomes das variáveis com letra, não com número ou s�
 Exercício: alterar a linha abaixo para confirmar se o valor da nova variável seja mais do que zero
 
 ```{r criar-variavel3, exercise=TRUE, exercise.lines = 5}
+z2 <- -100 / 10
 z2 < 100
 
 ```
@@ -170,6 +170,7 @@ z2 < 100
 
 ```{r criar-variavel3-hint}
 # o número negativo se escreve com '-' antes do número, tem cuidado de incluir o "<-":
+z2 <- -100 / 10
 z2 > 0 
 
 ```
@@ -178,10 +179,11 @@ z2 > 0
 Exercício: alterar a nova variável para que tenha o dobro do valor actual
 
 ```{r criar-variavel4, exercise=TRUE, exercise.lines = 5}
-z2 <- 
+z2 <- -100 / 10
+z2 <- ___ * ___
 
 ```
-
+<div class="observation-box">Obs: substituir os "___" com o valor apropriado.</div>
 </div>
 
 ```{r criar-variavel4-hint}
@@ -209,6 +211,8 @@ b
 
 No exemplo anterior, misturamos os tipos (número e string) o que resultou na conversão do número
 em string.
+
+<div class="observation-box">Obs: a partir dagora terá opção de corregir o seu trabalho através do botão "Enviar resposta" no canto inferior direito do exercício.</div>
 
 <div class="exercise-box">
 Exercício: criar um vector `vec` com os três primeiros números impares
@@ -623,8 +627,17 @@ Exercício: usar a indexeção numérica e por nome para obter o nome da tercera
 ```
 </div>
 
-## Recursos adicionais
+## Recursos Adicionais
 
+Tutoriais adicionais neste série:
+
+[Tutorial base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)  
+[Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/more-tutorial-base-R)  
+<!-- [Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R) -->
+
+Aqui estão alguns recursos adicionais para aprender mais sobre R:  
+
+[Receitas de R (En)](https://posit.cloud/learn/recipes)  
 [R para usuários de Excel (En)](https://rstudio-conf-2020.github.io/r-for-excel/)  
 [Livro introdutório sobre R (En, Pt)](https://pedropark99.github.io/Introducao_R/)  
 [Livro sobre R para epidemiologia (En, Pt)](https://www.epirhandbook.com/pt/index.pt.html)  
