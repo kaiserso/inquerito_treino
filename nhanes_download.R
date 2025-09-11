@@ -1,5 +1,4 @@
 # This is code to setup the tutorial - not for running by students
-# Source: wwwn.cdc.gov/chgs/nhanes
 
 #################################################################################################
 # Example code to download/import NHANES data files (SAS transport .XPT files) as a dataset     #
