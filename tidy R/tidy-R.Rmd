@@ -28,6 +28,14 @@ randomencouragement <- function() {
   encouragement[runif(1, 1, length(encouragement))]
 }
 
+# data available to all exercises...
+pers <- tibble(personid = c(5001:5009),
+               idade = c(rep(c(20,34), 4), 55),
+               householdid = c(rep(c(1000, 1001), each=2),
+                               2002, rep(2003, 3), 2005),
+               edu_yrs = seq(1, 18, by=2),
+               status = c(rep("I", 7), rep("R", 2)))
+
 ```
 
 ```{r logo, echo=FALSE, results='asis'}
@@ -108,7 +116,74 @@ Um **tibble** é uma versão moderna de um data frame no R. Ele é parte do tidy
 * **Tipos de dados explícitos**: Tibbles mantêm os tipos de dados de forma mais explícita, o que ajuda a evitar erros.
 * **Subconjunto seguro**: Tibbles não permitem a subconfiguração de colunas que não existem, o que ajuda a evitar erros comuns.
 
+Vamos ver um exemplo de uma tabela que resultou de um inquerito populacional, com dados demograficos sobre alguns dos
+participantes.
+
+```{r, tibble, echo=TRUE}
+pers <- tibble(personid = c(5001:5009),
+               idade = c(rep(c(20,34), 4), 55),
+               householdid = c(rep(c(1000, 1001), each=2),
+                               2002, rep(2003, 3), 2005),
+               edu_yrs = seq(1, 18, by=2),
+               status = c(rep("I", 7), rep("R", 2)))
+pers
+```
+
+Como podem ver, a aparencia e similar a um data frame, mas e acompanhada por o tipo de cada variavel e o numero de linhas no fim.
+
+Tudo que podemos fazer com data frame tambem e valido para um tibble, por exemplo extrair e resumir uma coluna:
+
+```{r tibble2, echo=TRUE}
+pers$idade
+summary(pers$idade)
+```
+
+E, até podemos converter num data frame com `as.data.frame(pers)`.
+
+<div class="exercise-box"> 
+Exercício: usar a indexação para identificar a idade da pessoa descrita na segunda linha do tibble.
+
+```{r, tibble3, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
+pers[___,___]
+```
+
+<div class="observation-box">Obs: quando ver um traço longo `___` no código, isto indica que é um espaço reservado para você completar com o seu código. Você pode substituir `___` por qualquer valor, função ou operação que desejar.</div>
+</div>
+
+```{r tibble3-check}
+grade_this({
+  if(identical(.result, 34) || identical(.result, tibble(idade = c(34)))) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+</div>
+
+<div class="exercise-box"> 
+Exercício: listar as idades de todos que tem > 20 anos de idade.
+
+```{r, tibble4, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
+pers[___]
+```
+
+<div class="observation-box">Obs: quando ver um traço longo `___` no código, isto indica que é um espaço reservado para você completar com o seu código. Você pode substituir `___` por qualquer valor, função ou operação que desejar.</div>
+</div>
+
+```{r tibble4-check}
+grade_this({
+  if(identical(.result, pers$idade[pers$idade > 20])) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+</div>
+
+
 ### O que é um pipe (tubo)?
+
 Um **pipe** (tubo) é um operador `|>` ou `%>%` que permite encadear várias operações de forma sequencial. Ele é usado para passar o resultado de uma operação como entrada para a próxima, tornando o código mais legível e intuitivo. Por exemplo:
 
 ```{r, pipe, echo=TRUE}
@@ -117,6 +192,12 @@ mtcars |>
   filter(mpg > 20) |>
   select(mpg, cyl, hp) |>
   arrange(desc(mpg))
+
+pers |>
+  filter(status == "I") |>
+  select(idade, edu_yrs, status) |>
+  arrange(desc(edu_yrs))
+
 ```
 
 O pipe define uma cadeia de operações sequenciais que é mais facilmente descrita em lingua natural, por exemplo, "pegue na tabela mtcars, filtar para somente incluir as linhas onde os mpg sejam acima de 20, selecciona as variáveis mpg, cyl e hp, e por em ordem decrescente segundo os mpg." Compare isto com a versão em base R do mesmo código:
@@ -193,7 +274,7 @@ Agora a sua vez! Agrupar os dados pelos am e carb, e calcular o max de disp para
 Tutoriais adicionais neste série:
 
 [Tutorial base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)  
-[Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/more-tutorial-base-R)  
+[Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/tutorial-more-base-R)  
 [Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R)  
 
 Aqui estão alguns recursos adicionais para aprender mais sobre R:  
@@ -205,4 +286,9 @@ Aqui estão alguns recursos adicionais para aprender mais sobre R:
 [Tutoriais sobre R para epidemiologia (En, Fr, Es, Pt)](https://www.appliedepi.org/)  
 [R Crash Course (En)](https://r-crash-course.github.io/01-rstudio-intro/)  
 [Posit Cloud (En)](https://posit.cloud)  
+
+Especificamente sobre o tidyverse:
+
+[R for data science (En)](https://www.tidyverse.org/learn/)
+[ggplot2: elegant graphics for data analysis (En)](https://ggplot2-book.org/)
 

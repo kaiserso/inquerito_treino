@@ -632,8 +632,8 @@ Exercício: usar a indexeção numérica e por nome para obter o nome da tercera
 Tutoriais adicionais neste série:
 
 [Tutorial base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)  
-[Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/more-tutorial-base-R)  
-<!-- [Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R) -->
+[Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/tutorial-more-base-R)  
+[Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R) 
 
 Aqui estão alguns recursos adicionais para aprender mais sobre R:  
 

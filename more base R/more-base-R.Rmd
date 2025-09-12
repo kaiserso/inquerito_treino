@@ -80,6 +80,7 @@ Este tutorial foi desenvolvido para dar seguimento ao curso sobre uso de R para 
 Neste tutorial, poderá completar alguns exercícios para reforçar conceitos tais como:
 
 * Operações lógicas
+* Comparações
 * Bases de dados
 
 ## Operações lógicas
@@ -398,11 +399,21 @@ Y>3*4
 Obs: Este tipo de conversão também acontece quando incluir valores com tipos diferentes num vector.
 </div>
 
-## Tutoriais adicionais neste série:
+```{r promotion-1-quiz, echo=FALSE}
+question("Qual e o tipo desta expressão? 3*TRUE",
+         answer("numérico", correct = TRUE),
+         answer("lógico"),
+         answer("carácter"),
+         answer("NA"))
+```
+
+## Recursos adicionais:
+
+Tutoriais adicionais neste série:
 
 [Tutorial base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)  
-[Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/more-tutorial-base-R)  
-<!-- [Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R) -->
+[Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/tutorial-more-base-R)  
+[Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R) 
 
 Aqui estão alguns recursos adicionais para aprender mais sobre R:  
 
