@@ -31,6 +31,9 @@ provs <- c("Maputo Cidade", "Maputo Provincia", "Gaza", "Inhambane")
 pops <- c(1130319, 2390673, 1465802, 1564289)
 f <- data.frame(provincia = provs, pop = pops)
 
+sexo <- c("F", "F", "M", "M", "M", NA, "F")
+idade <- c("10-19", "10-19", "30-39", "40-49", NA, "50+", "30-39")
+g <- data.frame(sexo, idade)
 ```
 
 ```{r logo, echo=FALSE, results='asis'}
@@ -270,7 +273,7 @@ identical(A, B)      # resultado é um único valor (senpre)
 No futuro, vamos ver situações onde esta diferença seja importante tomar em conta.
 
 No tutorial anterior ([base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)
-), vimos um data frame com dados de inquérito populacional:
+), vimos um data frame com dados demográficos:
 ```{r, echo=TRUE}
 str(f)
 ```
@@ -414,10 +417,84 @@ question("Qual e o tipo desta expressão? 3*TRUE",
 
 </div>
 
+## Dados em falta
+
+A gestão apropriada de dados em falta (ou missing, em inglês) e um tópico complexo. No entanto, para este tutorial, vamos concentrar em alguns aspectos operacionais sobre o comportamento de operadores e funções quando enfrentados com dados em falta, e como detectar e manipula-los.
+
+O símbolo no R para um valor em falta é `NA`. O `NA` indica a ausencia de uma observação. A maioria das funções consideram o resultado de qualquer operação que envolve `NA` também `NA`. Isto e lógico, por exemplo qual seria o resultado de somar 10 com um valor desconhecido? É desconhecido!
+
+```{r na, echo=TRUE}
+X <- NA
+Y <- 100
+Z <- NA
+X > Y
+X == Y
+X == Z
+```
+
+Este último exemplo pode ser sorprendente, mas se pensarmos um pouco, podemos concordar que não se deve considerar dois variáveis com valores desconhecidos como iguais. Nada indica que a idade de duas pessoas que desconhecemos seja a mesma, simplesmente não a sabemos, portanto, é `NA`.
+
+NO exemplo a seguir, vamos usar a função `order()`, para testar como R ordena o `NA` em relação a outros valores.
+
+```{r na2, echo=TRUE}
+X <- c(30, 10, 20)
+ord <- order(X)            # criar um vector de posições para reordenar X
+ord
+X[ord]
+```
+
+No exemplo acima, usamos a função `order()` para ordenar a variável X por ordem numérico (neste caso). O order não produz um vector reordenado, antes devolve as indices dos elementos reordenados. Por exemplo `order(c(30,10,20))` resulta em c(2,3,1) para indicar que primeiro vem o segundo elemento (10), depois a terceira (20) e por fim a primeira (30).
+
+<div class="exercise-box">
+Exercício: avalia a expressão `order(c(124, -30, 294, 30, 0))`.
+```{r na2-quiz, echo=FALSE}
+question("Qual e o resultado?",
+         answer("FALSE"),
+         answer("c(2, 5, 4, 1, 3)", correct=TRUE),
+         answer("c(1, 2, 3, 4, 5)"),
+         answer("c(-30, 0, 30, 124, 294)", message="Atenção, order devolve a ordem do vector e nao o vector reordenado"),
+         allow_retry = TRUE)
+```
+Le a página de ajuda para `order()` antes de responder a pergunta a seguir.
+```{r na2-quiz2, echo=FALSE}
+question("No exemplo acima, como podemos inverter a ordem para ser decrescente em vez de crescente?",
+         answer("-order(c(124, -30, 294, 30, 0))"),
+         answer("order(-c(124, -30, 294, 30, 0))", message="Em algumas situações isto pode funcionar, mas nao aqui"),
+         answer("order(c(124, -30, 294, 30, 0), decreasing=TRUE)", correct=TRUE),
+         answer("Não tem como fazer.", message="Atenção, order devolve a ordem do vector e nao o vector reordenado"),
+         allow_retry = TRUE)
+```
+
+</div>
+
+
+```{r na3, echo=TRUE}
+X <- c(1, NA, 2, Inf, -Inf)
+is.na(X)
+ord <- order(X)            # criar um vector de posições para reordenar X
+ord
+X[ord]
+```
+
+R considera que NA seja sempre maior que qualquer outro valor em termos de ordem, mesmo do infinito. No entanto, podemos alterar o comportamento de `order()` com a opção `na.last=FALSE`
+
+```{r na4, echo=TRUE}
+X <- c(1,2,3,NA)
+is.na(X)
+X[order(X, na.last=FALSE)]  # saltamos o passo de criar um vector de posições
+sum(X)
+sum(X[!is.na(X)])
+sum(X, na.rm=TRUE)
+mean(X, na.rm=TRUE)
+```
+
+Muitas funções no R possuiem opções para excluir os valores em falta do cálculo (na.rm, neste caso). Como podemos ver acima, o comportamento e igual a `func(Vec[!is.na(Vec)])`, mas e mais simples de entender o efeito desejado quando
+usamos a opção `na.rm=TRUE`.
+
 ## Sequências
 Podemos criar sequências de números com a função `seq()`, ou com o operador `:`, ou com a função `rep()`.
 
-```{r, echo=TRUE}
+```{r seq, echo=TRUE}
 seq(1, 10)          # sequência de 1 a 10
 1:10                # sequência de 1 a 10
 seq(1, 10, by = 2)  # sequência de 1 a 10, de 2 em 2
@@ -445,6 +522,30 @@ grade_this({
 Obs: O exemplo acima de `rep(c(1,2), each = 3)` é diferente de `rep(c(1,2), 3)`. No primeiro caso, cada elemento do vector é repetido três vezes, enquanto no segundo caso, o vector completo é repetido três vezes.
 </div>
 
+Podemos combinar as duas funções para criar vectores mais complexas, por exemplo, vamos criar uma lista das primeiras 3 letras maiusculas (A-C) repetido duas vezes, com cada elemento repetido 3 vezes.
+
+```{r seq3, echo=TRUE}
+LETTERS[rep(seq(1, 3), times=2, each=3)]
+```
+
+Usamos o vector predefinido LETTERS para converter os números nas letras correspondentes por posição no alfabeto. Conseguiu acompanhar a lógica?
+
+<div class="exercise-box">
+Exercício: Cria uma sequencia de 0-100 contando por 10, com cada elemento repetido 2 vezes.
+
+```{r seq4, exercise=TRUE}
+```
+</div>
+```{r seq4-check}
+grade_this({
+  if(identical(.result, rep(seq(0,100,by=10),each=2)))  {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+
 ### reciclagem de vectores
 
 O R recicla os elementos do vector mais curto para completar o comprimento do vector mais longo. Isto pode ser útil, mas também pode causar erros se não for intencional.
@@ -460,6 +561,10 @@ x + c(1, 2)        # c(1, 2) é reciclado para c(1, 2, 1)
 x * c(1, 2)        # c(1, 2) é reciclado para c(1, 2, 1)
 paste("Número", 1:3) # 1:3 é reciclado para c(1, 2, 3)
 ```
+
+<div class="observation-box">
+Obs: mais a frente vamos ver a função `paste()`, que junta dois strings de caracteres, em mais detalhe.
+</div>
 
 <div class="exercise-box">
 Exercício: Alterar o código abaixo para criar um vector que repete os números 1, 2, 3, 4, 5 três vezes (ou seja, 1, 2, ...5, 1, 2, ...5, 1, 2, ...5).
@@ -535,6 +640,30 @@ grade_this({
 })
 ```
 
+Podemos juntar o que aprendemos sobre sequencias com a função paste para criar sequencias de texto complicados. Por exemplo, podemos querer criar grupos etários para etiquetar o nosso factor sobre faixa etária, com valores de 0-9, 10-19, 20-29, 30-39, 40-49, 50+. Podemos fazer assim:
+
+```{r string3, echo=TRUE}
+low <- seq(0,40, by=10)
+hi <- seq(9,49, by=10)
+c(paste(low, hi, sep="-"), "50+")
+c(paste(low, low+9, sep="-"), "50+") # obviar a necessidade de 'hi'
+```
+
+<div class="exercise-box">
+Exercício: Utilise paste, seq e/ou rep para criar uma sequencia de grupos etárias de "0-14 anos", "15-24 anos", ... 
+"65-74 anos", "75+ anos". 
+```{r string4, exercise=TRUE}
+```
+</div>
+```{r string4-check}
+grade_this({
+  if(identical(.result, c("0-14 anos", "15-24 anos", "25-34 anos", "35-44 anos", "45-54 anos", "55-64 anos", "65-74 anos", "75+ anos"))) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
 ### busca e substituição
 
 Várias funções de manipulação de strings usam expressões regulares (regex) para encontrar padrões em strings. As expressões regulares são uma linguagem especial para descrever padrões em texto.
@@ -575,11 +704,11 @@ gsub(" +", "-", x)        # substituir 1+ espaços com traço
 <div class="exercise-box">
 Exercício: Usar as funções acima para harmonizar o formato dos números de telefone no vector tels para terem o formato +258 XX-XXX-XXXX.
 
-```{r string3, exercise=TRUE}
+```{r string5, exercise=TRUE}
 tels <- c("82 666 1234", "83 123-4598", "84.124.3423")
 ```
 </div>
-```{r string3-check}
+```{r string5-check}
 grade_this({
   if(identical(.result, c("+258 82-666-1234", "+258 83-123-4598", "+258 84-124-3423"))) {
     pass(randompraise())
@@ -616,7 +745,73 @@ quantile(x, probs = c(0.25, 0.5, 0.75), na.rm = TRUE) # quantis (ignorando NA)
 summary(x, na.rm=TRUE)
 ```
 
+### Tabulação
+
+Podemos tabular dados de forma univariada, bivariada, ou mais variaveis.
+
+```{r, echo=TRUE}
+sexo <- c("F", "F", "M", "M", "M", NA, "F")
+idade <- c("10-19", "10-19", "30-39", "40-49", NA, "50+", "30-39")
+g <- data.frame(sexo, idade)
+table(g$idade)
+table(g$sexo)
+# Diferente das funcoes acima, NA sao excluidas por omissao
+table(g$idade, g$sexo)                      
+# incluir os NA
+table(g$idade, g$sexo, useNA="ifany")       
+# outra sintaxe
+with(g, table(idade, sexo))                 
+# proporcao da celula
+with(g, prop.table(table(idade, sexo)))     
+# proporcao de linha
+with(g, 
+     prop.table(table(idade, sexo), 
+                margin=1))                  
+# proporcao de coluna
+with(g, 
+     prop.table(table(idade, sexo), 
+                margin=2))                  
+# converter em percentagem
+with(g, 
+     prop.table(table(idade, sexo), 
+                margin=2)*100)  
+# acrescentar os totais marginais
+with(g, 
+     addmargins(table(idade, sexo)))               
+```
+
+<div class="exercise-box">
+
+Exercício: Usar as funções acima (table, prop.table, addmargins) para calcular a proporcao dos casos que tem dados em falta para idade no data frame `g` introduzido acima.
+
+```{r stat, exercise=TRUE}
+g
+```
+</div>
+```{r stat-check}
+grade_this({
+  if(identical(.result, 1/7)) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+```{r stat-hint-1}
+# primeiro, queremos incluir os missings na tabela
+with(g, table(idade, sexo, useNA="ifany"))
+```
+```{r stat-hint-2}
+# depois, seria importante calcular a proporcao em cada celula
+with(g, prop.table(table(idade, sexo, useNA="ifany")))
+```
+```{r stat-hint-3}
+# finalmente, podemos usar a indexacao para obter o valor desejado
+with(g, prop.table(table(idade, sexo, useNA="ifany")))[4,3]
+```
+
 ## Recursos adicionais
+
+Parabens! Se chegou até aqui quer dizer que conseguiu completar o tutorial. Esta convidado para continuar a sua aprendizagem.
 
 Tutoriais adicionais neste série:
 

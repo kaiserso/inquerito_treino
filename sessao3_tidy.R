@@ -129,11 +129,20 @@ pers |> filter(status == "I") |>
   mutate(idade_meses = idade * 12) |> 
   summarise(total = sum(idade_meses))
 
+# quando queremos extender para a proxima linha, sempre devemos terminar 
+# a linha com o pipe.
+
 # summarize by group -----------------------------------------------------------
 
 # tambem podemos agregar por subgrupos
 pers |> group_by(status) |> 
   summarise(idade_media = mean(idade))
+
+# como será que summarize sabe que proceder por grupos? Olhando os resultados de
+# group_by, podemos ver que nao altera os resultados sozinho, mas há informação 
+# adicional # Groups: statsu [3] na segunda linha que vem antes dos dados:
+
+pers |> group_by(status)
 
 # Exercicio: a) calcular o tamanho medio dos agregados familiares por residencia, 
 # sao maiores os agregados na zona urbana ou rural? b) refazer o calculo, somente
@@ -142,16 +151,18 @@ pers |> group_by(status) |>
 # conditional updates ---------------------------------------------------------
 
 # corregir o caso 5009 - como o inquerito era para adultos de 15-49 anos, era 
-# ineligivel, portanto nao podia 'recusar' - usar ifelse
+# ineligivel, portanto nao podia 'recusar' - usar if_else
 
 pers |> mutate(status2 = if_else(idade > 49, "U",
                                          status))
+pers
 
 # como salvar o novo tibble?
 
 pers <- 
   pers |> mutate(status2 = if_else(idade > 49, "U",
                                            status))
+pers
 
 # uma maneira mais flexivel - case_match
 
@@ -188,7 +199,7 @@ pers
 
 # Merging ----------------------------------------------------------------------
 
-# Eercicio: a) o merge destes dados seria 1 a N, N a 1, 1 a 1 ou N a N? b) qual seria a 'chave' em cada
+# Exercício: a) o merge destes dados seria 1 a N, N a 1, 1 a 1 ou N a N? b) qual seria a 'chave' em cada
 # tabela para o merge?  c) quantos casos devem resultar da merge?
 
 # com base R, podemos usar 'merge' para juntar dados de 1:n, 1:1 ou n:n
@@ -205,7 +216,7 @@ pers$person_status <- pers$status
 pers$status <- NULL
 pers
 
-# quem ficou de fora?
+# quem ficou de fora em cada um destes casos?
 
 combinado3 <- merge(afs, pers)
 combinado4 <- merge(afs, pers, all.x = TRUE)  # o que acontece com os nao-matches?

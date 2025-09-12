@@ -13,7 +13,7 @@ description: >
 ```{r setup, include=FALSE}
 library(learnr)
 library(gradethis)
-library(dplyr)
+library(tidyverse)
 
 knitr::opts_chunk$set(echo = FALSE)
 gradethis::gradethis_setup()
@@ -89,7 +89,7 @@ Neste tutorial, poderá completar alguns exercícios para reforçar conceitos ta
 * mutate
 * filter e select
 * arrange
-* group_by e ummarise
+* group_by e summarise
 * ggplot
 * tbl_summary e tbl_regression
 
@@ -109,7 +109,7 @@ entre outros.
 
 O **tidy R** é uma abordagem para trabalhar com dados no R que enfatiza a clareza e a simplicidade. Ele se baseia nos princípios do tidyverse, mas pode ser usado com qualquer pacote ou função do R. A ideia é que os dados sejam organizados de forma que cada variável seja uma coluna, cada observação seja uma linha e cada tipo de unidade de observação seja uma tabela.
 
-### O que é um tibble?
+## Os tibbles
 
 Um **tibble** é uma versão moderna de um data frame no R. Ele é parte do tidyverse e oferece várias vantagens sobre os data frames tradicionais:
 * **Impressão mais limpa**: Tibbles exibem apenas as primeiras linhas e colunas, evitando a sobrecarga visual.
@@ -158,31 +158,78 @@ grade_this({
   fail(randomencouragement())
 })
 ```
-</div>
 
-<div class="exercise-box"> 
-Exercício: listar as idades de todos que tem > 20 anos de idade.
+## Funções essenciais
 
-```{r, tibble4, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
-pers[___]
+Agora vamos explorar algumas funções essenciais do tidyverse desenhados para trabalhar com tibbles.
+* filter() - para filtar linhas (observações)
+* select() - para seleccionar colunas (variáveis)
+* mutate() - para alterar ou criar novas colunas
+* summarize() - para resumir variáveis
+
+```{r func, echo=TRUE}
+# filter - selecionar linhas com criterios
+filter(pers, status == "R")
+filter(pers, idade > 20)
+# select - seleccionar colunas com criterios
+select(pers, householdid)
+select(pers, c(personid, status))
+# mutate - alterar o criar colunas 
+mutate(pers, idade_meses = idade *12)
+# summarise - agregar dados
+summarise(pers, total = sum(idade))  
 ```
 
-<div class="observation-box">Obs: quando ver um traço longo `___` no código, isto indica que é um espaço reservado para você completar com o seu código. Você pode substituir `___` por qualquer valor, função ou operação que desejar.</div>
+<div class="observation-box">
+Obs: summarize() geralmente reduz as dimenções do resultado, neste caso, somente retorno um tibble
+ com uma única linha e coluna.
 </div>
 
-```{r tibble4-check}
+<div class="exercise-box">
+
+Exercício: calcular a idade media das pessoas que recusaram em participar no inquérito, usando as funções apresentadas acima.
+
+```{r func2, exercise=TRUE}
+pers
+```
+</div>
+```{r func2-check}
 grade_this({
-  if(identical(.result, pers$idade[pers$idade > 20])) {
+  if(identical(.result, 44.5) || (is_tibble(.result) && identical(.result[[1]], 44.5))) {
     pass(randompraise())
   }
   fail(randomencouragement())
 })
 ```
 
+<div id="func2-hint">
+**Dica:** primeiro filtar para identificar os casos de recusa, depois agregar a idade usando summarize()
 </div>
 
+<div class="exercise-box">
 
-### O que é um pipe (tubo)?
+Exercício: Criar um novo ID 'globalid' no tibble que e resultado de concatenar o householdid seguido pelo personid, depois somente selecciona o novo globalid.
+
+```{r func3, exercise=TRUE}
+pers
+```
+</div>
+```{r func3-check}
+ans <- tibble(globalid = as.character(c(10005001, 10005002, 10015003, 10015004, 
+                                        20025005, 20035006, 20035007, 20035008, 20055009)))
+grade_this({
+  if(identical(.result, ans)) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+<div id="func3-hint">
+  **Dica:** utilise a função de base R `paste0` para concatenar.
+</div>
+
+## Os pipes (tubos)
 
 Um **pipe** (tubo) é um operador `|>` ou `%>%` que permite encadear várias operações de forma sequencial. Ele é usado para passar o resultado de uma operação como entrada para a próxima, tornando o código mais legível e intuitivo. Por exemplo:
 
@@ -239,7 +286,7 @@ mtcars |> filter(___) |> arrange(__) |> select(___)
 
 Antes de continuar, vamos analizar alguns aspectos do exercício anterior. Primeiro, notou que nao precisavamos de por os nomes das variáveis em ""? Alem disso, quando listamos as variaveis mpg e cyl para o select, incluiu num vector c()? Com o tidyverse, não é necessário. `mtcars[, c("mpg", "cyl")]` virou `mtcars |> select(mpg, cyl)` no tidyverse. São alguns dos aspectos do tidyverse que facilitam a programção.
 
-### Agrupar
+## Agrupamento
 
 Agora vamos aprender como calcular estatísticas sobre dados agrupados.  Podemos usar group_by para criar grupos nos dados:
 
@@ -267,7 +314,7 @@ Agora a sua vez! Agrupar os dados pelos am e carb, e calcular o max de disp para
 
 ```
 
-## 
+##
 
 ## Recursos adicionais
 
