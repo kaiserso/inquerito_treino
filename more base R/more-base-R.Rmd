@@ -729,13 +729,16 @@ Podemos usar funções básicas do R para calcular estatísticas descritivas de 
 * `range(x)` - intervalo (mínimo e máximo)  
 * `quantile(x, probs)` - quantis (por exemplo, `probs = c(0.25, 0.5, 0.75)` para os quartis)  
 * `summary(x)` - resumo estatístico básico (mínimo, 1º quartil, mediana, média, 3º quartil, máximo)  
-* `table(x)` - tabela de frequências (para variáveis categóricas)  
-* `prop.table(table(x))` - tabela de proporções (para variáveis categóricas)  
 
 ```{r, echo=TRUE}
 x <- c(1, 2, 3, 4, 5, NA)
 mean(x)                    # média (resultado e NA)
 mean(x, na.rm = TRUE)      # média (ignorando NA)
+```
+
+Como vemos numa secção anterior, muitas funções tem a opção `na.rm = TRUE` para ignorar os valores em falta (NA) no cálculo. É importante usar esta opção quando sabemos que o vector pode conter NA, caso contrário o resultado será NA.
+
+```{r, echo=TRUE}
 median(x, na.rm = TRUE)    # mediana (ignorando NA)
 sd(x, na.rm = TRUE)        # desvio padrão (ignorando NA)
 var(x, na.rm = TRUE)       # variância (ignorando NA)
@@ -745,24 +748,46 @@ quantile(x, probs = c(0.25, 0.5, 0.75), na.rm = TRUE) # quantis (ignorando NA)
 summary(x, na.rm=TRUE)
 ```
 
-### Tabulação
+## Tabulação
 
 Podemos tabular dados de forma univariada, bivariada, ou mais variaveis.
+
+* `table(x)` - tabela de frequências (para variáveis categóricas)  
+* `prop.table(table(x))` - tabela de proporções (para variáveis categóricas) 
+* `addmargins(table(x))` - tabela de frequências com totais marginais
+* `table(x, y)` - tabela de contingência (para duas variáveis categóricas)
 
 ```{r, echo=TRUE}
 sexo <- c("F", "F", "M", "M", "M", NA, "F")
 idade <- c("10-19", "10-19", "30-39", "40-49", NA, "50+", "30-39")
+table(idade)
+table(sexo)
+```
+
+<div class="observation-box">
+Obs: Diferente das funcoes acima, NA são excluidas por omissão das funções table() e prop.table(). Podemos incluir os NA com a opção useNA="ifany" ou useNA="always".
+</div>
+
+Podemos fazer tabelas cruzadas (bivariadas) com a função table(x, y), onde x e y são vectores de mesma longitud.
+
+Embora podemos tabular os vectores directamente, é mais comum tabular variáveis dentro de um data frame. Vamos criar um data frame com as variáveis idade e sexo. 
+
+```{r, echo=TRUE}
 g <- data.frame(sexo, idade)
-table(g$idade)
-table(g$sexo)
-# Diferente das funcoes acima, NA sao excluidas por omissao
 table(g$idade, g$sexo)                      
 # incluir os NA
 table(g$idade, g$sexo, useNA="ifany")       
 # outra sintaxe
 with(g, table(idade, sexo))                 
 # proporcao da celula
-with(g, prop.table(table(idade, sexo)))     
+with(g, prop.table(table(idade, sexo)))
+```
+
+<div class="observation-box">
+Atenção! `prop.table()` precisa uma tabela como input. Não se pode fazer `prop.table(g$idade, g$sexo)` diretamente.
+</div>
+
+```{r, echo=TRUE}
 # proporcao de linha
 with(g, 
      prop.table(table(idade, sexo), 
@@ -813,13 +838,14 @@ with(g, prop.table(table(idade, sexo, useNA="ifany")))[4,3]
 
 Parabens! Se chegou até aqui quer dizer que conseguiu completar o tutorial. Esta convidado para continuar a sua aprendizagem.
 
-Tutoriais adicionais neste série:
+#### Tutoriais adicionais neste série
 
 [Tutorial base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)  
 [Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/tutorial-more-base-R)  
 <!-- [Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R) -->
 
-Aqui estão alguns recursos adicionais para aprender mais sobre R:  
+
+#### Recursos adicionais sobre R 
 
 [Receitas de R (En)](https://posit.cloud/learn/recipes)  
 [R para usuários de Excel (En)](https://rstudio-conf-2020.github.io/r-for-excel/)  
@@ -828,3 +854,5 @@ Aqui estão alguns recursos adicionais para aprender mais sobre R:
 [Tutoriais sobre R para epidemiologia (En, Fr, Es, Pt)](https://www.appliedepi.org/)  
 [R Crash Course (En)](https://r-crash-course.github.io/01-rstudio-intro/)  
 [Posit Cloud (En)](https://posit.cloud)  
+
+

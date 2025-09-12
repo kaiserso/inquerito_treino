@@ -629,13 +629,13 @@ Exercício: usar a indexeção numérica e por nome para obter o nome da tercera
 
 ## Recursos Adicionais
 
-Tutoriais adicionais neste série:
+#### Tutoriais adicionais neste série:
 
 [Tutorial base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)  
 [Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/tutorial-more-base-R)  
 <!-- [Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R)  -->
 
-Aqui estão alguns recursos adicionais para aprender mais sobre R:  
+#### Recursos adicionais sobre R:  
 
 [Receitas de R (En)](https://posit.cloud/learn/recipes)  
 [R para usuários de Excel (En)](https://rstudio-conf-2020.github.io/r-for-excel/)  
