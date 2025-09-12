@@ -77,18 +77,21 @@ Este tutorial foi desenvolvido para dar seguimento ao curso sobre uso de R para 
 
 ### 
 
-Neste tutorial, poderá completar alguns exercícios para reforçar conceitos tais como:
+Neste tutorial, poderá completar alguns exercícios para reforçar conceitos tais como:  
 
-* Operações lógicas
-* Comparações
-* Bases de dados
+
+* Operações lógicas  
+* Operadores de comparação  
+* Sequências  
+* Manipulação de strings  
+* Resumo estatístico básico
 
 ## Operações lógicas
 
 Os operadores lógicas no R são: `&, |, !, ==, !=, <, >, <=, >=`. Estes operadores são usados para comparar valores lógicos e retornar um valor lógico (TRUE - verdadeiro, ou FALSE - falso). O significado de cada um:
 
 * `&` e
-* `|` ou
+* `|` ou-
 * `!` negação
 
 Por exemplo, a expressão `A & B` é TRUE se A e B ambos são TRUE, caso contrário é FALSE.  `A | B` é TRUE se ou A ou B é TRUE, caso contrário e FALSE, etc. O `!` nega ou inverte o valor de qualquer expressão lógica, por exemplo `!TRUE` é FALSE é `!FALSE` é TRUE.
@@ -399,6 +402,8 @@ Y>3*4
 Obs: Este tipo de conversão também acontece quando incluir valores com tipos diferentes num vector.
 </div>
 
+<div class="exercise-box">
+
 ```{r promotion-1-quiz, echo=FALSE}
 question("Qual e o tipo desta expressão? 3*TRUE",
          answer("numérico", correct = TRUE),
@@ -407,13 +412,217 @@ question("Qual e o tipo desta expressão? 3*TRUE",
          answer("NA"))
 ```
 
-## Recursos adicionais:
+</div>
+
+## Sequências
+Podemos criar sequências de números com a função `seq()`, ou com o operador `:`, ou com a função `rep()`.
+
+```{r, echo=TRUE}
+seq(1, 10)          # sequência de 1 a 10
+1:10                # sequência de 1 a 10
+seq(1, 10, by = 2)  # sequência de 1 a 10, de 2 em 2
+seq(1, 10, length.out = 5) # sequência de 1 a 10, com 5 elementos
+rep(1, 5)          # repetir 1 cinco vezes
+rep(c(1, 2), 3)    # repetir o vector c(1, 2) três vezes
+rep(c(1, 2), each = 3) # repetir cada elemento do vector c(1, 2) três vezes
+```
+<div class="exercise-box">
+Exercício: Alterar o código abaixo para criar uma sequência de números de 5 a 50, de 5 em 5.
+```{r seq1, exercise=TRUE}
+seq(5, 50)
+```
+</div>
+```{r seq1-check}
+grade_this({
+  if(identical(.result, c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50))) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+<div class="observation-box">
+Obs: O exemplo acima de `rep(c(1,2), each = 3)` é diferente de `rep(c(1,2), 3)`. No primeiro caso, cada elemento do vector é repetido três vezes, enquanto no segundo caso, o vector completo é repetido três vezes.
+</div>
+
+### reciclagem de vectores
+
+O R recicla os elementos do vector mais curto para completar o comprimento do vector mais longo. Isto pode ser útil, mas também pode causar erros se não for intencional.
+
+```{r, echo=TRUE}
+x <- c(1, 2, 3)
+y <- c(10, 20)
+x + y               # y é reciclado para c(10, 20, 10)
+x * y               # y é reciclado para c(10, 20, 10)
+x + 1               # 1 é reciclado para c(1, 1, 1)
+x * 2               # 2 é reciclado para c(2, 2, 2)
+x + c(1, 2)        # c(1, 2) é reciclado para c(1, 2, 1)
+x * c(1, 2)        # c(1, 2) é reciclado para c(1, 2, 1)
+paste("Número", 1:3) # 1:3 é reciclado para c(1, 2, 3)
+```
+
+<div class="exercise-box">
+Exercício: Alterar o código abaixo para criar um vector que repete os números 1, 2, 3, 4, 5 três vezes (ou seja, 1, 2, ...5, 1, 2, ...5, 1, 2, ...5).
+
+```{r seq2, exercise=TRUE}
+rep(1:5, each=3)
+```
+</div>
+```{r seq2-check}
+grade_this({
+  if(identical(.result, c(1,2,3,4,5,1,2,3,4,5,1,2,3,4,5))) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+## Manipulação de strings
+
+As vezes queremos manipular (alterar, concatenar, dividir, etc) strings (textos). O R tem várias funções para fazer isto. Algumas das mais comuns são:
+
+* `nchar(x)` - número de caracteres na string x
+* `paste(...)` - concatenar strings
+* `substr(x, start, stop)` - extrair uma sub-string de x, começando na posição start e terminando na posição stop
+* `toupper(x)` - converter x para maiúsculas
+* `tolower(x)` - converter x para minúsculas
+* `grep(pattern, x)` - encontrar a posição de pattern em x
+* `gsub(pattern, replacement, x)` - substituir pattern por replacement em x
+* `strsplit(x, split)` - dividir x em partes, usando split como separador
+* `sprintf(fmt, ...)` - formatar strings
+
+Vamos conhecer e praticar algumas destas funções agora.
+
+```{r, echo=TRUE}
+x <- "Hello, World!"
+nchar(x)               # número de caracteres
+substr(x, 1, 5)       # extrair sub-string
+toupper(x)            # converter para maiúsculas
+tolower(x)            # converter para minúsculas
+paste("Hello", "World", sep = ", ") # concatenar strings
+paste0("Hello", ", ", "World")       # concatenar sem separador
+strsplit(x, ",")       # dividir string
+sprintf("O valor de pi é aproximadamente %.2f", pi) # formatar string
+```
+
+<div class="exercise-box">
+Exercício: Alterar o código abaixo para usar a função substr() para extair a palavra "cão" da string x.
+```{r string1, exercise=TRUE}
+x <- "Quem não tem cão caça com gato"
+```
+</div>
+```{r string1-check}
+grade_this({
+  if(identical(.result, "cão")) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+<div class="exercise-box">
+Exercício: Alterar o código abaixo para juntar as palavras com traços (-).
+```{r string2, exercise=TRUE}
+paste0("cão", "gato", "pássaro")
+```
+</div>
+```{r string2-check}
+grade_this({
+  if(identical(.result, "cão-gato-pássaro")) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+### busca e substituição
+
+Várias funções de manipulação de strings usam expressões regulares (regex) para encontrar padrões em strings. As expressões regulares são uma linguagem especial para descrever padrões em texto.
+Por exemplo, a função `grep()` pode ser usada para encontrar a posição de um padrão em um vector de strings:
+```{r, echo=TRUE}
+x <- c("cão", "gato", "pássaro")
+grep("ão", x)          # encontrar padrão "ão"
+grep("a", x)           # encontrar padrão "a"
+grep("^c", x)          # encontrar strings que começam com "c"
+grep("o$", x)          # encontrar strings que terminam com "o"
+grep("z", x)           # encontrar padrão "z" (não existe)
+grep("a", x, value = TRUE) # retornar os valores que correspondem ao padrão
+grep("s+", x, value = TRUE) # encontrar padrão "s" repetido uma ou mais vezes
+```
+
+O símbolo `^` indica o início da string, e o símbolo `$` indica o fim da string. O símbolo `+` indica que o caractere anterior pode se repetir uma ou mais vezes. O símbolo `?` indica que o caractere anterior é opcional (pode aparecer zero ou uma vez). O símbolo `.` (ponto) indica qualquer caractere. 
+
+Os `[]` (colchetes) indicam um conjunto de caracteres. Por exemplo, `[abc]` indica qualquer um dos caracteres a, b ou c. Podemos usar intervalos dentro dos colchetes, por exemplo, `[a-z]` indica qualquer letra minúscula, e `[0-9]` indica qualquer dígito.
+
+<div class="observation-box">
+Obs: Quando queremos incluir um caracter especial (como `^`, `$`, `.`, `*`, `+`, `?`, `(`, `)`, `[`, `]`, `{`, `}`, `|`, `\`) na expressão regular, devemos precedê-lo com uma barra invertida (`\`). No entanto, como a barra invertida também é um caracter especial em strings do R, devemos usar duas barras invertidas (`\\`) para representar uma única barra invertida na expressão regular.
+</div>
+
+```{r, echo=TRUE}
+grep("...o", x, value = TRUE) # encontrar
+y <- c("+258 81 243  524", "+258 88 243 567", "+258 89  243 567")
+grep("^\\+258 8[1-7]", y, value = TRUE) # encontrar números de telefone que começam com +258 81 a +258 87
+```
+
+A função gsub(old, new, x) pode ser usada para substituir um padrão por outro em um vector de strings (o 'g' quer dizer global, ou seja, substituir todas as ocorrências do padrão):
+
+```{r, echo=TRUE}
+gsub("+258", "+27", x)      # substituir +258 com +27
+gsub("24", "XX", x)          # substituir 24 com XX
+gsub(" +", "-", x)        # substituir 1+ espaços com traço
+```
+
+<div class="exercise-box">
+Exercício: Usar as funções acima para harmonizar o formato dos números de telefone no vector tels para terem o formato +258 XX-XXX-XXXX.
+
+```{r string3, exercise=TRUE}
+tels <- c("82 666 1234", "83 123-4598", "84.124.3423")
+```
+</div>
+```{r string3-check}
+grade_this({
+  if(identical(.result, c("+258 82-666-1234", "+258 83-123-4598", "+258 84-124-3423"))) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+## Resumo estatistico básico
+
+Podemos usar funções básicas do R para calcular estatísticas descritivas de um vector numérico. Algumas das funções mais comuns são:  
+* `mean(x)` - média  
+* `median(x)` - mediana  
+* `sd(x)` - desvio padrão  
+* `var(x)` - variância  
+* `min(x)` - valor mínimo  
+* `max(x)` - valor máximo  
+* `range(x)` - intervalo (mínimo e máximo)  
+* `quantile(x, probs)` - quantis (por exemplo, `probs = c(0.25, 0.5, 0.75)` para os quartis)  
+* `summary(x)` - resumo estatístico básico (mínimo, 1º quartil, mediana, média, 3º quartil, máximo)  
+* `table(x)` - tabela de frequências (para variáveis categóricas)  
+* `prop.table(table(x))` - tabela de proporções (para variáveis categóricas)  
+
+```{r, echo=TRUE}
+x <- c(1, 2, 3, 4, 5, NA)
+mean(x)                    # média (resultado e NA)
+mean(x, na.rm = TRUE)      # média (ignorando NA)
+median(x, na.rm = TRUE)    # mediana (ignorando NA)
+sd(x, na.rm = TRUE)        # desvio padrão (ignorando NA)
+var(x, na.rm = TRUE)       # variância (ignorando NA)
+min(x, na.rm = TRUE)       # valor mínimo (ignorando NA)
+range(x, na.rm = TRUE)     # intervalo (mínimo e máximo, ignorando NA)
+quantile(x, probs = c(0.25, 0.5, 0.75), na.rm = TRUE) # quantis (ignorando NA)
+summary(x, na.rm=TRUE)
+```
+
+## Recursos adicionais
 
 Tutoriais adicionais neste série:
 
 [Tutorial base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)  
 [Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/tutorial-more-base-R)  
-[Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R) 
+<!-- [Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R) -->
 
 Aqui estão alguns recursos adicionais para aprender mais sobre R:  
 
