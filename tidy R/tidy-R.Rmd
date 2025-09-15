@@ -85,9 +85,9 @@ Este tutorial foi desenvolvido para dar seguimento ao curso sobre uso de R para 
 Neste tutorial, poderá completar alguns exercícios para reforçar conceitos tais como:
 
 * Tibbles
+* filter e select
 * Pipes (tubos)
 * mutate
-* filter e select
 * arrange
 * group_by e summarise
 * ggplot
@@ -129,7 +129,14 @@ pers <- tibble(personid = c(5001:5009),
 pers
 ```
 
+
 Como podem ver, a aparencia e similar a um data frame, mas e acompanhada por o tipo de cada variavel e o numero de linhas no fim.
+
+Pode explorar o tibble pers com as funcoes `str()`, `dim()`, `nrow()`, `ncol()`, `names()` e `glimpse()`.
+
+```{r tibble1, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
+pers
+```
 
 Tudo que podemos fazer com data frame tambem e valido para um tibble, por exemplo extrair e resumir uma coluna:
 
@@ -139,6 +146,8 @@ summary(pers$idade)
 ```
 
 E, até podemos converter num data frame com `as.data.frame(pers)`.
+
+Primeiro, vamos refrescar a memoria sobre indexação no base R, assim aproveitando para aprender como indexar tibbles.
 
 <div class="exercise-box"> 
 Exercício: usar a indexação para identificar a idade da pessoa descrita na segunda linha do tibble.
@@ -161,11 +170,14 @@ grade_this({
 
 ## Funções essenciais
 
-Agora vamos explorar algumas funções essenciais do tidyverse desenhados para trabalhar com tibbles.
-* filter() - para filtar linhas (observações)
-* select() - para seleccionar colunas (variáveis)
-* mutate() - para alterar ou criar novas colunas
-* summarize() - para resumir variáveis
+Agora vamos explorar algumas funções essenciais do tidyverse desenhados para trabalhar com tibbles.  
+* filter(tibble, expr) - para filtar linhas (observações)  
+* select(tibble, expr) - para seleccionar colunas (variáveis)  
+* arrange(tibble, expr) - para ordenar linhas
+* mutate(tibble, expr) - para alterar ou criar novas colunas  
+* summarize(tibble, expr) - para resumir variáveis  
+
+filter() e select() são similares a indexação, mas com uma sintaxe mais intuitiva. arrange() é parecido a order(), mutate() é usado para criar novas variáveis ou modificar as existentes, e summarize() é usado para calcular estatísticas resumidas.
 
 ```{r func, echo=TRUE}
 # filter - selecionar linhas com criterios
@@ -174,10 +186,9 @@ filter(pers, idade > 20)
 # select - seleccionar colunas com criterios
 select(pers, householdid)
 select(pers, c(personid, status))
-# mutate - alterar o criar colunas 
-mutate(pers, idade_meses = idade *12)
-# summarise - agregar dados
-summarise(pers, total = sum(idade))  
+# arrange - ordenar linhas
+arrange(pers, idade)       # ordem crescente
+arrange(pers, desc(idade)) # ordem decrescente
 ```
 
 <div class="observation-box">
@@ -187,13 +198,68 @@ Obs: summarize() geralmente reduz as dimenções do resultado, neste caso, somen
 
 <div class="exercise-box">
 
-Exercício: calcular a idade media das pessoas que recusaram em participar no inquérito, usando as funções apresentadas acima.
+Exercício: seleccionar personid para as observações com mais de 11 anos de educação. Por enquanto,
+vamos usar um tibble temporário x para guardar o resultado do filter, depois usar select() para extrair a variável personid.
+
+```{r func1, exercise=TRUE}
+x <- filter(pers, ___)
+select(x, ___)
+```
+</div>
+```{r func1-check}
+grade_this({
+  if(identical(.result, tibble(personid = as.integer(c(5007, 5008, 5009))))) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+
+```
+
+Mutate é usado para criar novas variáveis ou modificar as existentes.
+
+```{r, echo=TRUE}
+# mutate - alterar o criar colunas 
+mutate(pers, idade_meses = idade *12)
+```
+
+<div class="exercise-box">
+
+Exercício: criar um novo variável 'pais' com valor de 'MZ'.
 
 ```{r func2, exercise=TRUE}
-pers
+mutate(pers, ___)
 ```
 </div>
 ```{r func2-check}
+grade_this({
+  if(identical(.result, mutate(pers, pais = "MZ"))) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+
+```
+
+Summarise() é usado para calcular estatísticas resumidas. utilise funções como mean(), sum(), min(), max(), n() (número de observações) e n_distinct() (número de valores distintos).
+
+```{r, echo=TRUE}
+# summarise - agregar dados
+summarise(pers, total = sum(idade))  
+```
+
+Notou que o resultado é um tibble com uma única linha e coluna? Isto é porque summarize() reduz as dimensões do resultado.
+
+<div class="exercise-box">
+
+Exercício: calcular a idade media das pessoas que recusaram em participar no inquérito, usando as funções apresentadas acima.
+
+```{r func3, exercise=TRUE}
+x <- filter(pers, ___)
+summarize(x, ___)
+```
+</div>
+```{r func3-check}
 grade_this({
   if(identical(.result, 44.5) || (is_tibble(.result) && identical(.result[[1]], 44.5))) {
     pass(randompraise())
@@ -202,7 +268,7 @@ grade_this({
 })
 ```
 
-<div id="func2-hint">
+<div id="func3-hint">
 **Dica:** primeiro filtar para identificar os casos de recusa, depois agregar a idade usando summarize()
 </div>
 
@@ -210,11 +276,11 @@ grade_this({
 
 Exercício: Criar um novo ID 'globalid' no tibble que e resultado de concatenar o householdid seguido pelo personid, depois somente selecciona o novo globalid.
 
-```{r func3, exercise=TRUE}
+```{r func4, exercise=TRUE}
 pers
 ```
 </div>
-```{r func3-check}
+```{r func4-check}
 ans <- tibble(globalid = as.character(c(10005001, 10005002, 10015003, 10015004, 
                                         20025005, 20035006, 20035007, 20035008, 20055009)))
 grade_this({
@@ -225,9 +291,11 @@ grade_this({
 })
 ```
 
-<div id="func3-hint">
+<div id="func4-hint">
   **Dica:** utilise a função de base R `paste0` para concatenar.
 </div>
+
+Agora que já conhece as funções básicas, vamos aprender a encadear várias operações usando pipes.
 
 ## Os pipes (tubos)
 
@@ -235,11 +303,6 @@ Um **pipe** (tubo) é um operador `|>` ou `%>%` que permite encadear várias ope
 
 ```{r, pipe, echo=TRUE}
 library(dplyr)
-mtcars |>
-  filter(mpg > 20) |>
-  select(mpg, cyl, hp) |>
-  arrange(desc(mpg))
-
 pers |>
   filter(status == "I") |>
   select(idade, edu_yrs, status) |>
@@ -310,11 +373,109 @@ mtcars |> group_by(gear, cyl) |> summarize(mpg_media = mean(mpg), n = n())
 
 Agora a sua vez! Agrupar os dados pelos am e carb, e calcular o max de disp para cada grupo.
 
-```{r tibble1, exercise=TRUE}
+```{r groups, exercise=TRUE}
 
 ```
 
-##
+## Alteração conditional
+
+Lembra que na tabela pers, a variável status indica "I" para entrevistado e "R" para recusa:
+
+```{r, echo=TRUE}
+table(pers$status)
+```
+
+Imagina que os critérios de elegibilidade para participar no inquérito eram ter entre 15 e 49 anos.
+Agora vamos aprender como criar ou alterar variáveis com base em condições. Podemos usar if_else() para fazer isto. Por exemplo, vamos criar uma nova variável status2 que indica "U" (ineligível) para pessoas com mais de 49 anos, e mantém o valor original de status para os outros.
+
+### if_else
+
+if_else(condição, valor_se_verdadeiro, valor_se_falso) permite criar ou alterar variáveis com base em uma condição lógica. Vamos usar if_else para criar uma nova variável status2 que substitui "I" com "U" (ineligível) para pessoas com mais de 49 anos, e mantém o valor original de status para os outros.
+
+```{r mutate1, echo=TRUE}
+pers |> mutate(status2 = if_else(idade > 49, "U",
+                                         status))
+```
+
+Os pipes nao alteram o tibble original, a menos que incluimos `pers <-` no começo. Vamos fazer isto para guardar a nova variável no tibble pers.
+
+```{r mutate2, echo=TRUE}
+pers <- 
+  pers |> mutate(status2 = if_else(idade > 49, "U",
+                                           status))
+pers
+```
+
+### case_match
+
+Uma alternativa a if_else e case_match, que e mais facil de ler quando ha mais de duas condicoes. Vamos usar case_match para criar uma nova variavel status3 que substitui "I" com "Entrevistado" e "R" com "Recusa".
+
+```{r mutate3, echo=TRUE}
+pers |> mutate(status3 = case_match(status2,
+                                            "I" ~ "Entrevistado",
+                                            "R" ~ "Recusa"))
+```
+
+<div class="observation-box">
+Obs: o tilde (~) separe o original pelo novo codigo `"R" ~ "Recusa"` significa que "R" e substituido por "Recusa".
+</div>
+
+Upa!, esquecemos ineligivel, U (ineligivel) ficou NA no novo variável!
+
+```{r mutate4, echo=TRUE}
+pers |> mutate(status3 = case_match(status2,
+                                            "I" ~ "Entrevistado",
+                                            "R" ~ "Recusa", 
+                                            .default = "Ineligivel")) # nao ideal, presume muito
+```
+Vamos guardar o resultado no tibble pers.
+
+```{r mutate5, echo=TRUE}
+pers <- pers |> mutate(status3 = case_match(status2,
+                                            "I" ~ "Entrevistado",
+                                            "R" ~ "Recusa", 
+                                            "U" ~ "Ineligivel")) # um pouco melhor
+```
+
+.default e muito flexivel, mas as vezes é flexivel de mais. Se houvesse um erro de digitação na variável status2, por exemplo "X", o resultado seria "Ineligivel", o que não é correto. Melhor é listar todas as possibilidades, assim qualquer valor inesperado vira NA.
+
+### case_when
+
+Ainda mais flexivel é case_when, que permite usar expressões lógicas para definir as condições. Vamos usar case_when para criar uma nova variável edu_cat que categoriza os anos de educação em três grupos: "1-6" para menos de 6 anos, "7-12" para 7 a 12 anos, e "13+" para 13 ou mais anos.
+
+```{r mutate6, echo=TRUE}
+pers <-
+  pers |> mutate(edu_cat = case_when(edu_yrs < 5 ~ "1-6",
+                                      edu_yrs < 13 ~ "7-12",
+                                      TRUE ~ "13+"))
+pers
+```
+
+Notou a diferenca entre case_match e case_when, em termos de onde fica a variavel que e base na transformação?
+
+As condições são avaliadas em ordem, e a primeira condição verdadeira determina o valor da nova variável. Por isso, um valor de edu_yrs de 4 resulta em "1-6", um valor de 10 resulta em "7-12", e um valor de 15 resulta em "13+".
+
+<div class="observation-box">
+Obs: TRUE e similar a .default, agrega todas as alternativas nao listadas. E portanto, é arriscado usar TRUE se houver a possibilidade de um erro de digitação ou valor inesperado. Por exemplo, se houver uma idade de -9 para indicar um valor em falta, a condição idade < 5 seria verdadeira, e a idade 999 seria categorizada como "1-6", o que não é correto. Melhor é listar todas as possibilidades, assim qualquer valor inesperado vira NA.
+</div>
+
+<div class="exercise-box">
+
+Exercicio: usar case_when para recategorizar idade em dois grupos, <25 e 25+, criando um novo variável idade_cat com categorias de "<25" e "25+".
+
+```{r mutate7, exercise=TRUE}
+pers |> mutate(idade_cat = case_when(___))
+```
+</div>
+```{r mutate7-check}
+grade_this({
+  if(identical(.result, pers %>% mutate(idade_cat = case_when(idade < 25 ~ "<25",
+                                                              idade >= 25 ~ "25+")))) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
 
 ## Recursos adicionais
 

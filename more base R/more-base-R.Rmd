@@ -219,6 +219,9 @@ ___(C)
 ```
 </div>
 
+<div class="observation-box">Obs: quando ver um traço longo `___` no código, isto indica que é um espaço reservado para você completar com o seu código. Você pode substituir `___` por qualquer valor, função ou operação que desejar.</div>
+</div>
+
 ```{r logic4-hint-1}
 # **Dica:** no tutorial anterior ([base R (Pt)] (https://peteryoung.shinyapps.io/tutorial-base-R)) veemos que podemos 
 # somar o conteudo de um vector com sum():

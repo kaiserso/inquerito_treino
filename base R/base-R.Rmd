@@ -528,7 +528,7 @@ f
 Temos algumas funções chaves para inspeccionar os data frames:
 
 ```{r data2, echo=TRUE}
-str(f)                # descrever o objecto (same as Environment)
+str(f)                # descrever o objecto
 summary(f)            # resumir as variaveis
 dim(f)                # dimensoes do objecto
 ```
@@ -628,6 +628,8 @@ Exercício: usar a indexeção numérica e por nome para obter o nome da tercera
 </div>
 
 ## Recursos Adicionais
+
+Parabens! Se chegou até aqui quer dizer que conseguiu completar o tutorial. Esta convidado para continuar a sua aprendizagem.
 
 #### Tutoriais adicionais neste série:
 
