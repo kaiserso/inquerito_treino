@@ -163,9 +163,9 @@ grade_this({
 
 Os operadores de comparação são `==, !=, <, >, <=, >=`. Estes operadores são usados para comparar valores e retornar um (ou mais) valor(es) lógico(s) (TRUE - verdadeiro, ou FALSE - falso). O significado de cada um:
 
-* `==` igualdade
-* `!=` não igualdade
-* `<, >, <=, >=` menor, maior, menor ou igual, maior ou igual que
+* `==` igualdade  
+* `!=` não igualdade  
+* `<, >, <=, >=` menor, maior, menor ou igual, maior ou igual que  
 
 Os operadores de comparação `==, !=, <, >, <=, >=` podem ser usados para fazer comparações de números (ou vectores de números)
 
@@ -209,6 +209,7 @@ X >= X
 Y <= Y
 ```
 
+
 <div class="exercise-box">
 Exercício: Completar o código abaixo (preenchendo os ___) para guardar o resultado de calcular quántos dos elementos de Y são iguais aos do X.
 ```{r logic4, exercise=TRUE}
@@ -220,7 +221,6 @@ ___(C)
 </div>
 
 <div class="observation-box">Obs: quando ver um traço longo `___` no código, isto indica que é um espaço reservado para você completar com o seu código. Você pode substituir `___` por qualquer valor, função ou operação que desejar.</div>
-</div>
 
 ```{r logic4-hint-1}
 # **Dica:** no tutorial anterior ([base R (Pt)] (https://peteryoung.shinyapps.io/tutorial-base-R)) veemos que podemos 
@@ -349,6 +349,7 @@ Neste último caso, as.logical(-2) converteu -2 em TRUE, porque qualquer número
 
 Por isso, devemos ter cuidado quando tratar números como se fossem valores lógicos.
 
+
 ### Ordem de operações
 
 Os operadores são avaliadas em ordem de prioridade, assim:
@@ -418,7 +419,7 @@ question("Qual e o tipo desta expressão? 3*TRUE",
          answer("NA"))
 ```
 
-</div>
+</div> 
 
 ## Dados em falta
 
@@ -495,6 +496,7 @@ Muitas funções no R possuiem opções para excluir os valores em falta do cál
 usamos a opção `na.rm=TRUE`.
 
 ## Sequências
+
 Podemos criar sequências de números com a função `seq()`, ou com o operador `:`, ou com a função `rep()`.
 
 ```{r seq, echo=TRUE}
@@ -506,6 +508,7 @@ rep(1, 5)          # repetir 1 cinco vezes
 rep(c(1, 2), 3)    # repetir o vector c(1, 2) três vezes
 rep(c(1, 2), each = 3) # repetir cada elemento do vector c(1, 2) três vezes
 ```
+
 <div class="exercise-box">
 Exercício: Alterar o código abaixo para criar uma sequência de números de 5 a 50, de 5 em 5.
 ```{r seq1, exercise=TRUE}
@@ -720,7 +723,7 @@ grade_this({
 })
 ```
 
-## Resumo estatistico básico
+## Resumo estatístico básico
 
 Podemos usar funções básicas do R para calcular estatísticas descritivas de um vector numérico. Algumas das funções mais comuns são:  
 * `mean(x)` - média  
@@ -751,7 +754,7 @@ quantile(x, probs = c(0.25, 0.5, 0.75), na.rm = TRUE) # quantis (ignorando NA)
 summary(x, na.rm=TRUE)
 ```
 
-## Tabulação
+### Tabulação
 
 Podemos tabular dados de forma univariada, bivariada, ou mais variaveis.
 
