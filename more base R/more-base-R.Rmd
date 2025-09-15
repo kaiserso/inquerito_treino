@@ -121,7 +121,7 @@ A | B
 
 Agora com vectores:
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, error=TRUE}
 A <- c(T, F) # podem ser abreviados TRUE (T) ou FALSE (F), embora corre 
 B <- c(T, T) # o risco de confudir com variáveis com o mesmo nome
 A && B       # erro, && não funciona para comparar vectores
@@ -155,7 +155,7 @@ Exercício: A expressão abaixo produz TRUE se ou A é B sejam ambos TRUE. Alter
 ```{r logic2, exercise=TRUE, exercise.preload=TRUE}
 A <- c(TRUE, TRUE)
 B <- c(TRUE, FALSE)
-C <- A && B
+C <- A & B
 C
 ```
 </div>
