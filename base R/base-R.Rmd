@@ -31,7 +31,8 @@ randomencouragement <- function() {
 
 ```{r logo, echo=FALSE, results='asis'}
 
-htmltools::tags$style(HTML("
+htmltools::tags$style(
+  htmltools::HTML("
   h1 {
     color: navy;
   }
@@ -635,7 +636,7 @@ Parabens! Se chegou até aqui quer dizer que conseguiu completar o tutorial. Est
 
 [Tutorial base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)  
 [Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/tutorial-more-base-R)  
-<!-- [Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R)  -->
+[Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R)
 
 #### Recursos adicionais sobre R:  
 
