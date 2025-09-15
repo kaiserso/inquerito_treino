@@ -112,10 +112,10 @@ O **tidy R** é uma abordagem para trabalhar com dados no R que enfatiza a clare
 
 ## Os tibbles
 
-Um **tibble** é uma versão moderna de um data frame no R. Ele é parte do tidyverse e oferece várias vantagens sobre os data frames tradicionais:
-* **Impressão mais limpa**: Tibbles exibem apenas as primeiras linhas e colunas, evitando a sobrecarga visual.
-* **Tipos de dados explícitos**: Tibbles mantêm os tipos de dados de forma mais explícita, o que ajuda a evitar erros.
-* **Subconjunto seguro**: Tibbles não permitem a subconfiguração de colunas que não existem, o que ajuda a evitar erros comuns.
+Um **tibble** é uma versão moderna de um data frame no R. Ele é parte do tidyverse e oferece várias vantagens sobre os data frames tradicionais:  
+* **Impressão mais limpa**: Tibbles exibem apenas as primeiras linhas e colunas, evitando a sobrecarga visual.  
+* **Tipos de dados explícitos**: Tibbles mantêm os tipos de dados de forma mais explícita, o que ajuda a evitar erros.  
+* **Subconjunto seguro**: Tibbles não permitem a subconfiguração de colunas que não existem, o que ajuda a evitar erros comuns.  
 
 Vamos ver um exemplo de uma tabela que resultou de um inquerito populacional, com dados demograficos sobre alguns dos
 participantes.
@@ -200,13 +200,13 @@ filter(pers, ___)
 </div>
 ```{r func1-check}
 grade_this({
-  if(identical(.result, pers |> filter(idade > 11)))) {
+  if(identical(.result, pers |> filter(idade > 11))) {
     pass(randompraise())
   }
   fail(randomencouragement())
 })
 ```
-<div id="func1-hint-1">
+<div id="func1-hint">
 **Dica:** lembra que as operadores de comparação são `<, >, >=, <=, ==, !=`.
 </div>
 
@@ -301,6 +301,11 @@ Exercício: calcular a idade media das pessoas que recusaram em participar no in
 x <- filter(pers, ___)
 summarize(x, ___)
 ```
+
+<div id="func4-hint">
+**Dica:** primeiro filtar para identificar os casos de recusa, depois agregar a idade usando summarize()
+</div>
+
 </div>
 ```{r func4-check}
 grade_this({
@@ -311,9 +316,6 @@ grade_this({
 })
 ```
 
-<div id="func4-hint">
-**Dica:** primeiro filtar para identificar os casos de recusa, depois agregar a idade usando summarize()
-</div>
 
 <div class="exercise-box">
 
