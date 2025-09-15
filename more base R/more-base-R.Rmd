@@ -89,24 +89,32 @@ Neste tutorial, poderá completar alguns exercícios para reforçar conceitos ta
 * Manipulação de strings  
 * Resumo estatístico básico
 
-## Operações lógicas
+## Operações lógicas e de comparação
 
-Os operadores lógicas no R são: `&, |, !, ==, !=, <, >, <=, >=`. Estes operadores são usados para comparar valores lógicos e retornar um valor lógico (TRUE - verdadeiro, ou FALSE - falso). O significado de cada um:
+Os operadores lógicos no R são: `&, |, !, ==, !=, <, >, <=, >=`. Estes operadores são usados para comparar valores lógicos e retornar um valor lógico (TRUE - verdadeiro, ou FALSE - falso). 
 
-* `&` e
-* `|` ou-
-* `!` negação
+### Operadores lógicos 
+
+Os operadores lógicos são usados para formar expressões cujo resultado e verdadeiro (TRUE) e falso (FALSE).
+
+O significado de cada um:
+
+* `&` (e `&&`) - e (AND)  
+* `|` (e `||`) - ou (OR)  
+* `!` - negação (NOT) 
 
 Por exemplo, a expressão `A & B` é TRUE se A e B ambos são TRUE, caso contrário é FALSE.  `A | B` é TRUE se ou A ou B é TRUE, caso contrário e FALSE, etc. O `!` nega ou inverte o valor de qualquer expressão lógica, por exemplo `!TRUE` é FALSE é `!FALSE` é TRUE.
 
-No caso de comparação que envolve um vector, o resultado seria um vector de valores lógicos.
+No caso de comparação que envolve um vector, se usamos as versões `|` e `&&`, o resultado seria um vector de valores lógicos. Os operadores `||` e `&&` somente funcionam com valores escalares, e sempre devolvem um único valor.
 
 Alguns exemplos de expressões lógicas:
 
 ```{r, echo=TRUE}
 A <- TRUE
 B <- FALSE
-A & B
+A && B
+A & B        # neste caso, nao há diferença entre & e &&
+A || B
 A | B
 !A
 ```
@@ -114,8 +122,9 @@ A | B
 Agora com vectores:
 
 ```{r, echo=TRUE}
-A <- c(T, F) # podem ser abreviados TRUE (T) ou FALSE (F), embora corre risco de confudir com variáveis com mesmo nome
-B <- c(T, T)
+A <- c(T, F) # podem ser abreviados TRUE (T) ou FALSE (F), embora corre 
+B <- c(T, T) # o risco de confudir com variáveis com o mesmo nome
+A && B       # erro, && não funciona para comparar vectores
 A & B
 A | B
 !A
@@ -127,7 +136,7 @@ Exercício: A expressão abaixo produz TRUE se ou A ou B ou ambos sejam TRUE. Al
 ```{r logic1, exercise=TRUE, exercise.preload=TRUE}
 A <- TRUE
 B <- FALSE
-C <- A | B
+C <- A || B
 C
 ```
 </div>
@@ -146,7 +155,7 @@ Exercício: A expressão abaixo produz TRUE se ou A é B sejam ambos TRUE. Alter
 ```{r logic2, exercise=TRUE, exercise.preload=TRUE}
 A <- c(TRUE, TRUE)
 B <- c(TRUE, FALSE)
-C <- A & B
+C <- A && B
 C
 ```
 </div>
@@ -159,7 +168,7 @@ grade_this({
 })
 ```
 
-## Operadores de comparação
+### Operadores de comparação
 
 Os operadores de comparação são `==, !=, <, >, <=, >=`. Estes operadores são usados para comparar valores e retornar um (ou mais) valor(es) lógico(s) (TRUE - verdadeiro, ou FALSE - falso). O significado de cada um:
 
@@ -425,7 +434,7 @@ question("Qual e o tipo desta expressão? 3*TRUE",
 
 A gestão apropriada de dados em falta (ou missing, em inglês) e um tópico complexo. No entanto, para este tutorial, vamos concentrar em alguns aspectos operacionais sobre o comportamento de operadores e funções quando enfrentados com dados em falta, e como detectar e manipula-los.
 
-O símbolo no R para um valor em falta é `NA`. O `NA` indica a ausencia de uma observação. A maioria das funções consideram o resultado de qualquer operação que envolve `NA` também `NA`. Isto e lógico, por exemplo qual seria o resultado de somar 10 com um valor desconhecido? É desconhecido!
+O símbolo no R para um valor em falta é `NA` (not available). O `NA` indica a ausencia de uma observação. A maioria das funções consideram o resultado de qualquer operação que envolve `NA` também `NA`. Isto e lógico, por exemplo qual seria o resultado de somar 10 com um valor desconhecido? É desconhecido!
 
 ```{r na, echo=TRUE}
 X <- NA
@@ -756,7 +765,7 @@ summary(x, na.rm=TRUE)
 
 ### Tabulação
 
-Podemos tabular dados de forma univariada, bivariada, ou mais variaveis.
+Podemos tabular dados de forma univariada, bivariada, ou mais variáveis.
 
 * `table(x)` - tabela de frequências (para variáveis categóricas)  
 * `prop.table(table(x))` - tabela de proporções (para variáveis categóricas) 
@@ -771,7 +780,7 @@ table(sexo)
 ```
 
 <div class="observation-box">
-Obs: Diferente das funcoes acima, NA são excluidas por omissão das funções table() e prop.table(). Podemos incluir os NA com a opção useNA="ifany" ou useNA="always".
+Obs: Diferente das funções acima, NA são excluidas por omissão das funções table() e prop.table(). Podemos incluir os NA com a opção useNA="ifany" ou useNA="always".
 </div>
 
 Podemos fazer tabelas cruzadas (bivariadas) com a função table(x, y), onde x e y são vectores de mesma longitud.
