@@ -192,7 +192,7 @@ filter(pers, idade > 20)
 
 <div class="exercise-box">
 
-Exercício: Filtrar as observações para somente incluir as com mais de 11 anos de idade.
+Exercício: Filtrar as observações para somente incluir as com mais de 21 anos de idade.
 
 ```{r func1, exercise=TRUE}
 filter(pers, ___)
@@ -200,7 +200,7 @@ filter(pers, ___)
 </div>
 ```{r func1-check}
 grade_this({
-  if(identical(.result, pers |> filter(idade > 11))) {
+  if(identical(.result, pers |> filter(idade > 21))) {
     pass(randompraise())
   }
   fail(randomencouragement())
@@ -222,8 +222,7 @@ select(pers, c(personid, status))
 
 <div class="exercise-box">
 
-Exercício: seleccionar personid para as observações com mais de 11 anos de educação. Por enquanto,
-vamos usar um tibble temporário x para guardar o resultado do filter, depois usar select() para extrair a variável personid.
+Exercício: seleccionar personid para as observações com mais de 11 anos de educação. Por enquanto, vamos usar um tibble temporário x para guardar o resultado do filter, depois usar select() para extrair a variável personid.
 
 ```{r func2, exercise=TRUE}
 x <- filter(pers, ___)
@@ -368,7 +367,7 @@ Doutro lado, se queremos implementar a mesma no base R, teriamos que fazer algum
 Acho que muitos iam concordar de que o código com pipes é mais linear, mais legível e natural que o seu equivalente no base R.
 
 <div class="exercise-box"> 
-Exercício: filtre a tabela pers para incluir somente participantes com idade acima de 6 anos, ordena por personid em ordem crescente, e seleccione as variáveis idade e edu_yrs. Use pipes para fazer isto.
+Exercício: filtre a tabela pers para incluir somente participantes com idade acima de 21 anos, ordena por personid em ordem crescente, e seleccione as variáveis idade e edu_yrs. Use pipes para fazer isto.
 
 ```{r, pipe3, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
 pers |> ___             # seu codigo aqui
@@ -377,8 +376,8 @@ pers |> ___             # seu codigo aqui
 </div>
 ```{r pipe3-check}
 grade_this({
-  if(identical(.result, pers %>% filter(idade > 6) %>% arrange(personid) %>% select(idade, edu_yrs))) {
-    pass("Parabéns! Viu que foi necessário ordenar antes de seleccionar, para ter acesso à variável hp na ordenação.")
+  if(identical(.result, pers %>% filter(idade > 21) %>% arrange(personid) %>% select(idade, edu_yrs))) {
+    pass("Parabéns! Viu que foi necessário ordenar antes de seleccionar, para ter acesso à variável personid na ordenação.")
   }
   fail(randomencouragement())
 })
