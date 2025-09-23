@@ -28,6 +28,12 @@ randomencouragement <- function() {
   encouragement[runif(1, 1, length(encouragement))]
 }
 
+# Custom print function
+print_grouped_tibble <- function(tbl) {
+  print(tbl)
+  cat("Groups: ", paste(unique(attr(tbl, "group")), collapse = ", "), "\n")
+}
+
 # data available to all exercises...
 pers <- tibble(personid = c(5001:5009),
                idade = c(rep(c(20,34), 4), 55),
@@ -129,7 +135,6 @@ pers <- tibble(personid = c(5001:5009),
                status = c(rep("I", 7), rep("R", 2)))
 pers
 ```
-
 
 Como podem ver, a aparencia é similar a um data frame, mas é acompanhada por o tipo de cada variável e o numero de linhas no fim.
 
@@ -400,7 +405,7 @@ Antes de continuar, vamos analizar alguns aspectos do exercício anterior. Prime
 Agora vamos aprender como calcular estatísticas sobre dados agrupados.  Podemos usar group_by para criar grupos nos dados:
 
 ```{r, echo=TRUE}
-pers |> group_by(householdid)
+pers |> group_by(householdid) |> print_grouped_tibble()
 ```
 
 Notou a linha `# Groups:   householdid [5]`? Isto indica que os dados agora são agrupados, embora o agrupamento somente tem valor prático quando usamos num comando subsequente:
