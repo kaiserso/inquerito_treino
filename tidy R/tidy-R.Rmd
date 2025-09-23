@@ -36,7 +36,7 @@ print_grouped_tibble <- function(tbl) {
 
 # data available to all exercises...
 pers <- tibble(personid = c(5001:5009),
-               idade = c(rep(c(20,34), 4), 55),
+               idade = c(rep(c(20,34,46,17), 2), 55),
                householdid = c(rep(c(1000, 1001), each=2),
                                2002, rep(2003, 3), 2005),
                edu_yrs = seq(1, 18, by=2),
@@ -97,8 +97,6 @@ Neste tutorial, poderá completar alguns exercícios para aprender e reforçar c
 * mutate        
 * arrange       
 * group_by e summarise        
-* ggplot        
-* tbl_summary e tbl_regression        
 
 ### O que é o tidyverse?
 
@@ -128,7 +126,7 @@ participantes.
 
 ```{r, tibble, echo=TRUE}
 pers <- tibble(personid = c(5001:5009),
-               idade = c(rep(c(20,34), 4), 55),
+               idade = c(rep(c(20,34,46,17), 2), 55),
                householdid = c(rep(c(1000, 1001), each=2),
                                2002, rep(2003, 3), 2005),
                edu_yrs = seq(1, 18, by=2),
@@ -246,7 +244,7 @@ grade_this({
 
 ### arrange()
 
-Arrange e similar a 'order', e usado para reordenar as linhas em função de alguma expressão tipicamente em base nas variáveis no tibble.
+`arrange()` e similar a `order()`, e usado para reordenar as linhas em função de alguma expressão tipicamente em base nas variáveis no tibble.
 
 ```{r, echo=TRUE}
 # arrange - ordenar linhas
@@ -283,18 +281,17 @@ grade_this({
 
 ### summarize() ou summarise()
 
-summarise() é usado para calcular estatísticas resumidas. utilise funções como mean(), sum(), min(), max(), n() (número de observações) e n_distinct() (número de valores distintos).
+summarise() é usado para calcular estatísticas resumidas. Utilise funções como mean(), sum(), min(), max(), n() (número de observações) e n_distinct() (número de valores distintos).
 
 ```{r, echo=TRUE}
 # summarise - agregar dados
 summarise(pers, total = sum(idade))  
 ```
 
-Notou que o resultado é um tibble com uma única linha e coluna? Isto é porque summarize() reduz as dimensões do resultado.
+Notou que o resultado é um tibble com uma única linha e coluna? Isto é porque `summarize()` reduz as dimensões do resultado.
 
 <div class="observation-box">
-Obs: summarize() geralmente reduz as dimenções do resultado, neste caso, somente retorno um tibble
- com uma única linha e coluna.
+Obs: `summarize()` geralmente reduz as dimenções do resultado, neste caso, retorna um tibble com uma única linha e coluna.
 </div>
 
 <div class="exercise-box">
@@ -313,7 +310,7 @@ summarize(x, ___)
 </div>
 ```{r func4-check}
 grade_this({
-  if(identical(.result, 44.5) || (is_tibble(.result) && identical(.result[[1]], 44.5))) {
+  if(identical(.result, 36) || (is_tibble(.result) && identical(.result[[1]], 36))) {
     pass(randompraise())
   }
   fail(randomencouragement())
@@ -372,7 +369,7 @@ Doutro lado, se queremos implementar a mesma no base R, teriamos que fazer algum
 Acho que muitos iam concordar de que o código com pipes é mais linear, mais legível e natural que o seu equivalente no base R.
 
 <div class="exercise-box"> 
-Exercício: filtre a tabela pers para incluir somente participantes com idade acima de 21 anos, ordena por personid em ordem crescente, e seleccione as variáveis idade e edu_yrs. Use pipes para fazer isto.
+Exercício: filtre a tabela pers para incluir somente participantes com idade acima de 21 anos. Use pipes para fazer isto.
 
 ```{r, pipe3, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
 pers |> ___             # seu codigo aqui
@@ -381,6 +378,25 @@ pers |> ___             # seu codigo aqui
 </div>
 ```{r pipe3-check}
 grade_this({
+  if(identical(.result, pers %>% filter(idade > 21))) {
+    pass("Parabéns!")
+  }
+  fail("Notou que o tibble aparece antes do pipe `|>` e portanto nao precisa ser incluido nos argumentos a `filter()`?")
+})
+```
+
+Os pipes sao realmente uteis quando envolvem vários segmentos em seguida. Vamos fazer agora mais um exercício para por isso na prática.
+
+<div class="exercise-box"> 
+Exercício: filtre a tabela pers para incluir somente participantes com idade acima de 21 anos, ordena por personid em ordem crescente, e seleccione as variáveis idade e edu_yrs. Use pipes para fazer isto.
+
+```{r, pipe4, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
+pers |> ___             # seu codigo aqui
+```
+
+</div>
+```{r pipe4-check}
+grade_this({
   if(identical(.result, pers %>% filter(idade > 21) %>% arrange(personid) %>% select(idade, edu_yrs))) {
     pass("Parabéns! Viu que foi necessário ordenar antes de seleccionar, para ter acesso à variável personid na ordenação.")
   }
@@ -388,12 +404,12 @@ grade_this({
 })
 ```
 
-```{r pipe3-hint-1}
+```{r pipe4-hint-1}
 # Sendo que queremos ordenar por personid, e importante ordenar antes de seleccionar, caso contrário, a variável personid não estará disponível para ordenar. 
 pers
 ```
 
-```{r pipe3-hint-2}
+```{r pipe4-hint-2}
 # Mais uma dica: você pode usar `filter` para filtrar os dados, `arrange` para ordenar e `select` para escolher as variáveis que deseja manter.
 pers |> filter(___) |> arrange(__) |> select(___)
 ```
@@ -408,13 +424,15 @@ Agora vamos aprender como calcular estatísticas sobre dados agrupados.  Podemos
 pers |> group_by(householdid) |> print_grouped_tibble()
 ```
 
-Notou a linha `# Groups:   householdid [5]`? Isto indica que os dados agora são agrupados, embora o agrupamento somente tem valor prático quando usamos num comando subsequente:
+Notou a linha `# Groups:   householdid [5]`? Isto indica que os dados agora são agrupados, embora o agrupamento somente tem valor prático quando usamos num comando subsequente (salienter que o pacote que usamos para desenvolver este tutorial (learnr) esconde a informação sobre grupos quando imprimir um tibble, por isso usamos uma função especial `print_grouped_tibble()` para poder visualizar os resultados).
+
+O grupo so tem efeito quando aplicamos uma função que utilise os grupos, como `summarize()`:
 
 ```{r, echo=TRUE}
 pers |> group_by(householdid) |> summarize(idade_media = mean(idade))
 ```
 
-O resultado é um tibble com a media de mpg para cada grupo. Os resultados incluem as variáveis de agrupamento, junto com as novas variáveis criadas pelos comandos que aparecem no summarize.
+O resultado é um tibble com a media de idade para cada grupo. Os resultados incluem as variáveis de agrupamento, junto com as novas variáveis criadas pelos comandos que aparecem no summarize.
 
 Podemos fazer mais de que um comando ao mesmo tempo, e podemos criar grupos sobre combinações de variáveis, por exemplo a idade (anos) media, e o número de observações para cada agregado incluido:
 
@@ -450,7 +468,8 @@ Durante a limpeza e preparação de dados para análise, com frequencia queremos
 Todas estas funções devolvem um valor para cada observação, mas o valor devolvido pode ser determinado pelos valores de outros variáveis dentro da observação. Vamos ver um exemplo.
 
 <div class="observation-box">
-Obs: Ao longo desta secção vamos criar novos tibbles cada vez que alteramos os dados (pers1, pers2, pers3, ...). Isto ajuda a reproducibilidade do código.
+Obs: Ao longo desta secção vamos criar novos tibbles cada vez que alteramos os dados (pers1, pers2, pers3, ...). Isto evite com que tenhamos que repetir os códigos anteriores cada vez. Ajude-nos neste tutorial a ver como o tibble está a progredir. No futuro, podemos juntar os pipes assim evitando a necessidade de criar tibbles intermediários.
+
 </div>
 
 Lembra que na tabela pers, a variável status indica "I" para entrevistado e "R" para recusa:
@@ -482,7 +501,7 @@ pers1
 
 <div class="exercise-box">
 
-Exercício: imagina que durante a verificação de dados descubriu-se um erro de digitação, que resultou no personid 5090 ser entrada como 5009. Use if_else para corregir o personid da linha 9 (actualmente 5009) para 5090, guardando o resultado novamente no pers.
+Exercício: imagina que durante a verificação de dados descubriu-se um erro de digitação, que resultou no personid 5090 ser entrada como 5009. Use if_else para corregir o personid da linha 9 (actualmente 5009) para 5090, guardando o resultado no pers2.
 
 ```{r mutate3-setup}
 # note, a limitation of learnr is that if you treat a prior chunk as a setup chunk (e.g. mutate2) it is not displayed.
@@ -499,6 +518,10 @@ pers2 <- pers1 |> mutate(personid = if_else(___))
 grade_this({
   if(identical(.result, pers1 |> mutate(personid = if_else(personid == 5009, 5090, personid)))) {
     pass(randompraise())
+  }
+  if(identical(filter(.result, householdid==2005) |> 
+               select(personid) |> pull(), as.integer(0))) {
+    fail("cuidado! verifique o uso de '=' e '==' na sua resposta e tente de novo")
   }
   fail(randomencouragement())
 })
@@ -538,16 +561,16 @@ pers2 |> mutate(status3 = case_match(status2,
                                             "R" ~ "Recusa", 
                                             .default = "Ineligivel")) # nao ideal, presume muito
 ```
-Vamos guardar o resultado no tibble pers.
+Vamos guardar o resultado no tibble pers3.
 
-```{r mutate6}
+.default e muito flexivel, mas as vezes é flexivel de mais. Se houvesse um erro de digitação na variável status2, por exemplo "X", o resultado seria "Ineligivel", o que não é correto. Melhor é listar todas as possibilidades, assim qualquer valor inesperado vira NA.
+
+```{r mutate6, echo=TRUE}
 pers3 <- pers2 |> mutate(status3 = case_match(status2,
                                               "I" ~ "Entrevistado",
                                               "R" ~ "Recusa", 
                                               "U" ~ "Ineligivel")) # um pouco melhor
 ```
-
-.default e muito flexivel, mas as vezes é flexivel de mais. Se houvesse um erro de digitação na variável status2, por exemplo "X", o resultado seria "Ineligivel", o que não é correto. Melhor é listar todas as possibilidades, assim qualquer valor inesperado vira NA.
 
 <div class="exercise-box">
 
@@ -665,7 +688,8 @@ Agora vamos sintetizar o nosso conhecimento, juntando as várias ferramentas que
 
 <div class="exercise-box">
 
-Exercício: cria um 'tubo' (pipe) que cria uma nova variável 'globalid' que concatena householdid e personid, depois filtrar para os que tem >5 anos de educação e responderam ao inquérito, e seleccionar as variáveis globalid, faixa etaria, e edu_yrs. Ordena o resultado pela idade do participante.
+Exercício: Começando com pers6, cria um 'tubo' (pipe) que cria uma nova variável 'idade_cat2' que agrupa os respondentes por 15-24, 25-34, 35-44, 45+ anos. Salve o resultado em pers7.
+
 
 ```{r all-setup, exercise.setup="mutate10-setup"}
 pers6 <-
@@ -674,12 +698,60 @@ pers6 <-
 ```
 
 ```{r all, exercise=TRUE}
+pers7 <- pers6 |> ___
 ```
 
 </div>
+
 ```{r all-check}
 grade_this({
-  if(identical(.result, pers6 |> mutate(globalid = paste0(householdid, personid)) |> 
+  if(identical(.result, pers6 |> mutate(idade_cat2 = case_when(idade < 25 ~ "15-24",
+                                         idade < 35 ~ "25-34",
+                                         idade < 45 ~ "35-44",
+                                         !is.na(idade) ~ "45+")))) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+```{r all-hint-1}
+# para introduzir logica condicional, devemos considerar if_else, case_which e case_when
+pers7 <- pers6 |> mutate(idade_cat2 = case_when(___))
+```
+```{r all-hint-2}
+# Sendo que queremos definir multiplos intervalos, case_when seria o mais apropriado. 
+pers7 <- pers6 |> mutate(idade_cat2 = case_when(idade < 25 ~ "15-34", ___))
+```
+```{r all-hint-3}
+# para evitar que os sem idade sejam agrupados no grupo 35-44 anos, podemos usar !is.na()
+# na condicao final.
+pers7 <- pers6 |> mutate(idade_cat2 = case_when(idade < 25 ~ "15-24",
+                                                idade < 35 ~ "25-34",
+                                                idade < 45 ~ "35-44",
+                                                !is.na(idade) ~ "45+"))
+```
+
+<div class="exercise-box">
+
+Exercício: Começando com pers7, cria um 'tubo' (pipe) que cria uma nova variável 'globalid' que concatena householdid e personid, depois filtrar para os que tem >5 anos de educação e responderam ao inquérito, e seleccionar as variáveis globalid, faixa etaria, e edu_yrs. Ordena o resultado pela idade do participante.
+
+```{r all1-setup, exercise.setup="all-setup"}
+pers7 <-
+  pers6 |> mutate(idade_cat2 = case_when(idade < 25 ~ "15-24",
+                                         idade < 35 ~ "25-34",
+                                         idade < 45 ~ "35-44",
+                                         !is.na(idade) ~ "45+"))
+```
+
+```{r all1, exercise=TRUE}
+pers7 |> ___
+```
+
+</div>
+```{r all1-check}
+grade_this({
+  if(identical(.result, pers7 |> mutate(globalid = paste0(householdid, personid)) |> 
                filter(edu_yrs > 5 & status == "I") |>  
                arrange(idade) |> select(globalid, idade_cat, edu_yrs))) {
     pass(randompraise())
@@ -688,26 +760,26 @@ grade_this({
 })
 ```
 
-```{r all-hint-1}
+```{r all1-hint-1}
 # Pode lembrar que paste0() é a função que faz concatenação de variáveis de tipo 'char' (sem separador), 
 # neste caso, householdid e personid vao ser 'promovidos' de numerico a string antes da concatenação
-pers6 |> mutate(globalid = paste0(householdid, personid)) 
+pers7 |> mutate(globalid = paste0(householdid, personid)) 
 ```
-```{r all-hint-2}
+```{r all1-hint-2}
 # Lembre que filter() faz a selecção de linhas. Se queremos combinar condições, podemos fazer com "&"
-pers6 |> mutate(globalid = paste0(householdid, personid)) |> 
+pers7 |> mutate(globalid = paste0(householdid, personid)) |> 
     filter(edu_yrs > 5 & status == "I")
 ```
-```{r all-hint-3}
+```{r all1-hint-3}
 # Lembre que arrange() ordena as linhas segundo o critério. é importante ordenar antes de seleccionar
 # neste caso, porque depois de seleccionar, idade já não estara disponível
-pers6 |> mutate(globalid = paste0(householdid, personid)) |> 
+pers7 |> mutate(globalid = paste0(householdid, personid)) |> 
     filter(edu_yrs > 5 & status == "I") |>  
     arrange(idade)
 ```
-```{r all-hint-4}
+```{r all1-hint-4}
 # Lembre que select() é utilizado para seleccionar variáveis
-pers6 |> mutate(globalid = paste0(householdid, personid)) |> 
+pers7 |> mutate(globalid = paste0(householdid, personid)) |> 
     filter(edu_yrs > 5 & status == "I") |>  
     arrange(idade) |> 
     select(globalid, idade_cat, edu_yrs)
