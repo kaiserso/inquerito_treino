@@ -682,7 +682,7 @@ pers6 <- pers5 |> mutate(idade_cat =
                            case_when(idade < 25 ~ "<25",
                                      idade >= 25 & idade < 50 ~ "25-49"))
 ```
-## Síntese
+## Integrando tudo
 
 Agora vamos sintetizar o nosso conhecimento, juntando as várias ferramentas que aprendemos até agora.
 
@@ -809,6 +809,6 @@ Parabens! Se chegou até aqui quer dizer que conseguiu completar o tutorial. Est
 
 Específicamente sobre o tidyverse:
 
-[R for data science (En)](https://www.tidyverse.org/learn/)
+[R for data science (En)](https://www.tidyverse.org/learn/)  
 [ggplot2: elegant graphics for data analysis (En)](https://ggplot2-book.org/)
 
