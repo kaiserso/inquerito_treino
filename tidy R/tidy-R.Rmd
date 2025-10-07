@@ -787,6 +787,50 @@ pers7 |> mutate(globalid = paste0(householdid, personid)) |>
 
 <div class="observation-box">Obs: Para refrescar a memória sobre a concatenação de char ou outros conceitos de R básico, pode ver [Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/tutorial-more-base-R)</div>
 
+## Exemplo prático
+
+É frequente nos inquéritos que precisamos calcular um indicador de interesse em base de várias perguntas ou variáveis separadas na base de dados. Por exemplo, se queremos saber "qual é a proporção da amostra que foi vacinada alguma vez contra COVID-19?" E "qual a proporção que teve 2+ doses de vacina para COVID-19 no último ano?" pode ser necessario conjugar respostas das seguintes perguntas:  
+* Já teve vacina de COVID-19?  
+* Se teve vacina, teve no último ano?  
+* Se teve no último ano, quantas vezes teve no último ano?  
+
+Também, deve considerar as recusas e os que não se lembram. O desafío é: Como codificar cada cenário para a **sua** analise?
+
+
+```{r skip1, echo=FALSE}
+shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/10/skip.png", alt = "A diagram illustrating a fragment of a COVID-19 related questionnaire", 
+height = "350px")
+```
+
+Notou que alem das perguntas e respostas codificadas, temos uma coluna adicional com instruções ao inquiridor sobre os saltos condicionais (skip patterns em inglês) necessárias para implementar a lógica do questionário.  Estes saltos representam a relação lógica entre as perguntas.
+
+Os resultados para estas perguntas poderiam ser representadas desta maneira numa base de dados (incluindo aqui a parte que nos interesa sobre vacinacão):
+
+```{r skip2, echo=TRUE, }
+saltos <- tibble(partno = 1:7,
+                 q101 = c(1, -8, 1, 2, 1, 1, 1), 
+                 q102 = c(2, NA, 1, NA, 1, -9, 1), 
+                 q103 = c(NA, NA, 3, NA, 88, NA, 2))
+saltos
+```
+
+Rever o exemplo do tibble `saltos`. Porque estão codificados como NA as perguntas q102, e 103 em alguns casos? É porque a pergunta não foi feita. Isto é diferente do caso da pergunta q101 participante número 2, codificado como -8. Neste caso, a pergunta foi feita, mas o participante recusou em responder, ou no caso de q102 para participante número 6, onde ele respondeu que não sabia a resposta (-9).  Embora os saltos não aparecem de forma explícita no tibble, são implícitos nos padrões de respostas encontradas.
+
+Então como podemos criar um novo indicador para capturar o conceito que corresponde a nossa pergunta de pesquisa?  Uma alternativa no espirito do Tidy R seria:
+
+```{r skip3, echo=TRUE, }
+saltos <- saltos |> 
+		mutate(evervac = if_else(q101 < 0, NA, q101),
+           numvac = case_when(q101 == 2 | q102 == 2 ~ 0, 
+					     q103 > 87 ~ NA, 
+					     TRUE ~ q103))
+saltos
+```
+
+Pode ver caso por caso e certificar se as respostas para `evervac` e `numvac` fazem sentido. `evervac` e sempre igual a q101, menos no caso que o participante não respondeu a esta pergunta. Neste caso, e NA (participante 2).
+
+`numvac` e igual a q103. No entanto, se o respondente disse que não foi vacinado contra o COVID, ou se não foi vacinado nos últimos 12 meses, consideramos que recebeu 0 doses nos últimos 12 meses (participante 4). Se foi vacinado, mas não durante os últimos 12 meses, também consideramos que recebeu 0 doses nos últimos 12 meses (participante 1). Doutro lado, se recusou em responder ou disse que não sabia se foi vacinada nos últimos 12 meses ou quantos doses recebeu, consideramos NA (participantes 2, 5, 6).
+
 ## Recursos adicionais
 
 Parabens! Se chegou até aqui quer dizer que conseguiu completar o tutorial. Esta convidado para continuar a sua aprendizagem.
