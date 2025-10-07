@@ -1,6 +1,6 @@
 ---
 title: "Tutorial: more tidy R"
-utput: 
+output: 
   learnr::tutorial:
     progressive: true
     allow_skip: true
@@ -100,7 +100,7 @@ Neste tutorial, poderá completar alguns exercícios para aprender e reforçar c
 * graficos com ggplot2
 * tabelas com tbl_summary
 
-### Combinar tibbles
+## Como combinar tibbles
 
 Imagina que depois de realisar um inquérito comunitário, a nossa base de dados tem três tabelas: um com dados sobre os participantes, um com o estado final de entrevista dos agregados familiares selecionadas, e um com dados sobre o estado final das entrevistas:
 
@@ -119,7 +119,7 @@ Para apresentar os resultados do inquérito, é provavel que íamos precisar de 
 
 Nesta secção vamos aprender como juntar tabelas para poder responder a este tipo de pergunta.
 
-#### relações 1 a 1 entre tabelas
+### relações 1 a 1 entre tabelas
 
 Talvez a relação mais simples seja de 1 a 1. Nesta relação, cada observação na primeira tabela (tabela 'mãe') tem uma única observação na segunda tabela (tabela 'filha'). Este cenário de 1 a 1 e
 
@@ -128,7 +128,7 @@ shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/09/join2.pn
 height = "300px")
 ```
 
-#### relações 1 a N entre tabelas
+### relações 1 a N entre tabelas
 
 No entanto, podemos ter casos especiais, como a ausencia de um observação filha (1 a 0) ou ausencia de observação mãe correspondente a uma observação filha (0 a 1), ou seja uma observação orfão. Ou, podemos ter uma situação onde podemos ter nenhuma, uma ou mais de uma observações na tabela filha para cada observação mãe. Esta situação chamamos 1 a N.
 
@@ -139,19 +139,19 @@ height = "300px")
 
 Notou que neste exemplo, os dados da segunda tabela (sobre HH_status) foram repetidos para cada caso correspondente da primeira tabela? Isto acontece sempre que fazemos a uniao entre dois tabelas com uma relacao de multiplos ao um.
 
-#### relações N a N
+### relações N a N
 
 Finalmente, podemos ter situações ainda mais complexas, mas geralmente estas resultam de erros de desenho ou estruturação dos dados e devem ser evitadas, usando tabelas intermediarias. Por exemplo, a relação entre familias e escolas pode ser N a N, porque a mesma escola pode ter crianças de várias familias inscritas, e a mesma familia pode ter crianças inscritas em várias escolas. A solução e criar uma tabela de alunos que terá uma relação N a 1 com escolas e familias, ambas.
 
-#### variaveis chaves
+### variaveis chaves
 
 Para conseguir unir tabelas e importante defenir a chave, ou seja, a(s) coluna(s) presentes em ambas as tabelas que definem a relação entre eles. Por exemplo, o householdid foi usado para juntar o tibble 'listing' com o tibble 'hh_stat' nos exemplos acima. A mesma coluna aparecia em ambas as tabelas, neste caso, com nome identico embora não é obrigatorio que a chave tenha a mesma nome nas duas tabelas. 
 
-### as funções para unir dados
+## as funções para unir dados
 
 O tidyverse utilise inner_join, left_join(), right_join(), e full_join() para juntar tabelas.  Geralmente o processo e sequencial, ou seja, se querer juntar mais que duas tabelas, primeiro tem de escolher dois para juntar, depois, juntar o resultado do join com o tercero. O processo pode ser repetido para juntar mais tabelas. 
 
-#### inner_join
+### inner_join
 
 Um 'inner_join()' inclui todas as observações presentes em ambas as tabelas:
 
@@ -165,7 +165,7 @@ a |> inner_join(b)
 
 A linha com chave=1 na primeira tabela, e a linha com chave=4 na segunda tabela foram excluidas do resultado.
 
-#### left_join e right_join
+### left_join e right_join
 
 O left_join() inclui sempre todas as observações da primeira tabela, e somente as observações da segunda tabela que tiveram par no primeiro:
 
@@ -180,7 +180,7 @@ a |> right_join(b)
 
 A linha com chave=1 na primeira tabela, foi incluida, mas o valor correspondente da segunda tabela e `NA` por nao existir dados correspondentes. O right join faz o contrário.
 
-#### full_join
+### full_join
 
 Similar aos left_join e right_join, o full_join inclui todas as observacoes de ambas as tabelas, mesmo quando nao tem par:
 
@@ -192,7 +192,7 @@ a |> full_join(b)
 
 ```
 
-#### opções de join
+### opções de join
 
 Em casos onde as colunas tem nomes diferentes, podemos usar as opcoes para especificar as colunas relevantes:
 
@@ -221,7 +221,7 @@ b <- tibble(chave1 = c("Maria","Marcos","Joana"), chave2 = c("Gomes", "Tomas", "
 a |> left_join(b)
 ```
 
-#### advertencias 
+### advertencias 
 
 E importante tomar em conta alguns pontos quando fazer o join:
 * Especificar colunas  
@@ -257,20 +257,27 @@ nrow(c)
 
 ```
 
-### Exemplo concreto
+## Exemplos concretos de join
 
 Agora amos ver um exemplo concreto, queremos juntar o estado de cada entrevista de agregado familiar, depois, vamos juntar os dados dos agregados com as entrevistas individuais.
 
 <div class="exercise-box"> 
-Exercício: Utilise um join apropriado para combinar hh_stat com listing com finalidade de criar uma nova lista completa de participantes que inclui o estado de entrevista de agregado familiar correspondente.
+Exercício: Utilise um join apropriado para combinar hh_stat com listing com finalidade de criar uma nova lista completa de participantes que inclui o estado de entrevista de agregado familiar correspondente. 
 
-```{r, merge13, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
+A situacao e similar a situacao descrita nesta figura:
+
+```{r merge13, echo=FALSE}
+shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/09/join3.png", alt = "A diagram illustrating logical relationships between tables/tibbles", 
+height = "300px")
+```
+
+```{r, merge14, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
 listing |> ___(hh_stat)             
 ```
 
 </div>
 
-```{r merge13-check}
+```{r merge14-check}
 grade_this({
   if(identical(.result, left_join(listing, hh_stat))) {
     pass("Certo! O join apropriado e 'left_join' porque queremos a lista completa de pessoas. Neste caso, o inner_join tambem ia dar certo, sendo que o agregado de cada pessoa tem estado na tabela de hh_stat")
@@ -283,14 +290,18 @@ grade_this({
 ```
 
 <div class="exercise-box"> 
+
+LEFT OFF HERE
+
 Exercício: Utilise um join apropriado para combinar o resultado do exercicio passado com a tabela person_stat, para obter uma lista completa hh_stat com listing com finalidade de criar uma nova lista completa de participantes que inclui o estado de entrevista de agregado familiar correspondente.
 
-```{r, merge14, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
+```{r, merge16, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
 listing |> ___(hh_stat)             
 ```
 
 </div>
-```{r merge13-check}
+
+```{r merge16-check}
 grade_this({
   if(identical(.result, left_join(listing, hh_stat))) {
     pass("Certo! O join apropriado e 'left_join' porque queremos a lista completa de pessoas. Neste caso, o inner_join tambem ia dar certo, sendo que o agregado de cada pessoa tem estado na tabela de hh_stat")
@@ -315,6 +326,7 @@ Parabens! Se chegou até aqui quer dizer que conseguiu completar o tutorial. Est
 [Tutorial base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)  
 [Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/tutorial-more-base-R)  
 [Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R)  
+[Tutorial tidy R adicional (Pt)](https://peteryoung.shinyapps.io/tutorial-more-tidy-R)  
 
 #### Aqui estão alguns recursos adicionais para aprender mais sobre R:  
 
