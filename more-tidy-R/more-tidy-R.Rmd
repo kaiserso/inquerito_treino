@@ -1,0 +1,333 @@
+---
+title: "Tutorial: more tidy R"
+utput: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    language: pt
+runtime: shiny_prerendered
+description: >
+  Continuar o aprendizado de noções básicas do tidy R. Estes exercícios acompanham um curso sobre R feito no Instituto Nacional de Saúde, Marracuene, Moçambique em 2025.
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(tidyverse)
+
+knitr::opts_chunk$set(echo = FALSE)
+gradethis::gradethis_setup()
+
+randompraise <- function() {
+  praise <- c("Uau!", "Parabéns, você acertou!", "Agora sim!", "Está certo.", "Claro que sim!", "Eu sabia que ia conseguir!", "Impressionante!", "Fantástico")
+  praise[runif(1, 1, length(praise))]
+}
+
+randomencouragement <- function() {
+  encouragement <- c("Tente mais uma vez", "Tente de novo, consegues!", "Não desiste, tenta outra vez!", "Ainda não", "Reveja a resposta e tenta outra vez!", "Volte a tentar!", "Quase, tente outra vez", "Pense um pouco e tenta de novo")
+  encouragement[runif(1, 1, length(encouragement))]
+}
+
+# Custom print function
+print_grouped_tibble <- function(tbl) {
+  print(tbl)
+  cat("Groups: ", paste(unique(attr(tbl, "group")), collapse = ", "), "\n")
+}
+
+# data available to all exercises...
+
+# for join examples
+hh_stat <- tibble(householdid = c(1000, 1001, 1002, 2004, 2005, 3001, 3002),
+                  hh_status = c(rep("Interviewed", 3), "Destroyed", "Refused", rep("Interviewed", 2)))
+
+person_stat <- tibble(personid = 5001:5004,
+                      status = rep("Interviewed", 4))
+
+listing <- tibble(personid = c(5001:5006), 
+                  householdid = c(1000, 1000, 1001, 1001, 1001, 1001),
+                  idade = c(20, 34, 20, 34, 4, 11),
+                  elig = c(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE))
+```
+
+```{r logo, echo=FALSE, results='asis'}
+
+htmltools::tags$style(
+  htmltools::HTML("
+  h1 {
+    color: navy;
+  }
+  h2 {
+    color: navy;
+  }
+  .logo-top-right {
+    float: right;
+    top: 10px;
+    right: 10px;
+    width: 150px;
+    max-width: 25vw;
+  }
+  .exercise-box {
+    background-color: #f1f8ff;
+    border-left: 4px solid #2196F3;
+    padding: 10px;
+    margin: 15px 0;
+    font-style: italic;
+    border-radius: 4px;
+  }
+  .observation-box {
+    background-color: #fff8e1;
+    border-left: 4px solid #f9a825;
+    padding: 10px;
+    margin: 15px 0;
+    font-style: italic;
+    border-radius: 4px;
+  }
+"))
+
+htmltools::tags$img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/07/logo-small.png", class = "logo-top-right")
+
+```
+
+## Seja bem-vindo!
+
+Este tutorial foi desenvolvido para dar seguimento ao curso sobre uso de R para analisar dados de inquéritos populacionais, a ser apresentado no Instituto Nacional de Saúde de Moçambique. 
+
+### 
+
+Neste tutorial, poderá completar alguns exercícios para aprender e reforçar conceitos tais como:
+
+* Join/merge  
+* graficos com ggplot2
+* tabelas com tbl_summary
+
+### Combinar tibbles
+
+Imagina que depois de realisar um inquérito comunitário, a nossa base de dados tem três tabelas: um com dados sobre os participantes, um com o estado final de entrevista dos agregados familiares selecionadas, e um com dados sobre o estado final das entrevistas:
+
+```{r merge1, echo=FALSE}
+shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/09/join.png", alt = "A diagram illustrating logical relationships between tables/tibbles", 
+height = "300px")
+```
+
+No processo de recolha de dados, as informações são frequentemente armazenados em tabelas que correspondem a cada entidade, para maior flexibilidade. Por exemplo, poderá ter uma tabela para respondentes, outra para agregados familiares, outra para a lista de membros dos agregados familares, etc.
+
+Para apresentar os resultados do inquérito, é provavel que íamos precisar de juntar os dados de duas o mais tabelas para poder responder a perguntas tais como:
+
+* Qual foi a taxa de resposta individual? 
+* Qual e o tamanho mediano dos agregados familiares abordados?  
+* Houve uma diferença importante na idade dos que aceitaram versus os que recusaram em participar no inquérito?  
+
+Nesta secção vamos aprender como juntar tabelas para poder responder a este tipo de pergunta.
+
+#### relações 1 a 1 entre tabelas
+
+Talvez a relação mais simples seja de 1 a 1. Nesta relação, cada observação na primeira tabela (tabela 'mãe') tem uma única observação na segunda tabela (tabela 'filha'). Este cenário de 1 a 1 e
+
+```{r merge2, echo=FALSE}
+shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/09/join2.png", alt = "A diagram illustrating logical relationships between tables/tibbles", 
+height = "300px")
+```
+
+#### relações 1 a N entre tabelas
+
+No entanto, podemos ter casos especiais, como a ausencia de um observação filha (1 a 0) ou ausencia de observação mãe correspondente a uma observação filha (0 a 1), ou seja uma observação orfão. Ou, podemos ter uma situação onde podemos ter nenhuma, uma ou mais de uma observações na tabela filha para cada observação mãe. Esta situação chamamos 1 a N.
+
+```{r merge3, echo=FALSE}
+shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/09/join3.png", alt = "A diagram illustrating logical relationships between tables/tibbles", 
+height = "300px")
+```
+
+Notou que neste exemplo, os dados da segunda tabela (sobre HH_status) foram repetidos para cada caso correspondente da primeira tabela? Isto acontece sempre que fazemos a uniao entre dois tabelas com uma relacao de multiplos ao um.
+
+#### relações N a N
+
+Finalmente, podemos ter situações ainda mais complexas, mas geralmente estas resultam de erros de desenho ou estruturação dos dados e devem ser evitadas, usando tabelas intermediarias. Por exemplo, a relação entre familias e escolas pode ser N a N, porque a mesma escola pode ter crianças de várias familias inscritas, e a mesma familia pode ter crianças inscritas em várias escolas. A solução e criar uma tabela de alunos que terá uma relação N a 1 com escolas e familias, ambas.
+
+#### variaveis chaves
+
+Para conseguir unir tabelas e importante defenir a chave, ou seja, a(s) coluna(s) presentes em ambas as tabelas que definem a relação entre eles. Por exemplo, o householdid foi usado para juntar o tibble 'listing' com o tibble 'hh_stat' nos exemplos acima. A mesma coluna aparecia em ambas as tabelas, neste caso, com nome identico embora não é obrigatorio que a chave tenha a mesma nome nas duas tabelas. 
+
+### as funções para unir dados
+
+O tidyverse utilise inner_join, left_join(), right_join(), e full_join() para juntar tabelas.  Geralmente o processo e sequencial, ou seja, se querer juntar mais que duas tabelas, primeiro tem de escolher dois para juntar, depois, juntar o resultado do join com o tercero. O processo pode ser repetido para juntar mais tabelas. 
+
+#### inner_join
+
+Um 'inner_join()' inclui todas as observações presentes em ambas as tabelas:
+
+```{r merge4, echo=TRUE}
+
+a <- tibble(chave = c(1,2,3), valor1 = c('a', 'b', 'c'))
+b <- tibble(chave = c(2,3,4), valor2 = c('d', 'e', 'f'))
+a |> inner_join(b)
+
+```
+
+A linha com chave=1 na primeira tabela, e a linha com chave=4 na segunda tabela foram excluidas do resultado.
+
+#### left_join e right_join
+
+O left_join() inclui sempre todas as observações da primeira tabela, e somente as observações da segunda tabela que tiveram par no primeiro:
+
+```{r merge5, echo=TRUE}
+
+a <- tibble(chave = c(1,2,3), valor1 = c('a', 'b', 'c'))
+b <- tibble(chave = c(2,3,4), valor2 = c('d', 'e', 'f'))
+a |> left_join(b)
+a |> right_join(b)
+
+```
+
+A linha com chave=1 na primeira tabela, foi incluida, mas o valor correspondente da segunda tabela e `NA` por nao existir dados correspondentes. O right join faz o contrário.
+
+#### full_join
+
+Similar aos left_join e right_join, o full_join inclui todas as observacoes de ambas as tabelas, mesmo quando nao tem par:
+
+```{r merge6, echo=TRUE}
+
+a <- tibble(chave = c(1,2,3), valor1 = c('a', 'b', 'c'))
+b <- tibble(chave = c(2,3,4), valor2 = c('d', 'e', 'f'))
+a |> full_join(b)
+
+```
+
+#### opções de join
+
+Em casos onde as colunas tem nomes diferentes, podemos usar as opcoes para especificar as colunas relevantes:
+
+```{r merge7, echo=TRUE, error=TRUE}
+
+a <- tibble(chave1 = c(1,2,3), valor1 = c('a', 'b', 'c'))
+b <- tibble(chave2 = c(2,3,4), valor2 = c('d', 'e', 'f'))
+a |> inner_join(b) #, by = join_by(chave1 == chave2))
+```
+
+Pode ver que o join deu erro porque nao conseguiu identificar uma coluna com nome comum entre as duas tabelas. Para ultrapassar isto, pode especificar uma expressao 'join_by' assim:
+
+```{r merge8, echo=TRUE}
+a <- tibble(chave1 = c(1,2,3), valor1 = c('a', 'b', 'c'))
+b <- tibble(chave2 = c(2,3,4), valor2 = c('d', 'e', 'f'))
+a |> inner_join(b, by = join_by(chave1 == chave2))
+```
+
+Este mecanismo e altamente flexivel, mas o uso mais comum e com chaves identicos como apresentado acima, onde especificamos a chave da primeira tabela (a) do lado isquerdo do '==' e a chave da segunda tabela (b) do lado direito.
+
+Tambem podemos ter mais de uma coluna no join, neste caso, o join vai ser baseado na correspondencia de ambas colunas:
+
+```{r merge9, echo=TRUE}
+a <- tibble(chave1 = c("Joao","Maria","Marcos"), chave2 = c("Valdez","Gomes","Tomas"), valor1 = c('a', 'b', 'c'))
+b <- tibble(chave1 = c("Maria","Marcos","Joana"), chave2 = c("Gomes", "Tomas", "Rafael"), valor2 = c('d', 'e', 'f'))
+a |> left_join(b)
+```
+
+#### advertencias 
+
+E importante tomar em conta alguns pontos quando fazer o join:
+* Especificar colunas  
+* Nao misturar tipos de colunas diferentes   
+* Confirmar comportamento desejado  
+
+Nos exemplos anteriores, o join advertou que nao especificamos a coluna chave para o join, indicando a coluna utilizada. Para eliminar esta advertencia, pode especificar a coluna:
+
+```{r merge10, echo=TRUE}
+a <- tibble(chave1 = c(1,2,3), valor1 = c('a', 'b', 'c'))
+b <- tibble(chave1 = c(2,3,4), valor2 = c('d', 'e', 'f'))
+a |> inner_join(b, by = join_by(chave1 == chave1))
+```
+
+Dados bem-estruturados evitem erros. Por exemplo, e importante garantir que o tipo das colunas que contem a chave sao compativeis.
+
+```{r merge11, echo=TRUE, error=TRUE}
+a <- tibble(chave1 = c(1,2,3), valor1 = c('a', 'b', 'c'))
+b <- tibble(chave1 = c("2","3","4"), valor2 = c('d', 'e', 'f'))
+a |> inner_join(b, by = join_by(chave1 == chave1))
+```
+
+Finalmente, e sempre important confirmar que o numero de observacoes no resultado corresponde ao esperado. O uso de nrow() ou dim() pode ser util:
+
+```{r merge12, echo=TRUE}
+a <- tibble(chave1 = c(1,2,3), valor1 = c('a', 'b', 'c'))
+b <- tibble(chave1 = c(2,3,4), valor2 = c('d', 'e', 'f'))
+c <- a |> inner_join(b, by = join_by(chave1 == chave1))
+
+nrow(a)
+nrow(b)
+nrow(c)
+
+```
+
+### Exemplo concreto
+
+Agora amos ver um exemplo concreto, queremos juntar o estado de cada entrevista de agregado familiar, depois, vamos juntar os dados dos agregados com as entrevistas individuais.
+
+<div class="exercise-box"> 
+Exercício: Utilise um join apropriado para combinar hh_stat com listing com finalidade de criar uma nova lista completa de participantes que inclui o estado de entrevista de agregado familiar correspondente.
+
+```{r, merge13, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
+listing |> ___(hh_stat)             
+```
+
+</div>
+
+```{r merge13-check}
+grade_this({
+  if(identical(.result, left_join(listing, hh_stat))) {
+    pass("Certo! O join apropriado e 'left_join' porque queremos a lista completa de pessoas. Neste caso, o inner_join tambem ia dar certo, sendo que o agregado de cada pessoa tem estado na tabela de hh_stat")
+  }
+  if(identical(.result, right_join(listing, hh_stat))) {
+    fail("Parece que escolheu right_join? Neste caso, nao é o mais apropriado. Tente de novo.")
+  }
+  fail(randomencouragement())
+})
+```
+
+<div class="exercise-box"> 
+Exercício: Utilise um join apropriado para combinar o resultado do exercicio passado com a tabela person_stat, para obter uma lista completa hh_stat com listing com finalidade de criar uma nova lista completa de participantes que inclui o estado de entrevista de agregado familiar correspondente.
+
+```{r, merge14, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
+listing |> ___(hh_stat)             
+```
+
+</div>
+```{r merge13-check}
+grade_this({
+  if(identical(.result, left_join(listing, hh_stat))) {
+    pass("Certo! O join apropriado e 'left_join' porque queremos a lista completa de pessoas. Neste caso, o inner_join tambem ia dar certo, sendo que o agregado de cada pessoa tem estado na tabela de hh_stat")
+  }
+  if(identical(.result, right_join(listing, hh_stat))) {
+    fail("Parece que escolheu right_join? Neste caso, nao é o mais apropriado. Tente de novo.")
+  }
+  fail(randomencouragement())
+})
+```
+
+
+
+
+
+## Recursos adicionais
+
+Parabens! Se chegou até aqui quer dizer que conseguiu completar o tutorial. Esta convidado para continuar a sua aprendizagem.
+
+#### Tutoriais adicionais neste série:
+
+[Tutorial base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)  
+[Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/tutorial-more-base-R)  
+[Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R)  
+
+#### Aqui estão alguns recursos adicionais para aprender mais sobre R:  
+
+[Receitas de R (En)](https://posit.cloud/learn/recipes)  
+[R para usuários de Excel (En)](https://rstudio-conf-2020.github.io/r-for-excel/)  
+[Livro introdutório sobre R (En, Pt)](https://pedropark99.github.io/Introducao_R/)  
+[Livro sobre R para epidemiologia (En, Pt)](https://www.epirhandbook.com/pt/index.pt.html)  
+[Tutoriais sobre R para epidemiologia (En, Fr, Es, Pt)](https://www.appliedepi.org/)  
+[R Crash Course (En)](https://r-crash-course.github.io/01-rstudio-intro/)  
+[Posit Cloud (En)](https://posit.cloud)  
+
+Específicamente sobre o tidyverse:
+
+[R for data science (En)](https://www.tidyverse.org/learn/)  
+[ggplot2: elegant graphics for data analysis (En)](https://ggplot2-book.org/)
+
