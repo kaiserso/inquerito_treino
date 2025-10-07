@@ -105,7 +105,7 @@ Neste tutorial, poderá completar alguns exercícios para aprender e reforçar c
 Imagina que depois de realisar um inquérito comunitário, a nossa base de dados tem três tabelas: um com dados sobre os participantes, um com o estado final de entrevista dos agregados familiares selecionadas, e um com dados sobre o estado final das entrevistas:
 
 ```{r merge1, echo=FALSE}
-shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/09/join.png", alt = "A diagram illustrating logical relationships between tables/tibbles", 
+shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/10/join.png", alt = "A diagram illustrating logical relationships between tables/tibbles", 
 height = "300px")
 ```
 
@@ -124,7 +124,7 @@ Nesta secção vamos aprender como juntar tabelas para poder responder a este ti
 Talvez a relação mais simples seja de 1 a 1. Nesta relação, cada observação na primeira tabela (tabela 'mãe') tem uma única observação na segunda tabela (tabela 'filha'). Este cenário de 1 a 1 e
 
 ```{r merge2, echo=FALSE}
-shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/09/join2.png", alt = "A diagram illustrating logical relationships between tables/tibbles", 
+shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/10/join2.png", alt = "A diagram illustrating logical relationships between tables/tibbles", 
 height = "300px")
 ```
 
@@ -133,7 +133,7 @@ height = "300px")
 No entanto, podemos ter casos especiais, como a ausencia de um observação filha (1 a 0) ou ausencia de observação mãe correspondente a uma observação filha (0 a 1), ou seja uma observação orfão. Ou, podemos ter uma situação onde podemos ter nenhuma, uma ou mais de uma observações na tabela filha para cada observação mãe. Esta situação chamamos 1 a N.
 
 ```{r merge3, echo=FALSE}
-shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/09/join3.png", alt = "A diagram illustrating logical relationships between tables/tibbles", 
+shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/10/join3.png", alt = "A diagram illustrating logical relationships between tables/tibbles", 
 height = "300px")
 ```
 
@@ -267,7 +267,7 @@ Exercício: Utilise um join apropriado para combinar hh_stat com listing com fin
 A situacao e similar a situacao descrita nesta figura:
 
 ```{r merge13, echo=FALSE}
-shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/09/join3.png", alt = "A diagram illustrating logical relationships between tables/tibbles", 
+shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/10/join3.png", alt = "A diagram illustrating logical relationships between tables/tibbles", 
 height = "300px")
 ```
 
@@ -294,6 +294,13 @@ grade_this({
 LEFT OFF HERE
 
 Exercício: Utilise um join apropriado para combinar o resultado do exercicio passado com a tabela person_stat, para obter uma lista completa hh_stat com listing com finalidade de criar uma nova lista completa de participantes que inclui o estado de entrevista de agregado familiar correspondente.
+
+A situacao e similar a situacao descrita nesta figura:
+
+```{r merge15, echo=FALSE}
+shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/10/join4.png", alt = "A diagram illustrating logical relationships between tables/tibbles", 
+height = "300px")
+```
 
 ```{r, merge16, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
 listing |> ___(hh_stat)             
