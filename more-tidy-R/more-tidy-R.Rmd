@@ -40,13 +40,13 @@ print_grouped_tibble <- function(tbl) {
 hh_stat <- tibble(householdid = c(1000, 1001, 1002, 2004, 2005, 3001, 3002),
                   hh_status = c(rep("Interviewed", 3), "Destroyed", "Refused", rep("Interviewed", 2)))
 
-person_stat <- tibble(personid = 5001:5004,
-                      status = rep("Interviewed", 4))
+person_stat <- tibble(personid = c(5001:5004, 5007),
+                      status = c(rep("Interviewed", 4), "Refused"))
 
-listing <- tibble(personid = c(5001:5006), 
-                  householdid = c(1000, 1000, 1001, 1001, 1001, 1001),
-                  idade = c(20, 34, 20, 34, 4, 11),
-                  elig = c(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE))
+listing <- tibble(personid = c(5001:5007), 
+                  householdid = c(1000, 1000, 1001, 1001, 1001, 1001, 1002),
+                  idade = c(20, 34, 20, 34, 4, 11, 51),
+                  elig = c(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE))
 ```
 
 ```{r logo, echo=FALSE, results='asis'}
