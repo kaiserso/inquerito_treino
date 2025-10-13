@@ -85,11 +85,11 @@ htmltools::tags$img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/07
 
 ## Seja bem-vindo!
 
-Este tutorial foi desenvolvido para dar seguimento ao curso sobre uso de R para analisar dados de inquéritos populacionais, a ser apresentado no Instituto Nacional de Saúde de Moçambique. 
+Este tutorial foi desenvolvido para dar seguimento ao curso sobre o uso de R para analisar dados de inquéritos populacionais, a ser oferecido no Instituto Nacional de Saúde de Moçambique. 
 
 ### 
 
-Neste tutorial, poderá completar alguns exercícios para aprender e reforçar conceitos tais como:
+Neste tutorial, poderá completar alguns exercícios para aprender e reforçar conceitos como:
 
 * Tibbles       
 * filter e select      
@@ -100,28 +100,28 @@ Neste tutorial, poderá completar alguns exercícios para aprender e reforçar c
 
 ### O que é o tidyverse?
 
-O **tidyverse** é um conjunto de pacotes do R que compartilham uma filosofia comum de desenho, gramática e dados. Ele é projetado para tornar a análise de dados mais intuitiva e eficiente. Os pacotes mais comuns incluem:
+O **tidyverse** é um conjunto de pacotes (packages) do R que compartilham uma filosofia comum de conceição, gramática e estrutura de dados. É projetado para tornar a análise de dados mais intuitiva e eficiente. Os pacotes mais comuns incluem:
 
-* **dplyr**: Manipulação de dados (filtragem, ordenação, resumo, etc.)  
+* **dplyr**: Manipulação de dados (filtragem, ordenação, resumo etc.)  
 * **ggplot2**: Visualização de dados
-* **tidyr**: Transformação de dados (por exemplo, de formato largo para longo)
+* **tidyr**: Transformação de dados (por exemplo, de formato largo para formato longo)
 * **tibble**: Uma versão moderna de data frames
-* **haven**: Leitura e escrita de dados em formatos como SPSS, Stata, etc.
+* **haven**: Leitura e escrita de dados em formatos como *SPSS* e *Stata*
 
-entre outros.
+entre outros pacotes.
 
 ### O que é o tidy R?
 
-O **tidy R** é uma abordagem para trabalhar com dados no R que enfatiza a clareza e a simplicidade. Ele se baseia nos princípios do tidyverse, mas pode ser usado com qualquer pacote ou função do R. A ideia é que os dados sejam organizados de forma que cada variável seja uma coluna, cada observação seja uma linha e cada tipo de unidade de observação seja uma tabela.
+O **tidy R** é uma abordagem para trabalhar com dados no R que enfatiza a clareza e a simplicidade. Baseia-se nos princípios do **tidyverse**, mas pode ser usado com qualquer pacote ou função do R. A ideia é que os dados sejam organizados de forma que cada variável seja uma coluna, cada observação seja uma linha e cada tipo de unidade de observação seja uma tabela.
 
 ## Os tibbles
 
-Um **tibble** é uma versão moderna de um data frame no R. Ele é parte do tidyverse e oferece várias vantagens sobre os data frames tradicionais:  
-* **Impressão mais limpa**: Tibbles exibem apenas as primeiras linhas e colunas, evitando a sobrecarga visual.  
-* **Tipos de dados explícitos**: Tibbles mantêm os tipos de dados de forma mais explícita, o que ajuda a evitar erros.  
-* **Subconjunto seguro**: Tibbles não permitem a subconfiguração de colunas que não existem, o que ajuda a evitar erros comuns.  
+Um **tibble** é uma versão moderna de um *data frame* no R. Faz parte do **tidyverse** e oferece várias vantagens em relaçaõ aos *data frames*:  
+* **Impressão mais limpa**: exibem apenas as primeiras linhas e colunas, evitando a sobrecarga visual.  
+* **Tipos de dados explícitos**: mantêm os tipos de dados de forma mais explícita, o que ajuda a evitar erros.  
+* **Subconjunto seguro**: não permitem o aceso a colunas inexistentes, o que ajuda a evitar erros comuns.  
 
-Vamos ver um exemplo de uma tabela que resultou de um inquerito populacional, com dados demograficos sobre alguns dos
+Vamos ver um exemplo de uma tabela resultante de um *inquérito populacional*, com dados demográficos sobre alguns dos
 participantes.
 
 ```{r, tibble, echo=TRUE}
@@ -134,33 +134,33 @@ pers <- tibble(personid = c(5001:5009),
 pers
 ```
 
-Como podem ver, a aparencia é similar a um data frame, mas é acompanhada por o tipo de cada variável e o numero de linhas no fim.
+Como podem ver, a aparência é semelhante a um *data frame*, mas é acompanhada pelo tipo de cada variável e pelo número de linhas no final.  
 
-Pode explorar o tibble pers com as funções `str()`, `dim()`, `nrow()`, `ncol()`, `names()` e `glimpse()`.
+Pode explorar o *tibble* pers com as funções `str()`, `dim()`, `nrow()`, `ncol()`, `names()` e `glimpse()`.
 
 ```{r tibble1, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
 pers
 ```
 
-Tudo que podemos fazer com data frame tambem é valido para um tibble, por exemplo extrair e resumir uma coluna:
+Tudo que podemos fazer com *data frame* tambem é valido para um *tibble* — por exemplo, extrair e resumir uma coluna:
 
 ```{r tibble2, echo=TRUE}
 pers$idade
 summary(pers$idade)
 ```
 
-E, até podemos converter num data frame com `as.data.frame(pers)`.
+Também, podemos convertê-lo num *data frame* com `as.data.frame(pers)`.
 
-Primeiro, vamos refrescar a memoria sobre indexação no base R, assim aproveitando para aprender como indexar tibbles.
+Primeiro, vamos refrescar a memoria sobre indexação no base R, aproveitando para aprender como indexar *tibbles.*
 
 <div class="exercise-box"> 
-Exercício: usar a indexação para identificar a idade da pessoa descrita na segunda linha do tibble.
+Exercício: usar a indexação para identificar a idade da pessoa descrita na segunda linha do *tibble.*
 
 ```{r, tibble3, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
 pers[___,___]
 ```
 
-<div class="observation-box">Obs: quando ver um traço longo `___` no código, isto indica que é um espaço reservado para você completar com o seu código. Você pode substituir `___` por qualquer valor, função ou operação que desejar.</div>
+<div class="observation-box">Obs.: quando ver um traço longo `___` no código, isto indica que é um espaço reservado para preencher. Você pode substituir `___` por qualquer valor, função ou operação que desejar.</div>
 </div>
 
 ```{r tibble3-check}
@@ -174,18 +174,18 @@ grade_this({
 
 ## Funções essenciais
 
-Agora vamos explorar algumas funções essenciais do tidyverse desenhados para trabalhar com tibbles.  
-* filter(tibble, expr) - para filtar linhas (observações)  
-* select(tibble, expr) - para seleccionar colunas (variáveis)  
+Agora vamos explorar algumas funções essenciais do *tidyverse,* desenhados para trabalhar com *tibbles.*  
+* filter(tibble, expr) - para filtrar linhas (observações)  
+* select(tibble, expr) - para selecionar colunas (variáveis)  
 * arrange(tibble, expr) - para ordenar linhas  
 * mutate(tibble, expr) - para alterar ou criar novas colunas  
-* summarize(tibble, expr) - para resumir variáveis  
+* summarise/summarize(tibble, expr) - para resumir variáveis  
 
-filter() e select() são similares a indexação, mas com uma sintaxe mais intuitiva. arrange() é parecido a order(), mutate() é usado para criar novas variáveis ou modificar as existentes, e summarize() é usado para calcular estatísticas resumidas.
+As funções `filter()` e `select()` são semelhantes à indexação, mas têm uma sintaxe mais intuitiva. `arrange()` é semelhante a `order()`. A função `mutate()` é usado para criar novas variáveis ou modificar as existentes, e `summarise()` é usado para calcular estatísticas resumidas.
 
 ### filter()
 
-filter() serve para seleccionar ou filtrar as linhas do tibble com uma expressão tipicamente baseado em um ou mais das variáveis do tibble:
+`filter()` serve para selecionar, ou filtrar, as linhas do tibble com uma expressão tipicamente baseada em uma ou mais das variáveis do *tibble*:
 
 ```{r, echo=TRUE}
 # filter - selecionar linhas com criterios
@@ -195,7 +195,7 @@ filter(pers, idade > 20)
 
 <div class="exercise-box">
 
-Exercício: Filtrar as observações para somente incluir as com mais de 21 anos de idade.
+Exercício: Filtre as observações para incluir apenas aquelas com mais de 21 anos de idade.
 
 ```{r func1, exercise=TRUE}
 filter(pers, ___)
@@ -210,12 +210,12 @@ grade_this({
 })
 ```
 <div id="func1-hint">
-**Dica:** lembra que as operadores de comparação são `<, >, >=, <=, ==, !=`.
+**Dica:** lembre-se de que os operadores de comparação são `<, >, >=, <=, ==, !=`.
 </div>
 
 ### select()
 
-select() é para seleccionar uma ou mais variáveis do tibble.
+`select()` serve para seleccionar uma ou mais variáveis do *tibble.*
 
 ```{r, echo=TRUE}
 # select - seleccionar colunas com criterios
@@ -225,7 +225,7 @@ select(pers, c(personid, status))
 
 <div class="exercise-box">
 
-Exercício: seleccionar personid para as observações com mais de 11 anos de educação. Por enquanto, vamos usar um tibble temporário x para guardar o resultado do filter, depois usar select() para extrair a variável personid.
+Exercício: selecionar personid para as observações com mais de 11 anos de educação. Por enquanto, vamos usar um *tibble* temporário `x` para guardar o resultado do `filter()`, depois usar `select()` para extrair a variável `personid.`
 
 ```{r func2, exercise=TRUE}
 x <- filter(pers, ___)
@@ -244,7 +244,7 @@ grade_this({
 
 ### arrange()
 
-`arrange()` e similar a `order()`, e usado para reordenar as linhas em função de alguma expressão tipicamente em base nas variáveis no tibble.
+`arrange()` é semelhante a `order()`, e é usado para reordenar as linhas com base em alguma expressão, tipicamente em função das variáveis no *tibble.*  
 
 ```{r, echo=TRUE}
 # arrange - ordenar linhas
@@ -254,7 +254,7 @@ arrange(pers, desc(idade)) # ordem decrescente
 
 ### mutate()
 
-Mutate é usado para criar novas variáveis ou modificar as existentes.
+`mutate()` é usado para criar novas variáveis ou modificar as existentes.
 
 ```{r, echo=TRUE}
 # mutate - alterar o criar colunas 
@@ -281,22 +281,22 @@ grade_this({
 
 ### summarize() ou summarise()
 
-summarise() é usado para calcular estatísticas resumidas. Utilise funções como mean(), sum(), min(), max(), n() (número de observações) e n_distinct() (número de valores distintos).
+summarise() é usada para calcular estatísticas resumidas. Utilize funções como `mean()`, `sum()`, `min()`, `max()`, `n()` (número de observações) e `n_distinct()` (número de valores distintos).
 
 ```{r, echo=TRUE}
 # summarise - agregar dados
 summarise(pers, total = sum(idade))  
 ```
 
-Notou que o resultado é um tibble com uma única linha e coluna? Isto é porque `summarize()` reduz as dimensões do resultado.
+Notou que o resultado é um `tibble` com uma única linha e coluna? Isto ocorre porque `summarise()` reduz as dimensões do resultado.
 
 <div class="observation-box">
-Obs: `summarize()` geralmente reduz as dimenções do resultado, neste caso, retorna um tibble com uma única linha e coluna.
+Obs.: `summarise()` geralmente reduz as dimensões do resultado; neste caso, retorna um *tibble* com uma única linha e coluna.
 </div>
 
 <div class="exercise-box">
 
-Exercício: calcular a idade media das pessoas que recusaram em participar no inquérito, usando as funções apresentadas acima.
+Exercício: calcular a idade média das pessoas que recusaram participar no inquérito, usando as funções apresentadas.
 
 ```{r func4, exercise=TRUE}
 x <- filter(pers, ___)
@@ -304,7 +304,7 @@ summarize(x, ___)
 ```
 
 <div id="func4-hint">
-**Dica:** primeiro filtar para identificar os casos de recusa, depois agregar a idade usando summarize()
+**Dica:** primeiro filtar para identificar os casos de recusa, depois agregar a idade usando summarise()
 </div>
 
 </div>
@@ -345,7 +345,7 @@ Agora que já conhece as funções básicas, vamos aprender a encadear várias o
 
 ## Os pipes (tubos)
 
-Um **pipe** (tubo) é um operador `|>` ou `%>%` que permite encadear várias operações de forma sequencial. Ele é usado para passar o resultado de uma operação como entrada para a próxima, tornando o código mais legível e intuitivo. Por exemplo:
+Um **pipe** (tubo) é um operador `|>` ou `%>%` que permite encadear várias operações de forma sequencial. É usado para passar o resultado de uma operação como entrada para a próxima, tornando o código mais legível e intuitivo. Por exemplo:
 
 ```{r, pipe, echo=TRUE}
 library(dplyr)
@@ -356,23 +356,23 @@ pers |>
 
 ```
 
-O pipe define uma cadeia de operações sequenciais que é mais facilmente descrita em lingua natural, por exemplo, 
-"peque na tabela pers, filtrar para somente incluir os participantes com entrevista completa, selecciona idade, educação, estatus, e ordenar por anos de educação decrescente."
+O *pipe* define uma cadeia de operações sequenciais, mais facilmente descrita em língua natural, por exemplo: 
+"peque na tabela `pers`, filtre para incluir apenas os participantes com entrevista completa, selecione `idade`, `educação`, `status`, e ordenar por anos de educação em ordem decrescente."
 
-Doutro lado, se queremos implementar a mesma no base R, teriamos que fazer alguma coisa parecida a este comando:
+por outro lado, se quisermos implementar o mesmo no *base R*, teríamos de fazer algo semelhante a este comando:
 
 
 ```{r, pipe2, echo=TRUE}
 (pers[pers$status == "I", c("idade", "edu_yrs", "status")])[order(pers$edu_yrs[pers$status == "I"], decreasing = TRUE), ]
 ```
 
-Acho que muitos iam concordar de que o código com pipes é mais linear, mais legível e natural que o seu equivalente no base R.
+Acho que muitos concordariam que o código com *pipes* é mais linear, legível e natural do que o seu equivalente no *base R*.
 
 <div class="exercise-box"> 
-Exercício: filtre a tabela pers para incluir somente participantes com idade acima de 21 anos. Use pipes para fazer isto.
+Exercício: filtre a tabela `pers` para incluir apenas os participantes com idade acima de 21 anos. Use *pipes* para fazer isso.
 
 ```{r, pipe3, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
-pers |> ___             # seu codigo aqui
+pers |> ___             # o seu código aqui
 ```
 
 </div>
@@ -385,10 +385,10 @@ grade_this({
 })
 ```
 
-Os pipes sao realmente uteis quando envolvem vários segmentos em seguida. Vamos fazer agora mais um exercício para por isso na prática.
+Os *pipes* são realmente úteis quando envolvem várias etapas em sequência. Vamos fazer mais um exercício para pôr isso na prática.
 
 <div class="exercise-box"> 
-Exercício: filtre a tabela pers para incluir somente participantes com idade acima de 21 anos, ordena por personid em ordem crescente, e seleccione as variáveis idade e edu_yrs. Use pipes para fazer isto.
+Exercício: filtre a tabela `pers` para incluir apenas os participantes com idade acima de 21 anos, ordene por `personid` em ordem crescente e selecione as variáveis `idade` e `edu_yrs`. Use *pipes* para fazer isso.
 
 ```{r, pipe4, exercise=TRUE, echo=TRUE, exercise.eval=FALSE}
 pers |> ___             # seu codigo aqui
@@ -398,50 +398,50 @@ pers |> ___             # seu codigo aqui
 ```{r pipe4-check}
 grade_this({
   if(identical(.result, pers %>% filter(idade > 21) %>% arrange(personid) %>% select(idade, edu_yrs))) {
-    pass("Parabéns! Viu que foi necessário ordenar antes de seleccionar, para ter acesso à variável personid na ordenação.")
+    pass("Parabéns! Percebeu que foi necessário ordenar antes de selecionar, para ter acesso à variável personid na ordenação.")
   }
   fail(randomencouragement())
 })
 ```
 
 ```{r pipe4-hint-1}
-# Sendo que queremos ordenar por personid, e importante ordenar antes de seleccionar, caso contrário, a variável personid não estará disponível para ordenar. 
+# Sendo que queremos ordenar por personid, é importante ordenar antes de selecionar, caso contrário, a variável personid não estará disponível para ordenar. 
 pers
 ```
 
 ```{r pipe4-hint-2}
-# Mais uma dica: você pode usar `filter` para filtrar os dados, `arrange` para ordenar e `select` para escolher as variáveis que deseja manter.
+# Mais uma dica: pode usar filter() para filtrar os dados, arrange() para ordenar e select() para escolher as variáveis que deseja manter.
 pers |> filter(___) |> arrange(__) |> select(___)
 ```
 
-Antes de continuar, vamos analizar alguns aspectos do exercício anterior. Primeiro, notou que nao precisavamos de por os nomes das variáveis em ""? Alem disso, quando listamos as variáveis para o select, incluiu num vector c()? Com o tidyverse, não é necessário. `pers[, c("idade", "edu_yrs")]` virou `pers |> select(idade, edu_yrs)` no tidyverse. São alguns dos aspectos do tidyverse que facilitam a programação.
+Antes de continuar, vamos analisar alguns aspectos do exercício anterior. Primeiro, notou que não precisávamos de colocar os nomes das variáveis entre aspas? Além disso, quando listamos as variáveis para o `select()`, era necessário incluí-las num vector com `c()`? Com o *tidyverse*, isso não é necessário. `pers[, c("idade", "edu_yrs")]` virou `pers |> select(idade, edu_yrs)` no *tidyverse*. Esses são alguns dos aspectos do *tidyverse* que facilitam a programação.
 
 ## Agrupamento
 
-Agora vamos aprender como calcular estatísticas sobre dados agrupados.  Podemos usar group_by para criar grupos nos dados:
+Agora vamos aprender como calcular estatísticas sobre dados agrupados.  Podemos usar `group_by` para criar grupos nos dados:
 
 ```{r, echo=TRUE}
 pers |> group_by(householdid) |> print_grouped_tibble()
 ```
 
-Notou a linha `# Groups:   householdid [5]`? Isto indica que os dados agora são agrupados, embora o agrupamento somente tem valor prático quando usamos num comando subsequente (salienter que o pacote que usamos para desenvolver este tutorial (learnr) esconde a informação sobre grupos quando imprimir um tibble, por isso usamos uma função especial `print_grouped_tibble()` para poder visualizar os resultados).
+Notou a linha `# Groups:   householdid [5]`? Isso indica que os dados agora estão agrupados, embora o agrupamento só tenha valor prático quando usado num comando subsequente. Vale salienter que o pacote utilizado para desenvolver este tutorial (`learnr`) oculta a informação sobre grupos ao imprimir um *tibble*, por isso usamos a função especial `print_grouped_tibble()` para visualizar os resultados.
 
-O grupo so tem efeito quando aplicamos uma função que utilise os grupos, como `summarize()`:
+O agrupamento só tem efeito quando aplicamos uma função que utilize os grupos, como `summarise()`:
 
 ```{r, echo=TRUE}
-pers |> group_by(householdid) |> summarize(idade_media = mean(idade))
+pers |> group_by(householdid) |> summarise(idade_media = mean(idade))
 ```
 
-O resultado é um tibble com a media de idade para cada grupo. Os resultados incluem as variáveis de agrupamento, junto com as novas variáveis criadas pelos comandos que aparecem no summarize.
+O resultado é um *tibble* com a média de idade para cada grupo. Os resultados incluem as variáveis de agrupamento juntamente com as novas variáveis criadas pelos comandos utilizados no `summarise()`.
 
-Podemos fazer mais de que um comando ao mesmo tempo, e podemos criar grupos sobre combinações de variáveis, por exemplo a idade (anos) media, e o número de observações para cada agregado incluido:
+Podemos executar mais de um comando ao mesmo tempo e criar grupos com combinações de variáveis — por exemplo, a média de idade (em anos), e o número de observações para cada agregado incluído:
 
 ```{r, echo=TRUE}
 pers |> group_by(householdid) |> summarize(idade_media = mean(idade),  n = n())
 ```
 
 <div class="exercise-box">
-Agora a sua vez! Agrupe os dados pelo estado do inquérito (status), e calcule a idade media (idade_media) e educação máxima (edu_max) em anos por grupo.
+Agora é a sua vez! Agrupe os dados pelo estado do inquérito (`status`), e calcule a média de idade (`idade_media`) e a educação máxima (`edu_max`), em anos, para cada grupo.
 
 ```{r groups, exercise=TRUE}
 
@@ -459,38 +459,38 @@ grade_this({
 
 ## Alteração conditional
 
-Durante a limpeza e preparação de dados para análise, com frequencia queremos alterar uma variável para um subgrupo de observações. Embora filter() permite seleccionar observações, não facilita o update condicional porque os updates acontecem dentro de mutate(). Neste caso podemos usar funções condicionais como:  
+Durante a limpeza e preparação dos dados para análise, com frequência queremos alterar uma variável em um subgrupo de observações. Embora filter() permita selecionar observações, ele não facilita o update condicional pois os alterações acontecem dentro de mutate(). Neste caso, podemos usar funções condicionais como:  
 
 * if_else()  
 * case_which()  
 * case_when()  
 
-Todas estas funções devolvem um valor para cada observação, mas o valor devolvido pode ser determinado pelos valores de outros variáveis dentro da observação. Vamos ver um exemplo.
+Todas essas funções devolvem um valor para cada observação, mas o valor devolvido pode ser determinado pelos valores de outros variáveis dentro da observação. Vamos ver um exemplo.
 
 <div class="observation-box">
-Obs: Ao longo desta secção vamos criar novos tibbles cada vez que alteramos os dados (pers1, pers2, pers3, ...). Isto evite com que tenhamos que repetir os códigos anteriores cada vez. Ajude-nos neste tutorial a ver como o tibble está a progredir. No futuro, podemos juntar os pipes assim evitando a necessidade de criar tibbles intermediários.
+Obs.: Ao longo desta secção vamos criar novos *tibbles* cada vez que alteramos os dados (pers1, pers2, pers3, ...). Isto evite que precisemos repetir os códigos anteriores a cada passo. Ajude-nos, neste tutorial, a acompanhar como o *tibble* está a progredir. No futuro, podemos juntar os *pipes*, evitando assim a necessidade de criar *tibbles* intermediários.
 
 </div>
 
-Lembra que na tabela pers, a variável status indica "I" para entrevistado e "R" para recusa:
+Lembra-se de que na tabela `pers`, a variável `status` indica "I" para entrevistado e "R" para recusa:
 
 ```{r, echo=TRUE}
 table(pers$status)
 ```
 
-Imagina que os critérios de elegibilidade para participar no inquérito eram ter entre 15 e 49 anos.
-Agora vamos aprender como criar ou alterar variáveis com base em condições. Podemos usar if_else() para fazer isto. Por exemplo, vamos criar uma nova variável status2 que indica "U" (ineligível) para pessoas com mais de 49 anos, e mantém o valor original de status para os outros.
+Imagine que os critérios de elegibilidade para participar no inquérito sejam ter entre 15 e 49 anos.
+Agora vamos aprender a criar ou alterar variáveis com base em condições. Podemos usar if_else() para fazer isso. Por exemplo, vamos criar uma nova variável `status2` que indica "U" (ineligível) para pessoas com mais de 49 anos, e mantém o valor original de `status` para as demais.
 
 ### if_else
 
-if_else(condição, valor_se_verdadeiro, valor_se_falso) permite criar ou alterar variáveis com base em uma condição lógica. Vamos usar if_else para criar uma nova variável status2 que substitui "I" com "U" (ineligível) para pessoas com mais de 49 anos, e mantém o valor original de status para os outros.
+if_else(condição, valor_se_verdadeiro, valor_se_falso) permite criar ou alterar variáveis com base em uma condição lógica. Vamos usar `if_else()` para criar uma nova variável `status2` que substitui "I" com "U" (ineligível) para pessoas com mais de 49 anos, e mantém o valor original de `status` para as demais.
 
 ```{r mutate1, echo=TRUE}
 pers |> mutate(status = if_else(idade > 49, "U",
                                 status))
 ```
 
-Os pipes nao alteram o tibble original, a menos que incluimos `pers <-` no começo. Vamos fazer isto para guardar a nova variável no tibble pers (esta vez, vamos atribuir um novo nome em vez de sobreescriver a variável original)
+Os *pipes* não alteram o *tibble* original, a menos que incluamos `pers <-` no início. Vamos fazer isso para guardar a nova variável no tibble `pers`. Desta vez, vamos atribuir um novo nome em vez de sobreescriver a variável original.
 
 ```{r mutate2, echo=TRUE}
 pers1 <- 
@@ -501,7 +501,7 @@ pers1
 
 <div class="exercise-box">
 
-Exercício: imagina que durante a verificação de dados descubriu-se um erro de digitação, que resultou no personid 5090 ser entrada como 5009. Use if_else para corregir o personid da linha 9 (actualmente 5009) para 5090, guardando o resultado no pers2.
+Exercício: imagine que, durante a verificação de dados, foi descoberto um erro de digitação, que resultou em o `personid` 5090 ter sido inserido como 5009. Use `if_else()` para corrigir o `personid` da linha 9 (atualmente 5009) para 5090, guardando o resultado no `pers2`.
 
 ```{r mutate3-setup}
 # note, a limitation of learnr is that if you treat a prior chunk as a setup chunk (e.g. mutate2) it is not displayed.
@@ -521,7 +521,7 @@ grade_this({
   }
   if(identical(filter(.result, householdid==2005) |> 
                select(personid) |> pull(), as.integer(0))) {
-    fail("cuidado! verifique o uso de '=' e '==' na sua resposta e tente de novo")
+    fail("Cuidado! verifique o uso de '=' e '==' na sua resposta e tente novamente")
   }
   fail(randomencouragement())
 })
@@ -533,7 +533,7 @@ pers2
 
 ### case_match
 
-Uma alternativa a if_else e case_match, que e mais facil de ler quando ha mais de duas condicoes. Vamos usar case_match para criar uma nova variável status3 que substitui "I" com "Entrevistado" e "R" com "Recusa".
+Uma alternativa a `if_else()` é `case_match()`, que é mais fácil de ler quando há mais de duas condições. Vamos usar `case_match()` para criar uma nova variável `status3` que substitui "I" por "Entrevistado" e "R" por "Recusa".
 
 ```{r mutate4-setup, exercise.setup="mutate3-setup"}
 # exercises are stateless, so will need to progressively create the state along the way. As noted
@@ -550,20 +550,20 @@ pers2 |> mutate(status3 = case_match(status2,
 ```
 
 <div class="observation-box">
-Obs: o tilde (~) separe o original pelo novo codigo `"R" ~ "Recusa"` significa que "R" e substituido por "Recusa".
+Obs: o til (~) separa o original do novo código `"R" ~ "Recusa"` significa que "R" deve ser substituido por "Recusa".
 </div>
 
-Upa!, esquecemos ineligivel, U (ineligivel) ficou NA no nova variável!
+Ops, esquecemo-nos dos **ineligíveis**! O valor "U" (ineligível) ficou `NA` na nova variável!
 
 ```{r mutate5, echo=TRUE}
 pers2 |> mutate(status3 = case_match(status2,
                                             "I" ~ "Entrevistado",
                                             "R" ~ "Recusa", 
-                                            .default = "Ineligivel")) # nao ideal, presume muito
+                                            .default = "Ineligivel")) # não ideal, presume muito
 ```
-Vamos guardar o resultado no tibble pers3.
+Vamos guardar o resultado no *tibble* `pers3`.
 
-.default e muito flexivel, mas as vezes é flexivel de mais. Se houvesse um erro de digitação na variável status2, por exemplo "X", o resultado seria "Ineligivel", o que não é correto. Melhor é listar todas as possibilidades, assim qualquer valor inesperado vira NA.
+`.default` e muito flexivel, mas as vezes é flexivel demais. Se houvesse um erro de digitação na variável `status2`, por exemplo "X", o resultado seria "Ineligível", o que não será correto. O melhor seria listar todas as possibilidades; assim, qualquer valor inesperado torna-se `NA`.
 
 ```{r mutate6, echo=TRUE}
 pers3 <- pers2 |> mutate(status3 = case_match(status2,
@@ -574,7 +574,8 @@ pers3 <- pers2 |> mutate(status3 = case_match(status2,
 
 <div class="exercise-box">
 
-Exercício: imagina que durante a verificação de dados descubriu-se um erro de formação que afectou a recolha de dados para recusas. Neste inquérito, anos de educação nao deve ter sido recolhido pelos que recusaram em participar ou que nao eram elegíveis. Use case_which para actualizar os com status == R ou status == I para que os edu_yrs seja NA (missing). Neste caso, vamos criar uma nova variável "edu_yrs_c" para edu_yrs "corregido".
+Exercício: imagine que, durante a verificação de dados, foi descoberto um erro de formação dos inquiridores que afectou a recolha de dados referente às recusas. Neste inquérito, os anos de educação não deveriam ter sido recolhidos dos que recusaram participar ou que nao eram elegíveis. Use `case_match()` para actualizar os casos com `status == "R"` ou `status == "I"` de modo que os `edu_yrs` seja `NA` (ausente). Neste caso, vamos criar uma nova variável `edu_yrs_c` para `edu_yrs` (corregido) para esse fim.
+
 ```{r mutate7-setup, exercise.setup="mutate4-setup"}
 # it seems we can in fact chain together setups, just not non-setup chunks
 pers3 <- pers2 |> mutate(status3 = case_match(status2,
@@ -601,11 +602,11 @@ grade_this({
 pers4 <- pers3 |> mutate(edu_yrs_c = case_match(status, "I" ~ edu_yrs, "R" ~ NA, "U" ~ NA))
 ```
 
-<div class="observation-box">Obs: alteração condicional funciona tanto quando queremos somente alterar certos valores, como quando precisamos transformar todos os valores, por exemplo para transformar idade em faixa etária. </div>
+<div class="observation-box">Obs.: a alteração condicional funciona tanto quando queremos alterar apenas certos valores quanto quando precisamos transformar todos os valores — por exemplo para converter idade em faixas etárias. </div>
 
 ### case_when
 
-Ainda mais flexivel é case_when, que permite usar expressões lógicas para definir as condições. Vamos usar case_when para criar uma nova variável edu_cat que categoriza os anos de educação em três faixas etárias: "1-6" para menos de 6 anos, "7-12" para 7 a 12 anos, e "13+" para 13 ou mais anos.
+Ainda mais flexível é `case_when()`, que permite usar expressões lógicas para definir as condições. Vamos usar case_when para criar uma nova variável `edu_cat` que categoriza os anos de educação em três faixas: "1-6" para menos de 6 anos, "7-12" para 7 a 12 anos, e "13+" para 13 ou mais anos.
 
 ```{r mutate8-setup, exercise.setup="mutate7-setup"}
 # needed to instantiate results of previous exercise
@@ -621,30 +622,30 @@ pers5 <-
 pers5
 ```
 
-Notou a diferenca entre case_match e case_when, em termos de onde fica a variável que e base na transformação?
+Notou a diferenca entre `case_match()` e `case_when()`, em termos de onde se encontra a variável que serve de base para a transformação?
 
-As condições são avaliadas em ordem, e a primeira condição verdadeira determina o valor da nova variável. Por isso, um valor de edu_yrs de 4 resulta em "1-6", um valor de 10 resulta em "7-12", e um valor de 15 resulta em "13+".
+As condições são avaliadas em ordem, e a primeira condição verdadeira determina o valor da nova variável. Por isso, um valor de `edu_yrs` de 4 resulta em "1-6", um valor de 10 resulta em "7-12", e um valor de 15 resulta em "13+".
 
 <div class="observation-box">
-Obs: `TRUE` é similar a `.default`, agrega todas as alternativas nao listadas. E portanto, é arriscado usar TRUE se houver a possibilidade de um erro de digitação ou valor inesperado. Por exemplo, se houver uma idade de -9 para indicar um valor em falta, a condição idade < 5 seria verdadeira, e a idade 999 seria categorizada como "1-6", o que não é correto. Melhor é listar todas as possibilidades, assim qualquer valor inesperado vira NA.
+Obs.: `TRUE` é semelhante a `.default`, agregando todas as alternativas não listadas. Portanto, é arriscado usar `TRUE` se houver a possibilidade de um erro de digitação ou valores inesperados. Por exemplo, se houver uma idade de -9 para indicar  valor em falta, a condição `idade < 5` seria verdadeira, e a idade 999 seria categorizada como "1-6", o que não seria correto. O melhor é listar todas as possibilidades; assim, qualquer valor inesperado torna-se `NA`.
 </div>
 
-Aqui uma melhor maneira de controlar os valores nao esperados:
+Aqui está uma maneira mais seguro de controlar valores não esperados:
 
 ```{r mutate9, echo=TRUE}
 pers5 <-
   pers4 |> mutate(edu_cat = 
                     case_when(edu_yrs_c < 5 ~ "1-6",
                               edu_yrs_c < 13 ~ "7-12",
-                              edu_yrs_c < 24 ~ "13+")) # assumindo que o limite e 24
+                              edu_yrs_c < 24 ~ "13+")) # assumindo que o limite é 24
 pers5
 ```
 
-Agora, os que nao tinha edu_yrs_c definido, foram clasificados como 'NA' (dados em falta).
+Agora, os que não tinha `edu_yrs_c` definido, foram clasificados como `NA` (ausente).
 
 <div class="exercise-box">
 
-Exercício: usar case_when para recategorizar idade em dois grupos, <25 e 25-49, criando um nova variável idade_cat com categorias de "<25" e "25-49". Os que tem idade fora deste intervalo devem ficar NA para idade_cat.
+Exercício: use `case_when()` para recategorizar a variável `idade` em dois grupos, "<25" e "25-49", criando uma nova variável `idade_cat` com essas categorias. Os participantes com idades fora desse intervalo devem ter `NA` em `idade_cat`.
 
 ```{r mutate10-setup, exercise.setup="mutate8-setup"}
 pers5 <- pers4 |> mutate(edu_cat = case_when(edu_yrs_c < 5 ~ "1-6",
@@ -684,11 +685,11 @@ pers6 <- pers5 |> mutate(idade_cat =
 ```
 ## Integrando tudo
 
-Agora vamos sintetizar o nosso conhecimento, juntando as várias ferramentas que aprendemos até agora.
+Agora, vamos sintetizar o nosso conhecimento, juntando as várias ferramentas que aprendemos até aqui.
 
 <div class="exercise-box">
 
-Exercício: Começando com pers6, cria um 'tubo' (pipe) que cria uma nova variável 'idade_cat2' que agrupa os respondentes por 15-24, 25-34, 35-44, 45+ anos. Salve o resultado em pers7.
+Exercício: Começando com `pers6`, cria um *pipe* (tubo em português) que gere uma nova variável 'idade_cat2', agrupando os respondentes nas faixas de 15-24, 25-34, 35-44, 45+ anos. Salve o resultado em `pers7`.
 
 
 ```{r all-setup, exercise.setup="mutate10-setup"}
@@ -716,16 +717,16 @@ grade_this({
 ```
 
 ```{r all-hint-1}
-# para introduzir logica condicional, devemos considerar if_else, case_which e case_when
+# para introduzir lógica condicional, devemos considerar if_else(), case_which() e case_when()
 pers7 <- pers6 |> mutate(idade_cat2 = case_when(___))
 ```
 ```{r all-hint-2}
-# Sendo que queremos definir multiplos intervalos, case_when seria o mais apropriado. 
+# Sendo que queremos definir múltiplos intervalos, case_when() seria o mais apropriado. 
 pers7 <- pers6 |> mutate(idade_cat2 = case_when(idade < 25 ~ "15-34", ___))
 ```
 ```{r all-hint-3}
 # para evitar que os sem idade sejam agrupados no grupo 35-44 anos, podemos usar !is.na()
-# na condicao final.
+# na condição final.
 pers7 <- pers6 |> mutate(idade_cat2 = case_when(idade < 25 ~ "15-24",
                                                 idade < 35 ~ "25-34",
                                                 idade < 45 ~ "35-44",
@@ -734,7 +735,7 @@ pers7 <- pers6 |> mutate(idade_cat2 = case_when(idade < 25 ~ "15-24",
 
 <div class="exercise-box">
 
-Exercício: Começando com pers7, cria um 'tubo' (pipe) que cria uma nova variável 'globalid' que concatena householdid e personid, depois filtrar para os que tem >5 anos de educação e responderam ao inquérito, e seleccionar as variáveis globalid, faixa etaria, e edu_yrs. Ordena o resultado pela idade do participante.
+Exercício: Começando com `pers7`, crie um *pipe* que gere uma nova variável 'globalid', concatenando `householdid` e `personid`. Depois, filtre os casos com mais de 5 anos de educação e que responderam ao inquérito, e selecione as variáveis `globalid`, faixa etaria, e anos de educação. Por fim, ordene o resultado pela idade do participante.
 
 ```{r all1-setup, exercise.setup="all-setup"}
 pers7 <-
@@ -761,24 +762,24 @@ grade_this({
 ```
 
 ```{r all1-hint-1}
-# Pode lembrar que paste0() é a função que faz concatenação de variáveis de tipo 'char' (sem separador), 
-# neste caso, householdid e personid vao ser 'promovidos' de numerico a string antes da concatenação
+# Lembre-se de que paste0() é a função que concatena variáveis do tipo *character* (sem separador), 
+# Neste caso, householdid e personid serão 'promovidos' de numéricos para *string* antes da concatenação
 pers7 |> mutate(globalid = paste0(householdid, personid)) 
 ```
 ```{r all1-hint-2}
-# Lembre que filter() faz a selecção de linhas. Se queremos combinar condições, podemos fazer com "&"
+# Lembre-se de que filter() faz a selecção de linhas. Se quisermos combinar condições, podemos usar "&"
 pers7 |> mutate(globalid = paste0(householdid, personid)) |> 
     filter(edu_yrs > 5 & status == "I")
 ```
 ```{r all1-hint-3}
-# Lembre que arrange() ordena as linhas segundo o critério. é importante ordenar antes de seleccionar
-# neste caso, porque depois de seleccionar, idade já não estara disponível
+# Lembre-se de que arrange() ordena as linhas segundo o critério. É importante ordenar antes de selecionar
+# pois depois de seleccionar a variável idade já não estará disponível
 pers7 |> mutate(globalid = paste0(householdid, personid)) |> 
     filter(edu_yrs > 5 & status == "I") |>  
     arrange(idade)
 ```
 ```{r all1-hint-4}
-# Lembre que select() é utilizado para seleccionar variáveis
+# Lembre-se de que select() é utilizado para selecionar variáveis
 pers7 |> mutate(globalid = paste0(householdid, personid)) |> 
     filter(edu_yrs > 5 & status == "I") |>  
     arrange(idade) |> 
@@ -789,12 +790,12 @@ pers7 |> mutate(globalid = paste0(householdid, personid)) |>
 
 ## Exemplo prático
 
-É frequente nos inquéritos que precisamos calcular um indicador de interesse em base de várias perguntas ou variáveis separadas na base de dados. Por exemplo, se queremos saber "qual é a proporção da amostra que foi vacinada alguma vez contra COVID-19?" E "qual a proporção que teve 2+ doses de vacina para COVID-19 no último ano?" pode ser necessario conjugar respostas das seguintes perguntas:  
-* Já teve vacina de COVID-19?  
-* Se teve vacina, teve no último ano?  
-* Se teve no último ano, quantas vezes teve no último ano?  
+É frequente, nos inquéritos, precisarmos calcular um indicador de interesse em base de várias perguntas ou variáveis separadas na base de dados. Por exemplo, se quisermos saber: "Qual é a proporção da amostra que foi vacinada alguma vez contra a COVID-19?" e "Qual é a proporção que teve 2+ doses de vacina para a COVID-19 no último ano?" pode ser necessário conjugar respostas às seguintes perguntas:  
+* Já tomou a vacina contra a COVID-19?  
+* Se tomou a vacina, foi no último ano?  
+* Se foi no último ano, quantas doses recebeu no último ano?  
 
-Também, deve considerar as recusas e os que não se lembram. O desafío é: Como codificar cada cenário para a **sua** analise?
+Além disso, deve considerar as recusas e os que não se lembram. O desafio é: Como codificar cada cenário para a **sua** análise?
 
 
 ```{r skip1, echo=FALSE}
@@ -802,9 +803,9 @@ shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/10/skip.png
 height = "350px")
 ```
 
-Notou que alem das perguntas e respostas codificadas, temos uma coluna adicional com instruções ao inquiridor sobre os saltos condicionais (skip patterns em inglês) necessárias para implementar a lógica do questionário.  Estes saltos representam a relação lógica entre as perguntas.
+Notou que, além das perguntas e respostas codificadas, temos uma coluna adicional com instruções ao inquiridor sobre os saltos condicionais (*skip patterns* em inglês) necessárias para implementar a lógica do questionário.  Estes saltos representam a relação lógica entre as perguntas.
 
-Os resultados para estas perguntas poderiam ser representadas desta maneira numa base de dados (incluindo aqui a parte que nos interesa sobre vacinacão):
+Os resultados destas perguntas poderiam ser representadas desta maneira numa base de dados (incluindo aqui a parte que nos interessa sobre vacinação):
 
 ```{r skip2, echo=TRUE, }
 saltos <- tibble(partno = 1:7,
@@ -814,9 +815,9 @@ saltos <- tibble(partno = 1:7,
 saltos
 ```
 
-Rever o exemplo do tibble `saltos`. Porque estão codificados como NA as perguntas q102, e 103 em alguns casos? É porque a pergunta não foi feita. Isto é diferente do caso da pergunta q101 participante número 2, codificado como -8. Neste caso, a pergunta foi feita, mas o participante recusou em responder, ou no caso de q102 para participante número 6, onde ele respondeu que não sabia a resposta (-9).  Embora os saltos não aparecem de forma explícita no tibble, são implícitos nos padrões de respostas encontradas.
+Revise o exemplo do *tibble* `saltos`. Por que estão codificadas como `NA` as perguntas `q102`, e `103` em alguns casos? É porque a pergunta não foi feita. Isso é diferente do caso da pergunta `q101` para o participante número 2, codificado como `-8`. Neste caso, a pergunta foi feita, mas o participante recusou-se a responder, já no caso de `q102`, para o participante número 6, ele respondeu que não sabia a resposta (`-9`).  Embora os saltos não aparecem de forma explícita no *tibble*, são implícitos nos padrões de respostas encontrados.
 
-Então como podemos criar um novo indicador para capturar o conceito que corresponde a nossa pergunta de pesquisa?  Uma alternativa no espirito do Tidy R seria:
+Então, como podemos criar um novo indicador para capturar o conceito que corresponde à nossa pergunta de pesquisa?  Uma alternativa, no espírito do tidy R, seria:
 
 ```{r skip3, echo=TRUE, }
 saltos <- saltos |> 
@@ -827,21 +828,21 @@ saltos <- saltos |>
 saltos
 ```
 
-Pode ver caso por caso e certificar se as respostas para `evervac` e `numvac` fazem sentido. `evervac` e sempre igual a q101, menos no caso que o participante não respondeu a esta pergunta. Neste caso, e NA (participante 2).
+Pode ver caso por caso e certificar-se de que as respostas para `evervac` e `numvac` fazem sentido. `evervac` e sempre igual a q101, exceto quando o participante não respondeu a esta pergunta. Neste caso, é `NA` (participante 2).
 
-`numvac` e igual a q103. No entanto, se o respondente disse que não foi vacinado contra o COVID, ou se não foi vacinado nos últimos 12 meses, consideramos que recebeu 0 doses nos últimos 12 meses (participante 4). Se foi vacinado, mas não durante os últimos 12 meses, também consideramos que recebeu 0 doses nos últimos 12 meses (participante 1). Doutro lado, se recusou em responder ou disse que não sabia se foi vacinada nos últimos 12 meses ou quantos doses recebeu, consideramos NA (participantes 2, 5, 6).
+`numvac` é igual a `q103`. No entanto, se o respondente disse que não foi vacinado contra a COVID-19 ou se não foi vacinado nos últimos 12 meses, consideramos que recebeu zero doses nesse período (participante 4). Se foi vacinado, mas não durante os últimos 12 meses, também consideramos que recebeu zero doses nesse período (participante 1). Por outro lado, se se recusou em responder ou disse que não sabia se foi vacinada nos últimos 12 meses ou quantas doses recebeu, consideramos `NA` (participantes 2, 5, 6).
 
 ## Recursos adicionais
 
-Parabens! Se chegou até aqui quer dizer que conseguiu completar o tutorial. Esta convidado para continuar a sua aprendizagem.
+Parabéns! Se chegou até aqui, isso quer dizer que conseguiu completar o tutorial. Está convidado(a) para continuar a sua aprendizagem.
 
-#### Tutoriais adicionais neste série:
+#### Tutoriais adicionais nesta série:
 
 [Tutorial base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)  
 [Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/tutorial-more-base-R)  
 [Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R)  
 
-#### Aqui estão alguns recursos adicionais para aprender mais sobre R:  
+#### Aqui estão alguns recursos adicionais para aprender mais sobre o R:  
 
 [Receitas de R (En)](https://posit.cloud/learn/recipes)  
 [R para usuários de Excel (En)](https://rstudio-conf-2020.github.io/r-for-excel/)  
@@ -851,7 +852,7 @@ Parabens! Se chegou até aqui quer dizer que conseguiu completar o tutorial. Est
 [R Crash Course (En)](https://r-crash-course.github.io/01-rstudio-intro/)  
 [Posit Cloud (En)](https://posit.cloud)  
 
-Específicamente sobre o tidyverse:
+Específicamente sobre o *tidyverse*:
 
 [R for data science (En)](https://www.tidyverse.org/learn/)  
 [ggplot2: elegant graphics for data analysis (En)](https://ggplot2-book.org/)
