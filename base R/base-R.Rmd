@@ -630,7 +630,7 @@ Exercício: usar a indexeção numérica e por nome para obter o nome da tercera
 
 ## Recursos Adicionais
 
-Parabens! Se chegou até aqui quer dizer que conseguiu completar o tutorial. Esta convidado para continuar a sua aprendizagem.
+Parabens! Se chegou até aqui, isso quer dizer que conseguiu completar o tutorial. Está convidado(a) a continuar a sua aprendizagem.
 
 #### Tutoriais adicionais neste série:
 
@@ -638,7 +638,7 @@ Parabens! Se chegou até aqui quer dizer que conseguiu completar o tutorial. Est
 [Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/tutorial-more-base-R)  
 [Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R)
 
-#### Recursos adicionais sobre R:  
+#### Aqui estão alguns recursos adicionais para aprender mais sobre o R:  
 
 [Receitas de R (En)](https://posit.cloud/learn/recipes)  
 [R para usuários de Excel (En)](https://rstudio-conf-2020.github.io/r-for-excel/)  

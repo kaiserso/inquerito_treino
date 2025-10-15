@@ -627,7 +627,7 @@ Notou a diferenca entre `case_match()` e `case_when()`, em termos de onde se enc
 As condições são avaliadas em ordem, e a primeira condição verdadeira determina o valor da nova variável. Por isso, um valor de `edu_yrs` de 4 resulta em "1-6", um valor de 10 resulta em "7-12", e um valor de 15 resulta em "13+".
 
 <div class="observation-box">
-Obs.: `TRUE` é semelhante a `.default`, agregando todas as alternativas não listadas. Portanto, é arriscado usar `TRUE` se houver a possibilidade de um erro de digitação ou valores inesperados. Por exemplo, se houver uma idade de -9 para indicar  valor em falta, a condição `idade < 5` seria verdadeira, e a idade 999 seria categorizada como "1-6", o que não seria correto. O melhor é listar todas as possibilidades; assim, qualquer valor inesperado torna-se `NA`.
+Obs.: `TRUE` é semelhante a `.default`, agregando todas as alternativas não listadas. Portanto, é arriscado usar `TRUE` se houver a possibilidade de um erro de digitação ou valores inesperados. Por exemplo, se houver uma idade de -9 para indicar  valor em falta, a condição `idade < 7` seria verdadeira, e a idade 999 seria categorizada como "1-6", o que não seria correto. O melhor é listar todas as possibilidades; assim, qualquer valor inesperado torna-se `NA`.
 </div>
 
 Aqui está uma maneira mais seguro de controlar valores não esperados:
@@ -635,7 +635,7 @@ Aqui está uma maneira mais seguro de controlar valores não esperados:
 ```{r mutate9, echo=TRUE}
 pers5 <-
   pers4 |> mutate(edu_cat = 
-                    case_when(edu_yrs_c < 5 ~ "1-6",
+                    case_when(edu_yrs_c < 7 ~ "1-6",
                               edu_yrs_c < 13 ~ "7-12",
                               edu_yrs_c < 24 ~ "13+")) # assumindo que o limite é 24
 pers5
@@ -648,7 +648,7 @@ Agora, os que não tinha `edu_yrs_c` definido, foram clasificados como `NA` (aus
 Exercício: use `case_when()` para recategorizar a variável `idade` em dois grupos, "<25" e "25-49", criando uma nova variável `idade_cat` com essas categorias. Os participantes com idades fora desse intervalo devem ter `NA` em `idade_cat`.
 
 ```{r mutate10-setup, exercise.setup="mutate8-setup"}
-pers5 <- pers4 |> mutate(edu_cat = case_when(edu_yrs_c < 5 ~ "1-6",
+pers5 <- pers4 |> mutate(edu_cat = case_when(edu_yrs_c < 7 ~ "1-6",
                                              edu_yrs_c < 13 ~ "7-12",
                                              edu_yrs_c < 24 ~ "13+"))
 ```
@@ -852,7 +852,7 @@ Parabéns! Se chegou até aqui, isso quer dizer que conseguiu completar o tutori
 [R Crash Course (En)](https://r-crash-course.github.io/01-rstudio-intro/)  
 [Posit Cloud (En)](https://posit.cloud)  
 
-Específicamente sobre o *tidyverse*:
+#### Específicamente sobre o *tidyverse*:
 
 [R for data science (En)](https://www.tidyverse.org/learn/)  
 [ggplot2: elegant graphics for data analysis (En)](https://ggplot2-book.org/)

@@ -326,7 +326,7 @@ grade_this({
 
 ## Recursos adicionais
 
-Parabens! Se chegou até aqui quer dizer que conseguiu completar o tutorial. Esta convidado para continuar a sua aprendizagem.
+Parabens! Se chegou até aqui, isso quer dizer que conseguiu completar o tutorial. Está convidado(a) a continuar a sua aprendizagem.
 
 #### Tutoriais adicionais neste série:
 
@@ -345,7 +345,7 @@ Parabens! Se chegou até aqui quer dizer que conseguiu completar o tutorial. Est
 [R Crash Course (En)](https://r-crash-course.github.io/01-rstudio-intro/)  
 [Posit Cloud (En)](https://posit.cloud)  
 
-Específicamente sobre o tidyverse:
+#### Específicamente sobre o tidyverse:
 
 [R for data science (En)](https://www.tidyverse.org/learn/)  
 [ggplot2: elegant graphics for data analysis (En)](https://ggplot2-book.org/)

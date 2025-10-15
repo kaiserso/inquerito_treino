@@ -851,13 +851,13 @@ with(g, prop.table(table(idade, sexo, useNA="ifany")))[4,3]
 
 ## Recursos adicionais
 
-Parabens! Se chegou até aqui quer dizer que conseguiu completar o tutorial. Esta convidado para continuar a sua aprendizagem.
+Parabens! Se chegou até aqui, isso quer dizer que conseguiu completar o tutorial. Está convidado(a) a continuar a sua aprendizagem.
 
 #### Tutoriais adicionais neste série
 
 [Tutorial base R (Pt)](https://peteryoung.shinyapps.io/tutorial-base-R)  
 [Tutorial base R adicional (Pt)](https://peteryoung.shinyapps.io/tutorial-more-base-R)  
-<!-- [Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R) -->
+[Tutorial tidy R (Pt)](https://peteryoung.shinyapps.io/tutorial-tidy-R)
 
 
 #### Recursos adicionais sobre R 
