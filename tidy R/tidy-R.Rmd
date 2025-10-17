@@ -96,7 +96,8 @@ Neste tutorial, poderá completar alguns exercícios para aprender e reforçar c
 * Pipes (tubos)       
 * mutate        
 * arrange       
-* group_by e summarise        
+* group_by e summarise 
+* criação de indicadores
 
 ### O que é o tidyverse?
 
@@ -381,7 +382,7 @@ grade_this({
   if(identical(.result, pers %>% filter(idade > 21))) {
     pass("Parabéns!")
   }
-  fail("Notou que o tibble aparece antes do pipe `|>` e portanto nao precisa ser incluido nos argumentos a `filter()`?")
+  fail("Notou que o tibble aparece antes do pipe `|>` e portanto não precisa ser incluído nos argumentos a `filter()`?")
 })
 ```
 
@@ -462,7 +463,7 @@ grade_this({
 Durante a limpeza e preparação dos dados para análise, com frequência queremos alterar uma variável em um subgrupo de observações. Embora filter() permita selecionar observações, ele não facilita o update condicional pois os alterações acontecem dentro de mutate(). Neste caso, podemos usar funções condicionais como:  
 
 * if_else()  
-* case_which()  
+* case_match()  
 * case_when()  
 
 Todas essas funções devolvem um valor para cada observação, mas o valor devolvido pode ser determinado pelos valores de outros variáveis dentro da observação. Vamos ver um exemplo.
@@ -574,7 +575,7 @@ pers3 <- pers2 |> mutate(status3 = case_match(status2,
 
 <div class="exercise-box">
 
-Exercício: imagine que, durante a verificação de dados, foi descoberto um erro de formação dos inquiridores que afectou a recolha de dados referente às recusas. Neste inquérito, os anos de educação não deveriam ter sido recolhidos dos que recusaram participar ou que nao eram elegíveis. Use `case_match()` para actualizar os casos com `status == "R"` ou `status == "I"` de modo que os `edu_yrs` seja `NA` (ausente). Neste caso, vamos criar uma nova variável `edu_yrs_c` para `edu_yrs` (corregido) para esse fim.
+Exercício: imagine que, durante a verificação de dados, foi descoberto um erro de formação dos inquiridores que afetou a recolha de dados referente às recusas. Neste inquérito, os anos de educação não deveriam ter sido recolhidos de pessoas que recusaram participar ou que não eram elegíveis. Use `case_match()` para actualizar os casos com `status == "R"` ou `status == "I"` de modo que o `edu_yrs` seja `NA` (ausente). Para isso, criaremos uma nova variável `edu_yrs_c` (corrigido) do `edu_yrs`.
 
 ```{r mutate7-setup, exercise.setup="mutate4-setup"}
 # it seems we can in fact chain together setups, just not non-setup chunks
@@ -602,11 +603,11 @@ grade_this({
 pers4 <- pers3 |> mutate(edu_yrs_c = case_match(status, "I" ~ edu_yrs, "R" ~ NA, "U" ~ NA))
 ```
 
-<div class="observation-box">Obs.: a alteração condicional funciona tanto quando queremos alterar apenas certos valores quanto quando precisamos transformar todos os valores — por exemplo para converter idade em faixas etárias. </div>
+<div class="observation-box">Obs.: a alteração condicional funciona tanto quando queremos alterar apenas certos valores quanto quando precisamos transformar todos os valores — por exemplo, para converter idade em faixas etárias. </div>
 
 ### case_when
 
-Ainda mais flexível é `case_when()`, que permite usar expressões lógicas para definir as condições. Vamos usar case_when para criar uma nova variável `edu_cat` que categoriza os anos de educação em três faixas: "1-6" para menos de 6 anos, "7-12" para 7 a 12 anos, e "13+" para 13 ou mais anos.
+A função `case_when()` é ainda mais flexível porque permite usar expressões lógicas para definir as condições. Vamos usar `case_when()` para criar uma nova variável `edu_cat` que classifica os anos de educação em três faixas: "1-6" para menos de 6 anos, "7-12" para 7 a 12 anos, e "13+" para 13 ou mais anos.
 
 ```{r mutate8-setup, exercise.setup="mutate7-setup"}
 # needed to instantiate results of previous exercise
@@ -622,7 +623,7 @@ pers5 <-
 pers5
 ```
 
-Notou a diferenca entre `case_match()` e `case_when()`, em termos de onde se encontra a variável que serve de base para a transformação?
+Notou a diferença entre `case_match()` e `case_when()` em relação à variável que serve de base para a transformação?
 
 As condições são avaliadas em ordem, e a primeira condição verdadeira determina o valor da nova variável. Por isso, um valor de `edu_yrs` de 4 resulta em "1-6", um valor de 10 resulta em "7-12", e um valor de 15 resulta em "13+".
 
@@ -717,15 +718,15 @@ grade_this({
 ```
 
 ```{r all-hint-1}
-# para introduzir lógica condicional, devemos considerar if_else(), case_which() e case_when()
+# Para introduzir lógica condicional, devemos considerar if_else(), case_which() e case_when()
 pers7 <- pers6 |> mutate(idade_cat2 = case_when(___))
 ```
 ```{r all-hint-2}
-# Sendo que queremos definir múltiplos intervalos, case_when() seria o mais apropriado. 
+# Como que queremos definir múltiplos intervalos, case_when() seria o mais apropriado. 
 pers7 <- pers6 |> mutate(idade_cat2 = case_when(idade < 25 ~ "15-34", ___))
 ```
 ```{r all-hint-3}
-# para evitar que os sem idade sejam agrupados no grupo 35-44 anos, podemos usar !is.na()
+# Para evitar que as pessoas sem idade sejam incluídas no grupo de 35-44 anos, podemos usar !is.na()
 # na condição final.
 pers7 <- pers6 |> mutate(idade_cat2 = case_when(idade < 25 ~ "15-24",
                                                 idade < 35 ~ "25-34",
@@ -735,7 +736,7 @@ pers7 <- pers6 |> mutate(idade_cat2 = case_when(idade < 25 ~ "15-24",
 
 <div class="exercise-box">
 
-Exercício: Começando com `pers7`, crie um *pipe* que gere uma nova variável 'globalid', concatenando `householdid` e `personid`. Depois, filtre os casos com mais de 5 anos de educação e que responderam ao inquérito, e selecione as variáveis `globalid`, faixa etaria, e anos de educação. Por fim, ordene o resultado pela idade do participante.
+Exercício: A partir de `pers7`, crie um *pipe* que gere uma nova variável 'globalid', concatenando `householdid` e `personid`. Depois, filtre os casos com mais de 5 anos de educação que responderam ao inquérito, e selecione as variáveis `globalid`, faixa etária e anos de educação. Por fim, ordene o resultado pela idade do participante.
 
 ```{r all1-setup, exercise.setup="all-setup"}
 pers7 <-
@@ -763,17 +764,17 @@ grade_this({
 
 ```{r all1-hint-1}
 # Lembre-se de que paste0() é a função que concatena variáveis do tipo *character* (sem separador), 
-# Neste caso, householdid e personid serão 'promovidos' de numéricos para *string* antes da concatenação
+# Neste caso, householdid e personid serão convertidos de numéricos para *string* antes da concatenação
 pers7 |> mutate(globalid = paste0(householdid, personid)) 
 ```
 ```{r all1-hint-2}
-# Lembre-se de que filter() faz a selecção de linhas. Se quisermos combinar condições, podemos usar "&"
+# Lembre-se de que filter() faz a seleção de linhas. Se quisermos combinar condições, podemos usar "&"
 pers7 |> mutate(globalid = paste0(householdid, personid)) |> 
     filter(edu_yrs > 5 & status == "I")
 ```
 ```{r all1-hint-3}
-# Lembre-se de que arrange() ordena as linhas segundo o critério. É importante ordenar antes de selecionar
-# pois depois de seleccionar a variável idade já não estará disponível
+# Lembre-se de que arrange() ordena as linhas de acordo com o critério. É importante ordenar antes de selecionar
+# pois depois de selecionar a variável idade já não estará disponível
 pers7 |> mutate(globalid = paste0(householdid, personid)) |> 
     filter(edu_yrs > 5 & status == "I") |>  
     arrange(idade)
@@ -803,7 +804,7 @@ shiny::img(src = "https://peter.mayfirst.org/wp-content/uploads/2025/10/skip.png
 height = "350px")
 ```
 
-Notou que, além das perguntas e respostas codificadas, temos uma coluna adicional com instruções ao inquiridor sobre os saltos condicionais (*skip patterns* em inglês) necessárias para implementar a lógica do questionário.  Estes saltos representam a relação lógica entre as perguntas.
+Notou que, além das perguntas e respostas codificadas, temos uma coluna adicional com instruções ao inquiridor sobre os saltos condicionais (*skip patterns* em inglês) necessárias para implementar a lógica do questionário?  Estes saltos representam a relação lógica entre as perguntas.
 
 Os resultados destas perguntas poderiam ser representadas desta maneira numa base de dados (incluindo aqui a parte que nos interessa sobre vacinação):
 
@@ -811,7 +812,8 @@ Os resultados destas perguntas poderiam ser representadas desta maneira numa bas
 saltos <- tibble(partno = 1:7,
                  q101 = c(1, -8, 1, 2, 1, 1, 1), 
                  q102 = c(2, NA, 1, NA, 1, -9, 1), 
-                 q103 = c(NA, NA, 3, NA, 88, NA, 2))
+                 q103 = c(NA, NA, 3, NA, 88, NA, 2),
+                 q104 = c(-8, 1, 1, 2, 1, -9, 2))
 saltos
 ```
 
@@ -831,6 +833,266 @@ saltos
 Pode ver caso por caso e certificar-se de que as respostas para `evervac` e `numvac` fazem sentido. `evervac` e sempre igual a q101, exceto quando o participante não respondeu a esta pergunta. Neste caso, é `NA` (participante 2).
 
 `numvac` é igual a `q103`. No entanto, se o respondente disse que não foi vacinado contra a COVID-19 ou se não foi vacinado nos últimos 12 meses, consideramos que recebeu zero doses nesse período (participante 4). Se foi vacinado, mas não durante os últimos 12 meses, também consideramos que recebeu zero doses nesse período (participante 1). Por outro lado, se se recusou em responder ou disse que não sabia se foi vacinada nos últimos 12 meses ou quantas doses recebeu, consideramos `NA` (participantes 2, 5, 6).
+
+<div class="observation-box">
+Obs.: Este tipo de conversão também acontece quando incluir valores com tipos diferentes num vector.
+</div>
+
+<div class="exercise-box">
+
+Exercício: Crie uma nova variável 'evercovid' que recodifique q104 como 1/2 (1=sim, 2=não).
+
+```{r skip6-setup}
+saltos <- tibble(partno = 1:7,
+                 q101 = c(1, -8, 1, 2, 1, 1, 1), 
+                 q102 = c(2, NA, 1, NA, 1, -9, 1), 
+                 q103 = c(NA, NA, 3, NA, 88, NA, 2),
+                 q104 = c(2, -8, 1, 1, 1, -9, 2))
+saltos <- saltos |> 
+		mutate(evervac = if_else(q101 < 0, NA, q101),
+           numvac = case_when(q101 == 2 | q102 == 2 ~ 0, 
+					     q103 > 87 ~ NA, 
+					     TRUE ~ q103))
+saltos <- saltos |> mutate(evervac_i = 2-evervac,
+                           numvac_gt1 = if_else(numvac > 1, 1, 0))
+```
+
+```{r skip6, exercise=TRUE, exercise.setup="skip6-setup"}
+saltos <- saltos |> ___
+```
+
+</div>
+```{r skip6-check}
+grade_this({
+  if(identical(.result, saltos |> mutate(evercovid = if_else(q104 %in% c(1,2), q104, NA)))) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+```{r skip6-hint-1}
+# temos várias opções para recodificar, podemos usar if_else(), case_match() ou case_when(). No caso
+# de if_else(), precisa de uma condição: o que fazer se for verdadeiro e o que fazer se for falso.
+saltos <- saltos |> mutate(evercovid = if_else(___)) 
+saltos
+```
+
+```{r skip6-hint-2}
+# por exemplo, podemos indicar o que fazer se o valor for omitido devido à recusa ou não saber a resposta...
+saltos <- saltos |> mutate(evercovid = if_else(q104 == -8 | q104 == -9, ___, ___)) 
+saltos
+```
+
+```{r skip6-hint-3}
+# por exemplo, podemos indicar o que fazer se o valor for omitido devido à recusa ou não saber a resposta...
+saltos <- saltos |> mutate(evercovid = if_else(q104 == -8 | q104 == -9, NA, q104)) 
+saltos
+```
+
+### Gestão de dados em falta
+
+<div class="exercise-box">
+
+```{r skip4-quiz, echo=FALSE}
+question("Qual proporção dos respondentes receberam a vacina contra a COVID-19?",
+         answer("5/7 = 71,4%"),
+         answer("5/6 = 83,3%", correct = TRUE),
+         answer("6/6 = 100%"))
+```
+
+</div> 
+
+<div class="exercise-box">
+
+```{r skip5-quiz, echo=FALSE}
+question("Qual proporção dos respondentes receberam 2+ doses de vacina contra a COVID-19 nos últimos 12 meses?",
+         answer("3/7 = 42,9%"),
+         answer("2/7 = 28,6%"),
+         answer("2/2 = 100%"),
+         answer("2/4 = 50,0%", correct = TRUE))
+```
+
+</div> 
+
+<div class="observation-box">
+Obs.: Apenas podemos calcular o indicador se excluirmos os com dados em falta. Portanto, a resposta 'impossivel saber' também poderia ter sido considerada correcta. POr isso e sempre importante reportar quando tem dados em falta, para o leitor poder interpretar os resultados com a devida cautela.  
+</div>
+
+### Calcular proporções
+
+Mas como calcular os resultados obitos directamente no R? Podemos usar `summarise()` com `mean()`. Mas primeiro, vamos converter os indicadores novamente num formato melhor para responder a estas perguntas.
+
+```{r skip7}
+saltos <- saltos |> mutate(evervac_i = 2-evervac,
+                           numvac_gt1 = if_else(numvac > 1, 1, 0))
+saltos
+```
+
+Para converter uma variável codificada em {1,2} para {TRUE,FALSE} em {1,0}, podemos usar este atalho de subtração, porque 2-2=0 e 2-1=1.  Por outro lado, podemos aproveitar que o R converte {TRUE,FALSE} em {1,0} e usar `numvac > 1` para recodificar num indicador que é 1 no caso de numvac ser 2 ou mais, e caso contrário e 0.
+
+<div class="observation-box">
+Obs.: Os indicadores qualitativos que têm apenas 2 possibilidades que representam verdadeiro ou falso são chamados *Booleanos* (inventaos pelo [George Boole](https://en.wikipedia.org/wiki/George_Boole). A codificação {1,0} é conveniente porque a média de um indicador codificado assim é igual a proporção, ou probabilidade, do indicador ser verdadeiro. 
+</div>
+
+```{r skip8-setup, exercise.setup="skip6-setup"}
+saltos <- saltos |> mutate(evervac_i = 2-evervac,
+                           numvac_gt1 = if_else(numvac > 1, 1, 0))
+saltos <- saltos |> mutate(evercovid = if_else(q104 == -8 | q104 == -9, NA, q104)) 
+```
+
+<div class="exercise-box">
+
+Exercício: Crie uma nova variável `evercovid_i` que recodifique `evercovid` para {1,0} (1=sim, 0=não).
+
+```{r skip8, exercise=TRUE, exercise.setup="skip8-setup"}
+saltos <- saltos |> ___
+```
+
+</div>
+```{r skip8-check}
+grade_this({
+  if(identical(.result, saltos |> mutate(evercovid_i = 2-evercovid))) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+Agora que temos os nossos indicadores recodificados, podemos usar `mean()` para obter a proporção.
+
+```{r skip9}
+saltos |> summarise(p_evervac = mean(evervac_i, na.rm=TRUE), p_numvac = mean(numvac_gt1, na.rm=TRUE))
+```
+
+Isto funciona porque uma proporção é a média de um indicador Booleano {1,0}. 
+
+Se queremos a percentagem, e só multiplicar o resultado por 100.
+
+<div class="exercise-box">
+
+Exercício: Calcule a proporção de participantes que afirmam que já tiveram COVID-19.
+
+```{r skip10-setup, exercise.setup="skip8-setup"}
+saltos <- saltos |> mutate(evercovid_i = 2-evercovid)
+```
+
+```{r skip10, exercise=TRUE, exercise.setup="skip10-setup"}
+saltos <- saltos |> ___
+```
+
+</div>
+```{r skip10-check}
+grade_this({
+  if(identical(.result, saltos |> summarise(evercovid = mean(evercovid_i, na.rm=TRUE)))) {
+    pass(randompraise())
+  }
+  if(identical(.result, saltos |> summarise(evercovid = mean(evercovid, na.rm=TRUE)))) {
+    fail("A resposta não está totalmente correta. Será que utilizou o indicador codificado como 1/0?")
+  }
+  if(identical(.result, saltos |> summarise(evercovid = mean(evercovid_i)))) {
+    fail("A resposta não está 100% certo. Será que se esqueceu de incluir `na.rm=TRUE`?")
+  }
+  fail(randomencouragement())
+})
+```
+
+```{r skip10-hint-1}
+# Lembre-se de que podemos calcular um valor agregado, com summarise()
+saltos |> summarise(evercovid = ___) 
+```
+
+```{r skip10-hint-2}
+# Lembre-se de que podemos calcular uma proporção com mean(), no caso de estar codificado como {1,0}
+saltos |> summarise(evercovid = mean(___)) 
+```
+
+```{r skip10-hint-3}
+# Lembre-se de que podemos calcular uma proporção com mean(), no caso de estar codificado como {1,0}
+saltos |> summarise(evercovid = mean(evercovid, na.rm=TRUE)) 
+```
+
+<div class="exercise-box">
+
+Exercício: Calcule a **percentagem** de participantes que afirmam já ter tido COVID-19.
+
+```{r skip11, exercise=TRUE, exercise.setup="skip10-setup"}
+saltos <- saltos |> ___
+```
+
+</div>
+```{r skip11-check}
+grade_this({
+  if(identical(.result, saltos |> summarise(evercovid = mean(evercovid_i, na.rm=TRUE)*100))) {
+    pass(randompraise())
+  }
+  if(identical(.result, saltos |> summarise(evercovid = mean(evercovid_i, na.rm=TRUE)))) {
+    fail("Quase. Será que esqueceu de converter a proporção para percentagem?")
+  }
+  if(identical(.result, saltos |> summarise(evercovid = mean(evercovid*100, na.rm=TRUE)))) {
+    fail("A resposta não está totalmente correta. Será que utilizou o indicador codificado como 1/0?")
+  }
+  if(identical(.result, saltos |> summarise(evercovid = mean(evercovid_i)))) {
+    fail("Não está 100% certo. Será que esqueceu de incluir na.rm=TRUE?")
+  }
+  fail(randomencouragement())
+})
+```
+
+```{r skip11-hint-1}
+# Podemos multiplicar antes ou depois de calcular a média...
+saltos |> summarize(evercovid = mean(evercovid_i, na.rm=TRUE)*100) 
+saltos |> summarize(evercovid = mean(evercovid_i*100, na.rm=TRUE)) # mesmo resultado 
+```
+
+### Juntando tudo
+
+No próximo exercício, vai ter de criar um novo indicador e depois calcular a proporção. Qeremos saber a proporção das pessoas vacinadas contra a COVID-19 que afirmaram ter tido a doença. É importante pensar em que deve ser incluído no denominador e no numerador do novo indicador.
+
+<div class="exercise-box">
+
+Exercício: Calcule a proporção de participantes que dizem que já tiveram COVID-19 entre os que já foram vacinados. A nova variável deve ser chamada `covid_entre_vac`.
+
+```{r skip12, exercise=TRUE, exercise.setup="skip10-setup"}
+saltos <- saltos |> mutate()
+```
+
+</div>
+```{r skip12-check}
+grade_this({
+  if(identical(.result, saltos |> mutate(covid_entre_vac = case_when(is.na(evervac_i) | is.na(evercovid_i) ~ NA,
+                                                                     evervac_i == 0 ~ NA,
+                                                                     TRUE ~ evercovid_i)))) {
+    pass(randompraise())
+  }
+  fail(randomencouragement())
+})
+```
+
+```{r skip12-hint-1}
+# O ideal seria usar case_when() aqui, sendo que a condição depende de duas variáveis
+# lembre que os argumentos ao case_when sao condição, resultado se verdadeiro, resultado se falso
+saltos |> mutate(covid_entre_vac = case_when(___))
+```
+
+```{r skip12-hint-2}
+# podemos despachar primeiro os missings (se a resposta ao estado de vacina ou de COVID esta em falta, 
+# entao este indicador também vai ser missing)
+saltos |> mutate(covid_entre_vac = case_when(is.na(evervac_i) | is.na(evercovid_i) ~ NA, ___)) 
+```
+
+```{r skip12-hint-3}
+# depois, o nosso indicador seria não definido para os que não tiveram vacina, entao podemos elimina-los
+saltos |> mutate(covid_entre_vac = case_when(is.na(evervac_i) | is.na(evercovid_i) ~ NA, 
+                                             evervac_i == 0 ~ NA, ___))
+```
+
+```{r skip12-hint-4}
+# para os que restam, o valor final vai ser o resultado de COVID
+saltos |> mutate(covid_entre_vac = case_when(is.na(evervac_i) | is.na(evercovid_i) ~ NA, 
+                                             evervac_i == 0 ~ NA, 
+                                             TRUE ~ evercovid_i)) 
+```
 
 ## Recursos adicionais
 
