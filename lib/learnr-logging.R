@@ -1,0 +1,130 @@
+# Register callbacks to log tutorial start and exercise completion for every exercise in a 
+# tutorial to a database on cloudflare. Note, assumes appname defined as tutorial.id in 
+# options. This must be sourced in a server-start context chunk:
+
+# ```{r setup}
+# options(
+#   tutorial.id = "test-logging",
+#   logger.endpoint = "https://learnr-logger.kaiserso.workers.dev/log",
+#   logger.timeout = 3 # in seconds
+# )
+# ```
+
+# ```{r server, context = "server-start", echo=FALSE, include=FALSE}
+# source("../lib/learnr-logging.R")
+# ```
+
+library(httr)
+library(jsonlite)
+library(dotenv)
+
+cat(file=stderr(), "Server-start chunk", "\n")
+
+# use a private .env or .Renviron file to store sensitive configuration
+# parameters and authorization credentials
+if (file.exists(".env")) {
+  try(dotenv::load_dot_env(), silent = TRUE)
+}
+if (file.exists(".Renviron")) {
+  try(dotenv::load_dot_env(".Renviron"), silent = TRUE)
+} 
+
+logger.endpoint <- Sys.getenv("LOGGER_ENDPOINT", unset = "")
+logger.api.key  <- Sys.getenv("LOGGER_API_KEY", unset = "")
+logger.enabled  <- tolower(Sys.getenv("LOGGER_ENABLED", "false")) == "true"
+
+# allow caller to override the endpoint and api key via options
+logger.endpoint <- getOption("logger.endpoint", logger.endpoint)
+logger.api.key <- getOption("logger.api.key", logger.api.key)
+logger.enabled <- getOption("logger.enabled", logger.enabled)
+
+# these are user-defined/overridable
+tutorial.id <- getOption("tutorial.id", "unknown-tutorial")
+logger.timeout <- getOption("logger.timeout", 3)
+
+# Log when a question is submitted
+event_register_handler("session_start", function(session, event, data) {
+  
+  message("Session started")
+  observe({
+    id <- UUIDgenerate()
+    payload <- list(
+      session = id,
+      event = "session_start",
+      info = list(
+        user_agent = session$clientData$useragent,
+        path = session$clientData$url_pathname,
+        hostname = session$clientData$url_hostname,
+        app = tutorial.id
+      )
+    )
+    if(logger.enabled && nzchar(logger.endpoint) && nzchar(logger.api.key)) {
+      res <- try(
+          POST(logger.endpoint,
+               body = toJSON(payload, auto_unbox = TRUE),
+               encode = "json",
+               timeout(logger.timeout)),
+          silent = TRUE
+        )
+        # Log the response or error
+        if (inherits(res, "try-error")) {
+          message("❌ Failed to send log: ", conditionMessage(attr(res, "condition")))
+        } else {
+          message("✅ Log sent, status: ", res$status_code)
+        }
+    } else {
+      message("⚠️ Logger is disabled or not properly configured. Logging to console only.")
+      message(toJSON(payload, auto_unbox = TRUE))
+    }
+  })
+})
+
+
+event_register_handler("exercise_result", function(session, event, data) {
+
+  message("🧩 Exercise submitted: ", data$label)
+
+  observe({
+    
+    correct_val <- NA
+    if (!is.null(data$feedback)) {
+      correct_val <- data$feedback$correct
+    }  
+    message("correct val was: ", correct_val)
+    message("names: ", paste0(names(data), collapse = ", "))
+    
+    message("feedback: ", str(data$feedback))
+    message("checked: ", data$checked)
+    
+    payload <- list(
+      session = session$token,
+      event   = event,
+      info    = list(
+        label = data$label, 
+        correct = correct_val,
+        checked = data$checked,
+        hostname = session$clientData$url_hostname,
+        app = tutorial.id
+        )
+    )
+    if(logger.enabled && nzchar(logger.endpoint) && nzchar(logger.api.key)) {
+      res <- try(
+      POST(logger.endpoint,
+           add_headers(`x-api-key` = logger.api.key),
+           body = toJSON(payload, auto_unbox = TRUE),
+           encode = "json",
+           timeout(logger.timeout)),
+      silent = TRUE
+    )
+    # Log the response or error
+    if (inherits(res, "try-error")) {
+      message("❌ Failed to send log: ", conditionMessage(attr(res, "condition")))
+    } else {
+      message("✅ Log sent, status: ", res$status_code)
+    }
+    } else {
+      message("⚠️ Logger is disabled or not properly configured. Logging to console only.")
+      message(toJSON(payload, auto_unbox = TRUE))
+    }
+  })
+})

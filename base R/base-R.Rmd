@@ -13,6 +13,12 @@ description: >
 ```{r setup, include=FALSE}
 library(learnr)
 library(gradethis)
+library(uuid)
+
+# for logging
+options(
+  tutorial.id = "base-R"
+)
 
 knitr::opts_chunk$set(echo = FALSE)
 gradethis::gradethis_setup()
@@ -27,6 +33,10 @@ randomencouragement <- function() {
   encouragement[runif(1, 1, length(encouragement))]
 }
 
+```
+
+```{r server, context = "server-start", echo=FALSE, include=FALSE}
+source("./learnr-logging.R")
 ```
 
 ```{r logo, echo=FALSE, results='asis'}

@@ -1,0 +1,311 @@
+---
+title: "learnr logerator"
+author: "Peter Young"
+date: "2025-10-19"
+output:
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+
+# note, this app is not for deployment
+
+knitr::opts_chunk$set(echo = FALSE)
+
+#library(httr2)
+library(DBI)
+library(RSQLite)  # you may export SQLite and connect locally
+library(jsonlite)
+library(purrr)
+library(tidyverse)
+library(purrr)
+library(kableExtra)
+library(httr2)
+library(scales)
+
+if (file.exists(".env")) {
+  try(dotenv::load_dot_env(), silent = TRUE)
+}
+if (file.exists(".Renviron")) {
+  try(dotenv::load_dot_env(".Renviron"), silent = TRUE)
+} 
+
+production_hosts <- Sys.getenv("SHINY_PRODUCTION_HOST", unset = "")
+log_server_url <- Sys.getenv("CLOUDFLARE_LOGGER_D1_ENDPOINT", unset = "")
+account_id <- Sys.getenv("CLOUDFLARE_ACCOUNT_ID") 
+database_id <- Sys.getenv("CLOUDFLARE_LOGGER_D1_DB_ID") 
+api_token <- Sys.getenv("CLOUDFLARE_LOGGER_D1_API_TOKEN")
+
+cat(paste0("Account RENVIRON", Sys.getenv("READ_ACCT_RENVIRON")))
+cat(paste0("Project RENVIRON", Sys.getenv("READ_PROJ_RENVIRON")))
+
+# include local testing output?
+exclude.local <- FALSE
+start.date <- as.Date("2025-01-01") # can filter out older records
+
+if(!nzchar(log_server_url)) {
+  stop("CLOUDFLARE_LOGGER_D1_ENDPOINT environment variable not set")
+}
+if(!nzchar(account_id)) {
+  stop("CLOUFLARE_ACCOUNT_ID environment variable not set")
+}
+if(!nzchar(database_id)) {
+  stop("CLOUDFLARE_LOGGER_D1_DB_ID environment variable not set")
+}
+if(!nzchar(api_token)) {
+  stop("CLOUDFLARE_LOGGER_D1_API_TOKEN environment variable not set")
+}
+
+query <- "select * from logs"
+
+resp <- request(
+  paste0(log_server_url, "/", account_id, "/d1/database/", database_id, "/query")
+) |>
+  req_headers(
+    "Authorization" = paste("Bearer", api_token),
+    "Content-Type"  = "application/json"
+  ) |>
+  req_body_json(list(sql = query)) |>
+  req_perform()
+
+# Parse
+data <- resp_body_json(resp)
+
+res <- data$result[[1]]$results
+if (is.null(res) || !length(res)) {
+  logs <- tibble()
+} else {
+  logs <- purrr::map_dfr(res, as_tibble)
+}
+
+```
+
+```{r parse-logs, echo=FALSE}
+## Logging outcomes
+
+logs <- logs %>%
+  mutate(info_parsed = map(info, ~ tryCatch(fromJSON(.x), error = function(e) NULL)))
+
+# only include actual runs on production, and parse the json fields into sep cols
+logs_clean <- logs %>% unnest_wider(info_parsed)
+
+# earlier I was logging submissions instead of results, cleanup here
+logs_clean <- logs_clean |> 
+  mutate(event = if_else(event == "exercise_submitted", "exercise_result", event))
+
+if(exclude.local == TRUE) {
+  logs_clean <- logs_clean |> filter(hostname %in% production_hosts)
+}
+if(!is.na(start.date)) {
+  logs_clean <- logs_clean |> filter(as.Date(ts) >= start.date)
+}
+
+# which tutorials actually have data?
+found_tutorials <- logs_clean |> distinct(path) |> filter(!is.na(path)) |> 
+  mutate(app = str_remove(path, "^(/tutorial-|/)"),
+         app = str_remove(app, "/$"),
+         app2 = str_replace_all(app, "-", " "),
+         local_path = paste0(app, "/", app, ".Rmd"),
+         local_path2 = paste0(app2, "/", app, ".Rmd")) |> 
+  arrange(desc(path)) |>
+  distinct(local_path, .keep_all = TRUE) # some hackery to deal with multiple deployments of same tutorial
+
+# parse the total number of exercises and last exercise name from the source for those
+# tutorials that were found
+tutorial_func <-   function(path) {
+    app = str_remove(path, "^(/tutorial-|/)")
+    app = str_remove(app, "/$")
+    app2 = str_replace_all(app, "-", " ")
+    local_path = paste0(app, "/", app, ".Rmd")
+    local_path2 = paste0(app2, "/", app, ".Rmd")
+    
+    #message(paste0("current directory is ", getwd()))
+    suppressWarnings(tutorial_source <- tryCatch(readLines(local_path), error = function(e) NULL))
+    if (is.null(tutorial_source)) {
+      tutorial_source <- tryCatch(readLines(local_path2), error = function(e) NULL)
+    }
+    if (!is.null(tutorial_source)) {
+      total_exercises <- sum(grepl("```\\{r,? .*, ?exercise=", tutorial_source))
+      last_exercise <- tail(grep("```\\{r,? .*, ?exercise=", tutorial_source, value = TRUE), 1)
+      last_exercise_name <- sub("```\\{r,? (.*), ?exercise=.*$", "\\1", last_exercise)
+      return(data.frame(app = app, 
+                        total_exercises = total_exercises, 
+                        last_exercise_name = last_exercise_name))
+    } else {
+      return(data.frame(app = app, 
+                        total_exercises = NA, 
+                        last_exercise_name = NA))
+  }
+}
+tutorial_detail_func <- function(path) {
+  app = str_remove(path, "^(/tutorial-|/)")
+  app = str_remove(app, "/$")
+  app2 = str_replace_all(app, "-", " ")
+  local_path = paste0(app, "/", app, ".Rmd")
+  local_path2 = paste0(app2, "/", app, ".Rmd")
+  
+  suppressWarnings(tutorial_source <- tryCatch(readLines(local_path), error = function(e) NULL))
+  if (is.null(tutorial_source)) {
+    tutorial_source <- tryCatch(readLines(local_path2), error = function(e) NULL)
+  }
+  if (!is.null(tutorial_source)) {
+    exercise_lines <- grep("```\\{r,? .*, ?exercise=", tutorial_source, value = TRUE)
+    exercise_names <- sub("```\\{r,? (.*), ?exercise=.*$", "\\1", exercise_lines)
+    return(data.frame(app = app, 
+                      exercise_name = exercise_names, 
+                      exercise_index = seq_along(exercise_names)))
+  } else {
+    return(data.frame(app = app, exercise_name = NA))
+  }
+}
+
+# parse the tutorial structure from source code, details include ordered list of exercises
+tutorial_info <- map_dfr(found_tutorials$path, tutorial_func)
+tutorial_detail <- map_dfr(found_tutorials$path, tutorial_detail_func)
+
+# get info on tutorial initiation
+initiation <- tutorial_info |> left_join(logs_clean, join_by(app == app)) |> 
+  filter(event == "session_start") |> 
+  group_by(app) |> 
+  summarise(initiations = n_distinct(session),
+            last_init_date = as.Date(max(ts)),
+            total_exercises = max(total_exercises),
+            last_exercise_name = last(last_exercise_name),
+            .groups = "drop")
+
+# get info on tutorial completion (I'm not actually capturing this event, using last exercise
+# as a proxy)
+completion <- tutorial_info |> left_join(logs_clean, join_by(app == app, last_exercise_name == label)) |> 
+  filter(event == "exercise_submitted") |> 
+  group_by(app) |> 
+  summarise(completions = n_distinct(session),
+            .groups = "drop")
+
+completion <- initiation |> left_join(completion, by = join_by(app)) |> 
+  mutate(completions = if_else(is.na(completions), 0L, completions),
+         completion_rate = percent(completions / initiations, 0.1))
+
+exercise_detail <- 
+  tutorial_detail |> 
+  left_join(logs_clean |> filter(event %in% c("exercise_submitted", "exercise_result")), 
+            join_by(app == app, exercise_name == label)) |> 
+  group_by(app, exercise_name, exercise_index) |>
+  summarise(sessions_attempting = n_distinct(session),
+            correct_attempts = sum(correct == TRUE, na.rm = TRUE),
+            total_attempts = sum(checked == TRUE, na.rm = TRUE),
+            total_submissions = n(),
+            last_submission_date = as.Date(max(ts)),
+            prop_correct = percent(correct_attempts / total_attempts, 0.1),
+            .groups = "drop") |> 
+  arrange(app, exercise_index)
+
+# for each session/app, compute proportion of exercises done and find last exercise
+# completed
+
+prop_exercise_unique_sessions <- 
+  tutorial_info |> left_join(logs_clean, join_by(app == app)) |>
+    filter(event == "exercise_submitted") |> 
+    group_by(app, session) |> 
+    summarise(exercises_done = n_distinct(label),
+              total_exercises = first(total_exercises),
+              last_exercise_date = as.Date(last(ts)), .groups = "drop") |> 
+    mutate(prop_done = exercises_done / total_exercises)
+
+# summarize the per-session data to see range of completion rates and when last 
+# completed an exercise
+
+prop_exercise_done <- 
+  prop_exercise_unique_sessions |> group_by(app) |>
+    summarise(min_prop_done = min(prop_done, na.rm = TRUE),
+              avg_prop_done = mean(prop_done, na.rm = TRUE),
+              max_prop_done = max(prop_done, na.rm = TRUE),
+              last_ex_date = as.Date(max(last_exercise_date, na.rm=TRUE)),
+              .groups = "drop") |> 
+  mutate(across(ends_with("_done"), ~percent(.x, accuracy = 0.1)))
+
+# fix up the percentage, now that we've used for computing ranges
+sessions <-
+  prop_exercise_unique_sessions |> 
+  mutate(session = paste0(substr(session, 1, 6),  "...")) |>
+  mutate(prop_done = percent(prop_done, accuracy = 0.1))
+
+# create a nice time series for plotting
+exercise_ts <-
+  logs_clean |> mutate(week_start = lubridate::floor_date(as.Date(ts), "week")) |>
+  group_by(week_start, app, event) |> 
+  summarise(events = n(), .groups = "drop") # |> 
+ # pivot_wider(names_from = event, values_from = events, values_fill = 0)
+
+```
+
+### Tutorial initiations and completions
+```{r show-results-1}
+completion |> 
+  rename(
+    "App" = app,
+    "Starts" = initiations,
+    "Last start" = last_init_date,
+    "N. ex." = total_exercises,
+    "Last ex." = last_exercise_name,
+    "N. comp." = completions,
+    "C. rate" = completion_rate
+  ) |>
+  kable(caption = "Initiations and completions")
+
+```
+
+### Tutorial progress
+```{r show-results-2}
+prop_exercise_done |>
+    rename(
+    "App" = app,
+    "Min % done" = min_prop_done,
+    "Avg % done" = avg_prop_done,
+    "Max % done" = max_prop_done,
+    "Last submit" = last_ex_date
+  ) |>
+    kable(caption = "Progress of exercises completed per session")
+```
+
+### Progress by session
+```{r show-results-3}
+sessions |>
+    rename(
+    "App" = app,
+    "Session" = session,
+    "Ex. done" = exercises_done,
+    "N. ex." = total_exercises,
+    "Last ex." = last_exercise_date,
+    "% done" = prop_done
+  ) |>
+  kable(caption = "Session progress")
+```
+
+### Exercise attempts and correctness
+```{r show-results-4}
+exercise_detail |> 
+  select(app, exercise_name, sessions_attempting, total_submissions, total_attempts, 
+         prop_correct, last_submission_date) |>
+    rename(
+    "App" = app,
+    "Ex. name" = exercise_name,
+    "N. sessions" = sessions_attempting,
+    "N. submissions" = total_submissions,
+    "N. attempts" = total_attempts,
+    "% correct" = prop_correct,
+    "Last submit" = last_submission_date
+  ) |>
+  kable(caption = "Exercise attempts")
+```
+
+### Time series of tutorial intitiation and exercise completion
+```{r show-results-5}
+exercise_ts |> 
+  ggplot(aes(x = week_start, y = events, color = event)) +
+  geom_line() + geom_point() +
+  facet_grid(~app) +
+  theme_minimal() +
+  scale_x_date(breaks = unique(exercise_ts$week_start)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+```

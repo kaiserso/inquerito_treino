@@ -14,6 +14,12 @@ description: >
 library(learnr)
 library(gradethis)
 library(tidyverse)
+library(uuid)
+
+# for logging
+options(
+  tutorial.id = "tidy-R"
+)
 
 knitr::opts_chunk$set(echo = FALSE)
 gradethis::gradethis_setup()
@@ -42,6 +48,10 @@ pers <- tibble(personid = c(5001:5009),
                edu_yrs = seq(1, 18, by=2),
                status = c(rep("I", 7), rep("R", 2)))
 
+```
+
+```{r server, context = "server-start", echo=FALSE, include=FALSE}
+source("./learnr-logging.R")
 ```
 
 ```{r logo, echo=FALSE, results='asis'}
@@ -97,7 +107,7 @@ Neste tutorial, poderá completar alguns exercícios para aprender e reforçar c
 * mutate        
 * arrange       
 * group_by e summarise 
-* criação de indicadores
+* criação de indicadores  
 
 ### O que é o tidyverse?
 
@@ -304,11 +314,12 @@ x <- filter(pers, ___)
 summarize(x, ___)
 ```
 
+</div>
+
 <div id="func4-hint">
 **Dica:** primeiro filtar para identificar os casos de recusa, depois agregar a idade usando summarise()
 </div>
 
-</div>
 ```{r func4-check}
 grade_this({
   if(identical(.result, 36) || (is_tibble(.result) && identical(.result[[1]], 36))) {
@@ -442,11 +453,13 @@ pers |> group_by(householdid) |> summarize(idade_media = mean(idade),  n = n())
 ```
 
 <div class="exercise-box">
+
 Agora é a sua vez! Agrupe os dados pelo estado do inquérito (`status`), e calcule a média de idade (`idade_media`) e a educação máxima (`edu_max`), em anos, para cada grupo.
 
 ```{r groups, exercise=TRUE}
 
 ```
+
 </div>
 
 ```{r groups-check}
