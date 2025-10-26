@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.env
+.Renviron
+rsconnect
+.htm
+.html
+.DS_Store
