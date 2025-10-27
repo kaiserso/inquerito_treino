@@ -14,11 +14,15 @@ description: >
 library(learnr)
 library(gradethis)
 library(uuid)
+library(learnrLogr)
 
 # for logging
 options(
-  tutorial.id = "more-base-R"
+  tutorial.id = "more-base-R",
+  logger.enabled = TRUE
 )
+
+register_learnr_handlers() 
 
 knitr::opts_chunk$set(echo = FALSE)
 gradethis::gradethis_setup()
@@ -40,10 +44,6 @@ f <- data.frame(provincia = provs, pop = pops)
 sexo <- c("F", "F", "M", "M", "M", NA, "F")
 idade <- c("10-19", "10-19", "30-39", "40-49", NA, "50+", "30-39")
 g <- data.frame(sexo, idade)
-```
-
-```{r server, context = "server-start", echo=FALSE, include=FALSE}
-source("./learnr-logging.R")
 ```
 
 ```{r logo, echo=FALSE, results='asis'}

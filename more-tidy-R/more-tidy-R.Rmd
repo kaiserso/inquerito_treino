@@ -15,11 +15,15 @@ library(learnr)
 library(gradethis)
 library(tidyverse)
 library(uuid)
+library(learnrLogr)
 
 # for logging
 options(
-  tutorial.id = "more-tidy-R"
+  tutorial.id = "more-tidy-R",
+  logger.enabled = TRUE
 )
+
+register_learnr_handlers() 
 
 knitr::opts_chunk$set(echo = FALSE)
 gradethis::gradethis_setup()
@@ -42,6 +46,38 @@ print_grouped_tibble <- function(tbl) {
 
 # data available to all exercises...
 
+# for tbl_summmary examples
+saltos <- tibble(partno = 1:11,
+                 q001 = c(1, 2, 1, 2, 1, 1, 2, 1, 1, 2, 2),
+                 q002 = c(17, 15, 23, 67, 54, 29, 40, 12, 23, 14, 73),
+                 q101 = c(1, -8, 1, 2, 1, 1, 1, 2, 2, 2, 1), 
+                 q102 = c(2, NA, 1, NA, 1, -9, 1, NA, NA, NA, 1), 
+                 q103 = c(NA, NA, 3, NA, 88, NA, 2, NA, NA, NA, 3),
+                 q104 = c(2, -8, 1, 1, 1, -9, 2, 2, 1, 1, 1))
+saltos <- saltos |> 
+		mutate(evervac = if_else(q101 < 0, NA, q101),
+           numvac = case_when(q101 == 2 | q102 == 2 ~ 0, 
+					     q103 > 87 ~ NA, 
+					     TRUE ~ q103))
+saltos <- saltos |> mutate(evervac_i = 2-evervac,
+                           numvac_gt1 = if_else(numvac > 1, 1, 0))
+saltos <- saltos |> mutate(evercovid = if_else(q104 == -8 | q104 == -9, NA, q104)) 
+saltos <- saltos |> mutate(grupo_etario = case_when(q002 < 18 ~ "Criança",
+                                               q002 >=18 & q002 < 60 ~ "Adulto",
+                                               q002 >=60 ~ "Idoso"))
+saltos <- saltos |> mutate(q001_f = factor(q001,
+                                           levels = c(1,2),
+                                           labels = c("Masculino", "Feminino")),
+                           evervac_f = factor(evervac,
+                                              levels = 1:2,
+                                              labels = c("Sim", "Não")),
+                           q102_f = factor(q102, 
+                                           levels = c(1,2,-8,-9), 
+                                           labels = c("Sim", "Não", "Recusou", "Não sabe")),
+                           evercovid_f = factor(evercovid,
+                                              levels = 1:2,
+                                              labels = c("Sim", "Não")))
+
 # for join examples
 hh_stat <- tibble(householdid = c(1000, 1001, 1002, 2004, 2005, 3001, 3002),
                   hh_status = c(rep("Interviewed", 3), "Destroyed", "Refused", rep("Interviewed", 2)))
@@ -53,12 +89,8 @@ listing <- tibble(personid = c(5001:5007),
                   householdid = c(1000, 1000, 1001, 1001, 1001, 1001, 1002),
                   idade = c(20, 34, 20, 34, 4, 11, 51),
                   elig = c(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE))
-```
 
-```{r server, context = "server-start", echo=FALSE, include=FALSE}
-source("./learnr-logging.R")
 ```
-
 
 ```{r logo, echo=FALSE, results='asis'}
 
@@ -107,9 +139,85 @@ Este tutorial foi desenvolvido para dar seguimento ao curso sobre uso de R para 
 
 Neste tutorial, poderá completar alguns exercícios para aprender e reforçar conceitos tais como:
 
-* Join/merge  
-* graficos com ggplot2
 * tabelas com tbl_summary
+* graficos com ggplot2
+* Join/merge  
+
+## Como visualizar tabelas
+
+Vamos voltar ao exemplo que usamos no tutorial anterior sobre vacinação contra COVID-19:
+
+```{r tbl_summary1, echo=FALSE}
+saltos
+```
+
+No tutorial passado, limpampos os dados para poder calcular de forma correcta as proporcoes e medias tomando em conta os saltos no questionário, e os valores em falta. Depois, criamos factores para as variáveis categóricas. 
+
+Adicionamos duas variáveis novas: `q001`, sexo do participante e `q002`, idade do participante em anos.
+
+Queremos visualizar estatísticas resumidas sobre os dados. Para obter um resultado rápido, podemos sempre usar os comandos de base R de forma interactiva:
+
+```{r tbl_summary2, echo=TRUE}
+summary(saltos$evervac)
+table(saltos$evervac)
+mean(saltos$numvac, na.rm=TRUE)
+table(saltos$q002, saltos$q001) # analise bivariada
+
+```
+
+No entanto, para relatórios mais formais, podemos usar a função `tbl_summary()` do pacote `gtsummary`, que faz parte do tidyverse. Esta função cria tabelas resumiadas de forma rápida e fácil.
+
+```{r tbl_summary3, echo=TRUE}
+library(gtsummary)
+saltos |>
+  select(-partno, -q001) |> 
+  tbl_summary(
+    by = q001_f
+  )
+```
+
+Podemos ver que a tabela criada tem as estatísticas descritivas para cada variável, separadas por sexo. A função `tbl_summary()` é muito flexível e permite personalizar a saída de várias maneiras, como adicionar totais, mudar o formato dos números, etc. Consulte a documentação do `gtsummary` para mais detalhes.
+
+```{r tbl_summary4, echo=TRUE}
+saltos |>
+  select(q001_f, q002, numvac, where(~is.factor(.x))) |> 
+  tbl_summary(
+    by = q001_f
+  ) |>
+  add_overall() |>
+  add_p() |>
+  modify_header(label ~ "**Variável**") |>
+  modify_spanning_header(c("stat_1", "stat_2") ~ "**Sexo**")
+```  
+
+Usamos `select()` para limitar as variáveis incluidas (e dentro do `select()`, usamos where() para selecionar de forma automatica todas os factores, mas poderiamos ter os listado também). Depois, incluimos uma coluna de total (overall), e acrescentamos um p-value (no rodapé podemos saber como foi calculado para as variáveis continuas e categóricas). os comandos `modify_*_header*()` serviram para alterar os encabeçados, neste caso, trocando Characteristic por Variável, e incluindo o variável `by` acima das colunas associadas.
+
+
+```{r tbl_summary5, echo=TRUE}
+saltos |>
+  select(q001_f, q002, numvac, where(~is.factor(.x))) |> 
+  tbl_summary(
+    by = q001_f,
+    statistic = list(all_continuous() ~ "{mean} ({sd})",
+                     all_categorical() ~ "{n} ({p}%)"),
+    digits = all_continuous() ~ 1,
+    percent = "row",
+    missing_text = "Em falta",
+    label = list(q002 = "Idade",
+                 numvac = "No. de vacinas tomadas",
+                 evervac_f = "Alguma vez vacinado",
+                 q102_f = "Vacinado no último ano",
+                 evercovid_f = "Já teve COVID-19")
+  ) |>
+  add_overall() |>
+  add_p() |>
+  modify_header(label ~ "**Variável**") |>
+  modify_spanning_header(c("stat_1", "stat_2") ~ "**Sexo**")
+```  
+
+Neste exemplo, pedimos média em vez de mediano e desvio padrão em vez de intervalo de confiança para as variáveis continuas. Também, alteramos as percentagens para ser de linha em vez de coluna, e especificamos as etiquetas a usar para cada variável. Finalemnte, optamos por codificar os NA como "Em falta".
+
+## LEFT OFF HERE - EXERCISES FOR TBL_SUMMARY
 
 ## Como combinar tibbles
 

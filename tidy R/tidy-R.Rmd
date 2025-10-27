@@ -14,12 +14,15 @@ description: >
 library(learnr)
 library(gradethis)
 library(tidyverse)
-library(uuid)
 
-# for logging
+library(learnrLogr) # from github package kaiserso/learnrLogr
+
 options(
-  tutorial.id = "tidy-R"
+  tutorial.id = "tidy-R",
+  logger.enabled = TRUE
 )
+
+register_learnr_handlers() 
 
 knitr::opts_chunk$set(echo = FALSE)
 gradethis::gradethis_setup()
@@ -51,7 +54,7 @@ pers <- tibble(personid = c(5001:5009),
 ```
 
 ```{r server, context = "server-start", echo=FALSE, include=FALSE}
-source("./learnr-logging.R")
+#source("./learnr-logging.R")
 ```
 
 ```{r logo, echo=FALSE, results='asis'}

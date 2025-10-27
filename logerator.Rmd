@@ -7,7 +7,7 @@ output:
   word_document: default
 ---
 
-```{r setup, include=FALSE}
+```{r setup, echo=FALSE, include=FALSE}
 
 # note, this app is not for deployment
 
@@ -57,6 +57,9 @@ if(!nzchar(api_token)) {
   stop("CLOUDFLARE_LOGGER_D1_API_TOKEN environment variable not set")
 }
 
+```
+
+```{r fetch-logs, echo=FALSE}
 query <- "select * from logs"
 
 resp <- request(
@@ -92,7 +95,8 @@ logs_clean <- logs %>% unnest_wider(info_parsed)
 
 # earlier I was logging submissions instead of results, cleanup here
 logs_clean <- logs_clean |> 
-  mutate(event = if_else(event == "exercise_submitted", "exercise_result", event))
+  mutate(event = if_else(event == "exercise_submitted", "exercise_result", event)) |> 
+  filter(!is.na(app) & (!app %in% c("test-logging", "test-logging-shiny")))
 
 if(exclude.local == TRUE) {
   logs_clean <- logs_clean |> filter(hostname %in% production_hosts)
@@ -111,78 +115,100 @@ found_tutorials <- logs_clean |> distinct(path) |> filter(!is.na(path)) |>
   arrange(desc(path)) |>
   distinct(local_path, .keep_all = TRUE) # some hackery to deal with multiple deployments of same tutorial
 
+```
+
+```{r fetch-tutorials, echo=FALSE, include=FALSE}
+# get list of tutorials deployed locally
+
 # parse the total number of exercises and last exercise name from the source for those
-# tutorials that were found
+# tutorials that were found. Also include the total number of quizzes
 tutorial_func <-   function(path) {
+  
+    #message("processing path: ", path)
     app = str_remove(path, "^(/tutorial-|/)")
+    app = str_remove(app, ".Rmd$")
     app = str_remove(app, "/$")
-    app2 = str_replace_all(app, "-", " ")
+    dir2 = str_replace_all(app, "-", " ")
     local_path = paste0(app, "/", app, ".Rmd")
-    local_path2 = paste0(app2, "/", app, ".Rmd")
+    local_path2 = paste0(dir2, "/", app, ".Rmd")
     
+    if(app %in% c("test-logging", "test-logging-shiny", "")) {
+      #message("skipping test-logging tutorial")
+      return(data.frame(app = app, 
+                        path = NA,
+                        total_exercises = NA, 
+                        last_exercise_name = NA))
+    }
+    #message("trying to find: ", local_path, " or ", local_path2)
     #message(paste0("current directory is ", getwd()))
+    thepath <- local_path
     suppressWarnings(tutorial_source <- tryCatch(readLines(local_path), error = function(e) NULL))
     if (is.null(tutorial_source)) {
       tutorial_source <- tryCatch(readLines(local_path2), error = function(e) NULL)
+      thepath <- local_path2
     }
     if (!is.null(tutorial_source)) {
       total_exercises <- sum(grepl("```\\{r,? .*, ?exercise=", tutorial_source))
       last_exercise <- tail(grep("```\\{r,? .*, ?exercise=", tutorial_source, value = TRUE), 1)
       last_exercise_name <- sub("```\\{r,? (.*), ?exercise=.*$", "\\1", last_exercise)
-      return(data.frame(app = app, 
+      total_quizzes <- sum(grepl("```\\{r,? .*-quiz ?.*}", tutorial_source))
+      return(data.frame(app = app,
+                        path = thepath,
+                        total_quizzes = total_quizzes,
                         total_exercises = total_exercises, 
                         last_exercise_name = last_exercise_name))
     } else {
       return(data.frame(app = app, 
+                        path = NA,
+                        total_quizzes = NA,
                         total_exercises = NA, 
                         last_exercise_name = NA))
   }
 }
 tutorial_detail_func <- function(path) {
-  app = str_remove(path, "^(/tutorial-|/)")
-  app = str_remove(app, "/$")
-  app2 = str_replace_all(app, "-", " ")
-  local_path = paste0(app, "/", app, ".Rmd")
-  local_path2 = paste0(app2, "/", app, ".Rmd")
-  
-  suppressWarnings(tutorial_source <- tryCatch(readLines(local_path), error = function(e) NULL))
-  if (is.null(tutorial_source)) {
-    tutorial_source <- tryCatch(readLines(local_path2), error = function(e) NULL)
-  }
+  suppressWarnings(tutorial_source <- tryCatch(readLines(path), error = function(e) NULL))
   if (!is.null(tutorial_source)) {
     exercise_lines <- grep("```\\{r,? .*, ?exercise=", tutorial_source, value = TRUE)
     exercise_names <- sub("```\\{r,? (.*), ?exercise=.*$", "\\1", exercise_lines)
-    return(data.frame(app = app, 
+    return(data.frame(path = path,
                       exercise_name = exercise_names, 
                       exercise_index = seq_along(exercise_names)))
   } else {
-    return(data.frame(app = app, exercise_name = NA))
+    return(data.frame(path = NA, exercise_name = NA, exercise_index = NA))
   }
 }
 
 # parse the tutorial structure from source code, details include ordered list of exercises
-tutorial_info <- map_dfr(found_tutorials$path, tutorial_func)
-tutorial_detail <- map_dfr(found_tutorials$path, tutorial_detail_func)
+tutorial_info <- map_dfr(found_tutorials$path, tutorial_func) |> 
+  filter(!is.na(path)) |>
+  distinct()
+tutorial_detail <- map_dfr(tutorial_info$path, tutorial_detail_func) |> 
+  filter(!is.na(path)) |>
+  distinct() |> inner_join(tutorial_info, by = join_by(path))
 
+```
+
+```{r analyze-logs, echo=FALSE}
 # get info on tutorial initiation
 initiation <- tutorial_info |> left_join(logs_clean, join_by(app == app)) |> 
   filter(event == "session_start") |> 
   group_by(app) |> 
   summarise(initiations = n_distinct(session),
             last_init_date = as.Date(max(ts)),
+            total_quizzes = max(total_quizzes),
             total_exercises = max(total_exercises),
             last_exercise_name = last(last_exercise_name),
             .groups = "drop")
 
 # get info on tutorial completion (I'm not actually capturing this event, using last exercise
 # as a proxy)
-completion <- tutorial_info |> left_join(logs_clean, join_by(app == app, last_exercise_name == label)) |> 
-  filter(event == "exercise_submitted") |> 
+completed <- tutorial_info |> left_join(logs_clean, join_by(app == app, last_exercise_name == label)) |> 
+  filter(event %in% c("exercise_submitted", "exercise_result")) |> 
   group_by(app) |> 
   summarise(completions = n_distinct(session),
             .groups = "drop")
 
-completion <- initiation |> left_join(completion, by = join_by(app)) |> 
+completion <- initiation |> left_join(completed, by = join_by(app)) |> 
   mutate(completions = if_else(is.na(completions), 0L, completions),
          completion_rate = percent(completions / initiations, 0.1))
 
@@ -205,7 +231,7 @@ exercise_detail <-
 
 prop_exercise_unique_sessions <- 
   tutorial_info |> left_join(logs_clean, join_by(app == app)) |>
-    filter(event == "exercise_submitted") |> 
+    filter(event %in% c("exercise_result", "exercise_submitted")) |> 
     group_by(app, session) |> 
     summarise(exercises_done = n_distinct(label),
               total_exercises = first(total_exercises),
@@ -248,6 +274,7 @@ completion |>
     "Last start" = last_init_date,
     "N. ex." = total_exercises,
     "Last ex." = last_exercise_name,
+    "N. quiz." = total_quizzes,
     "N. comp." = completions,
     "C. rate" = completion_rate
   ) |>
